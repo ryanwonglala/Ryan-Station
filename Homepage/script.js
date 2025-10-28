@@ -52,6 +52,7 @@ async function loadPlaylist() {
 // ========================================================================
 
 // 获取DOM元素
+const miniPlayer = document.querySelector('.mini-player');
 const turntableBase = document.getElementById('turntableBase');
 const miniVinyl = document.getElementById('miniVinyl');
 const playerPanel = document.getElementById('playerPanel');
@@ -75,6 +76,7 @@ const audioWaveContainer = document.getElementById('audioWaveContainer');
 let isPlaying = false;
 let currentTrackIndex = 0;
 let isPanelOpen = false;
+let isPlayerExpanded = false; // 播放器是否展开
 let isDragging = false;
 let dragStartX = 0;
 let playMode = 'sequential'; // 'sequential' 或 'random'
@@ -299,6 +301,11 @@ function startPlaying() {
   miniVinyl.classList.add('playing');
   statusLight.classList.add('active');
 
+  // 给播放器容器添加 playing 类，使其稍微露出更多
+  if (miniPlayer) {
+    miniPlayer.classList.add('playing');
+  }
+
   // 显示波浪动画
   if (audioWaveContainer) {
     audioWaveContainer.classList.add('active');
@@ -314,6 +321,11 @@ function stopPlaying() {
   miniVinyl.classList.remove('playing');
   statusLight.classList.remove('active');
 
+  // 移除播放器容器的 playing 类，使其更加隐藏
+  if (miniPlayer) {
+    miniPlayer.classList.remove('playing');
+  }
+
   // 隐藏波浪动画
   if (audioWaveContainer) {
     audioWaveContainer.classList.remove('active');
@@ -323,11 +335,25 @@ function stopPlaying() {
   panelPlayIcon.className = 'play-icon';
 }
 
+// 切换播放器展开/收起
+function togglePlayerExpanded() {
+  isPlayerExpanded = !isPlayerExpanded;
+  if (isPlayerExpanded) {
+    miniPlayer.classList.add('expanded');
+  } else {
+    miniPlayer.classList.remove('expanded');
+  }
+}
+
 // 切换面板显示
 function togglePanel() {
   isPanelOpen = !isPanelOpen;
   if (isPanelOpen) {
     playerPanel.classList.add('show');
+    // 打开面板时也展开播放器
+    if (!isPlayerExpanded) {
+      togglePlayerExpanded();
+    }
   } else {
     playerPanel.classList.remove('show');
   }
@@ -424,7 +450,20 @@ function handleDragEnd(e) {
 }
 
 // 事件监听
-turntableBase.addEventListener('click', togglePanel);
+// 点击播放器底座时切换展开/收起
+turntableBase.addEventListener('click', (e) => {
+  e.stopPropagation();
+  togglePlayerExpanded();
+
+  // 如果展开了，也打开面板；如果收起了，也关闭面板
+  if (isPlayerExpanded && !isPanelOpen) {
+    playerPanel.classList.add('show');
+    isPanelOpen = true;
+  } else if (!isPlayerExpanded && isPanelOpen) {
+    playerPanel.classList.remove('show');
+    isPanelOpen = false;
+  }
+});
 
 panelPlayBtn.addEventListener('click', (e) => {
   e.stopPropagation();
@@ -518,10 +557,22 @@ document.addEventListener('touchend', (e) => {
   }
 });
 
-// 点击面板外部关闭面板
+// 点击外部关闭播放器和面板
 document.addEventListener('click', (e) => {
-  if (isPanelOpen && !playerPanel.contains(e.target) && !turntableBase.contains(e.target)) {
-    togglePanel();
+  if ((isPanelOpen || isPlayerExpanded) &&
+      !playerPanel.contains(e.target) &&
+      !turntableBase.contains(e.target) &&
+      !miniPlayer.contains(e.target)) {
+    // 关闭面板
+    if (isPanelOpen) {
+      playerPanel.classList.remove('show');
+      isPanelOpen = false;
+    }
+    // 收起播放器
+    if (isPlayerExpanded) {
+      miniPlayer.classList.remove('expanded');
+      isPlayerExpanded = false;
+    }
   }
 });
 

@@ -3,67 +3,82 @@
   "tracks": [
     {
       "title": "神曼波",
-      "artist": "哈基米",
+      "artist": "仙品",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E7%A5%9E%E6%9B%BC%E6%B3%A2.mp3"
     },
     {
       "title": "Kamin",
-      "artist": "布吉岛",
+      "artist": "宿命的小曲",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E3%80%90kamin%E3%80%91%7C%E2%80%9C%E3%80%90%E5%AE%BF%E5%91%BD%E3%81%AE%E5%B0%8F%E6%9B%B2%E3%80%91%E2%80%9D%20-%20001%20-%20%E3%80%90kamin%E3%80%91%7C%E2%80%9C%E3%80%90%E5%AE%BF%E5%91%BD%E3%81%AE%E5%B0%8F%E6%9B%B2%E3%80%91%E2%80%9D.mp3"
     },
     {
       "title": "宝莲",
-      "artist": "布吉岛",
+      "artist": "燃起来了",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E3%80%90%E9%AC%BC%E7%81%AD%E6%89%8B%E4%B9%A6%7C%E7%8B%9B%E6%B2%BB%C2%B7%E7%8B%9B%E6%81%8B%E3%80%91%E5%AE%9D%E8%8E%B2%20-%20001%20-%20%E3%80%90%E9%AC%BC%E7%81%AD%E6%89%8B%E4%B9%A6%7C%E7%8B%9B%E6%B2%BB%C2%B7%E7%8B%9B%E6%81%8B%E3%80%91%E5%AE%9D%E8%8E%B2.mp3"
     },
     {
+      "title": "Something Just Like This",
+      "artist": "Mixed version",
+      "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E3%80%90%E5%8F%8C%E5%A3%B0%E7%8E%AF%E7%BB%95%E3%80%91%E3%80%90JFlaMusic%E3%80%91Something%20Just%20Like%20This%EF%BC%88%E4%B8%AD%E8%8B%B1%E5%AD%97%E5%B9%95%EF%BC%89%20-%20001%20-%20%E3%80%90%E5%8F%8C%E5%A3%B0%E7%8E%AF%E7%BB%95%E3%80%91%E3%80%90JFlaMusic%E3%80%91Something%20Just%20Like%20This%EF%BC%88%E4%B8%AD%E8%8B%B1%E5%AD%97%E5%B9%95%EF%BC%89.mp3"
+    },
+    {
+      "title": "一等情事",
+      "artist": "小木头",
+      "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E3%80%8A%20%E4%B8%80%E7%AD%89%E6%83%85%E4%BA%8B%20%E3%80%8B%20-%20001%20-%20%E3%80%8A%20%E4%B8%80%E7%AD%89%E6%83%85%E4%BA%8B%20%E3%80%8B.mp3"
+    },
+    {
+      "title": "执迷不悟",
+      "artist": "Emo小曲",
+      "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%F0%9F%8C%B8%E2%80%9C%E6%88%91%E5%AF%B9%E4%BD%A0%E5%8F%88%E4%BD%95%E6%AD%A2%E6%98%AF%E6%89%A7%E8%BF%B7%E4%B8%8D%E6%82%9F%E2%80%9D%F0%9F%8C%B8%E6%9B%BC%E6%B3%A2%E3%81%AE%E6%89%A7%E8%BF%B7%E4%B8%8D%E6%82%9F%20-%20001%20-%20%F0%9F%8C%B8%E2%80%9C%E6%88%91%E5%AF%B9%E4%BD%A0%E5%8F%88%E4%BD%95%E6%AD%A2%E6%98%AF%E6%89%A7%E8%BF%B7%E4%B8%8D%E6%82%9F%E2%80%9D%F0%9F%8C%B8%E6%9B%BC%E6%B3%A2%E3%81%AE%E6%89%A7%E8%BF%B7%E4%B8%8D%E6%82%9F.mp3"
+    },
+    {
       "title": "难得真兄弟（交响曲版）",
-      "artist": "布吉岛",
+      "artist": "三个",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E7%8C%9B%E6%94%BB%E9%87%91%E8%89%B2%E5%A4%A7%E5%8E%85%20%E3%80%8A%E9%9A%BE%E5%BE%97%E7%9C%9F%E5%85%84%E5%BC%9F%E3%80%8B%E4%BA%A4%E5%93%8D%E4%B9%90%E6%BC%94%E5%A5%8F%EF%BC%88%E8%BF%AB%E7%9C%9F%EF%BC%89%20-%20001%20-%20%E7%8C%9B%E6%94%BB%E9%87%91%E8%89%B2%E5%A4%A7%E5%8E%85%20%E3%80%8A%E9%9A%BE%E5%BE%97%E7%9C%9F%E5%85%84%E5%BC%9F%E3%80%8B%E4%BA%A4%E5%93%8D%E4%B9%90%E6%BC%94%E5%A5%8F%EF%BC%88%E8%BF%AB%E7%9C%9F%EF%BC%89.mp3"
     },
     {
       "title": "青基",
-      "artist": "哈基米",
+      "artist": "离人很远",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E9%9D%92%E5%9F%BA%20-%20001%20-%20%E9%9D%92%E5%9F%BA.mp3"
     },
     {
       "title": "基米说",
-      "artist": "哈基米",
+      "artist": "离神很近",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E5%9F%BA%E7%B1%B3%E8%AF%B4%E5%AE%8C%E6%95%B4%E7%89%88%20-%20001%20-%20%E5%9F%BA%E7%B1%B3%E8%AF%B4%E5%AE%8C%E6%95%B4%E7%89%88.mp3"
     },
     {
       "title": "夜哈",
-      "artist": "哈基米",
+      "artist": "开头蚌埠住了",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E5%A4%9C%E5%93%88%20-%20001%20-%20%E5%A4%9C%E5%93%88.mp3"
     },
     {
       "title": "风哈雨",
-      "artist": "哈基米",
+      "artist": "古风小哈",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E9%A3%8E%E5%93%88%E9%9B%A8%20-%20001%20-%20%E9%A3%8E%E5%93%88%E9%9B%A8.mp3"
     },
     {
       "title": "哈基Wake",
-      "artist": "哈基米",
+      "artist": "白切基",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E5%93%88%E5%9F%BAWake%20-%20001%20-%20%E5%93%88%E5%9F%BAWake.mp3"
     },
     {
       "title": "跳楼基",
-      "artist": "哈基米",
+      "artist": "比原唱好听",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E8%B7%B3%E6%A5%BC%E6%9C%BA1.1%E6%9B%BC%E6%B3%A2%E5%AE%8C%E6%95%B4%E7%89%88%20-%20001%20-%20%E8%B7%B3%E6%A5%BC%E6%9C%BA1.1%E6%9B%BC%E6%B3%A2%E5%AE%8C%E6%95%B4%E7%89%88.mp3"
     },
     {
       "title": "最后一哈",
-      "artist": "哈基米",
+      "artist": "听哭了",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E3%80%90%E5%AE%8C%E6%95%B4%E7%89%88%E3%80%91%E6%9C%80%E5%90%8E%E4%B8%80%E5%93%88%20-%20001%20-%20%E3%80%90%E5%AE%8C%E6%95%B4%E7%89%88%E3%80%91%E6%9C%80%E5%90%8E%E4%B8%80%E5%93%88.mp3"
     },
     {
       "title": "起哈了",
-      "artist": "哈基米",
+      "artist": "以耄之名，你还愿意吗",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%E3%80%90%E5%AE%8C%E6%95%B4%E7%89%88%E3%80%91%F0%9F%90%B1%E8%B5%B7%E5%93%88%E4%BA%86%F0%9F%90%B1%20%20%20%E2%80%9C%E4%BB%A5%E8%80%84%E4%B9%8B%E5%90%8D%EF%BC%8C%E4%BD%A0%E8%BF%98%E6%84%BF%E6%84%8F%E5%90%97%E2%80%9D%20-%20001%20-%20%E3%80%90%E5%AE%8C%E6%95%B4%E7%89%88%E3%80%91%F0%9F%90%B1%E8%B5%B7%E5%93%88%E4%BA%86%F0%9F%90%B1%20%20%20%E2%80%9C%E4%BB%A5%E8%80%84%E4%B9%8B%E5%90%8D%EF%BC%8C%E4%BD%A0%E8%BF%98%E6%84%BF%E6%84%8F%E5%90%97%E2%80%9D.mp3"
     },
     {
       "title": "把基米拼好给你",
-      "artist": "哈基米",
+      "artist": "搞了半天要自己拼",
       "src": "https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Music/%F0%9F%90%B1%E6%8A%8A%E5%9F%BA%E7%B1%B3%E6%8B%BC%E5%A5%BD%E7%BB%99%E4%BD%A0%F0%9F%90%B1%20-%20001%20-%20%F0%9F%90%B1%E6%8A%8A%E5%9F%BA%E7%B1%B3%E6%8B%BC%E5%A5%BD%E7%BB%99%E4%BD%A0%F0%9F%90%B1.mp3"
     }
   ]

@@ -496,23 +496,39 @@ body.light-mode .clouds {
   display: none;
 }
 
-/* ============ 迷你播放器容器 ============ */
+/* ============ 迷你播放器容器 - 贴边隐藏版（点击展开） ============ */
 .mini-player {
   position: fixed;
   bottom: 30px;
-  right: 30px;
+  right: -65px; /* 默认隐藏到右侧边缘外，只露出一小部分 */
   z-index: 1000;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 播放器底座 */
+/* 播放时稍微露出更多（约40%），作为视觉提示 */
+.mini-player.playing {
+  right: -50px;
+}
+
+/* 点击展开后完全显示 */
+.mini-player.expanded {
+  right: 30px;
+}
+
+/* 悬停时添加提示效果（不完全展开，只是视觉反馈） */
+.mini-player:not(.expanded):hover .turntable-base {
+  transform: scale(1.05);
+}
+
+/* 播放器底座 - 低调版本 */
 .turntable-base {
   width: 100px;
   height: 100px;
-  background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  background: linear-gradient(145deg, rgba(42, 42, 42, 0.8) 0%, rgba(26, 26, 26, 0.9) 50%, rgba(10, 10, 10, 0.95) 100%);
   border-radius: 50%;
   box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.8),
-    inset 0 2px 5px rgba(255, 255, 255, 0.1),
+    0 8px 20px rgba(0, 0, 0, 0.5),
+    inset 0 2px 5px rgba(255, 255, 255, 0.08),
     inset 0 -2px 5px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -520,12 +536,14 @@ body.light-mode .clouds {
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0.85;
 }
 
 .turntable-base:hover {
   transform: scale(1.05);
+  opacity: 1;
   box-shadow:
-    0 12px 40px rgba(102, 126, 234, 0.4),
+    0 12px 35px rgba(102, 126, 234, 0.3),
     inset 0 2px 5px rgba(255, 255, 255, 0.1),
     inset 0 -2px 5px rgba(0, 0, 0, 0.5);
 }
