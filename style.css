@@ -1,0 +1,2022 @@
+/* ============ CSS 变量定义 - 主题颜色 ============ */
+:root {
+  /* 黑暗模式颜色 (默认) */
+  --bg-gradient-start: #1a1a2e;
+  --bg-gradient-mid: #16213e;
+  --bg-gradient-end: #0f3460;
+  --sidebar-bg: rgba(15, 23, 42, 0.8);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --text-color: #cbd5e1;
+  --icon-color: #e2e8f0;
+  --hover-color: #ffa117;
+  --section-text-color: rgba(255, 255, 255, 0.1);
+  --active-bg-start: #1a1a2e;
+  --active-bg-mid: #16213e;
+  --active-bg-end: #0f3460;
+  --active-shadow-color: rgba(15, 23, 42, 0.8);
+  --transition-speed: 0.5s;
+  --body-bg-pulse-color: rgba(255, 255, 255, 0.03);
+}
+
+body.light-mode {
+  /* 明亮模式颜色 - 蓝紫渐变配色方案 */
+  --bg-gradient-start: #6c92e9; /* 天蓝色 */
+  --bg-gradient-mid: #7a6fbe; /* 紫蓝色 */
+  --bg-gradient-end: #a76799; /* 玫瑰紫 */
+  --sidebar-bg: rgba(255, 255, 255, 0.85);
+  --sidebar-border: rgba(255, 255, 255, 0.3);
+  --text-color: #475569;
+  --icon-color: #334155;
+  --hover-color: #ea580c;
+  --section-text-color: rgba(0, 0, 0, 0.06);
+  --active-bg-start: rgba(255, 255, 255, 0.6);
+  --active-bg-mid: rgba(240, 240, 255, 0.6);
+  --active-bg-end: rgba(230, 230, 255, 0.6);
+  --active-shadow-color: rgba(255, 255, 255, 0.85);
+  --body-bg-pulse-color: rgba(255, 255, 255, 0.05);
+
+  /* 白色背景 + 点状网格 + 橙色径向渐变 */
+  background-color: #f8fafc;
+  background-image:
+    radial-gradient(125% 125% at 50% 10%, rgba(249, 115, 22, 0.3) 40%, rgba(248, 250, 252, 1) 100%),
+    radial-gradient(rgba(255, 255, 255, 0.2) 1px, #f8fafc 1px);
+  background-size:
+    100% 100%,
+    20px 20px;
+  background-attachment: fixed;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+
+  /* [!!] 更新为新的黑暗模式背景 */
+  background-color: #0f172a;
+  background-image:
+    /* Dotted grid (top layer) */
+    radial-gradient(#ffffff33 1px, transparent 1px),
+    /* Radial gradient (middle layer) */
+    radial-gradient(150% 80% at 25% 75%, rgba(244, 63, 94, 0.5) 40%, rgba(15, 23, 42, 1) 100%);
+  background-size:
+    16px 16px, /* For the dotted grid */
+    auto;       /* For the radial gradient */
+  /* [!!] 结束新的背景 */
+
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  transition: background var(--transition-speed) ease;
+}
+
+body.dragging {
+  cursor: grabbing !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body.dragging * {
+  cursor: grabbing !important;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 50%, var(--body-bg-pulse-color) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--body-bg-pulse-color) 0%, transparent 50%);
+  animation: pulse 15s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============ 侧边栏样式 ============ */
+.sidebar {
+  position: fixed;
+  width: 84px;
+  height: 100%;
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--sidebar-border);
+  z-index: 9999;
+  transition: width 0.5s, background var(--transition-speed) ease, border-color var(--transition-speed) ease;
+  padding-left: 10px;
+  overflow: hidden;
+}
+
+.sidebar:hover,
+.sidebar:focus-within {
+  width: 300px;
+}
+
+.imageBox {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.imageBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar ul {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar ul li {
+  position: relative;
+  padding: 5px;
+}
+
+.sidebar ul li:not(.theme-switch-li):last-of-type {
+  margin-bottom: 0;
+}
+
+.sidebar .active {
+  background: linear-gradient(135deg, var(--active-bg-start) 0%, var(--active-bg-mid) 50%, var(--active-bg-end) 100%);
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  transition: background var(--transition-speed) ease;
+}
+
+.sidebar .active::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-bottom-right-radius: 25px;
+  box-shadow: 5px 5px 0 5px var(--active-shadow-color);
+  background: transparent;
+  transition: box-shadow var(--transition-speed) ease;
+}
+
+.sidebar .active::after {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-top-right-radius: 25px;
+  box-shadow: 5px -5px 0 5px var(--active-shadow-color);
+  background: transparent;
+  transition: box-shadow var(--transition-speed) ease;
+}
+
+#logo {
+  margin: 40px 0 100px 0;
+}
+
+.sidebar ul li a {
+  position: relative;
+  display: flex;
+  white-space: nowrap;
+}
+
+.sidebar .icon {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 60px;
+  padding-left: 10px;
+  height: 70px;
+  color: var(--icon-color);
+  transition: color var(--transition-speed) ease;
+}
+
+.sidebar .icon i {
+  font-size: 30px;
+  z-index: 999;
+}
+
+.sidebar .text {
+  position: relative;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  color: var(--text-color);
+  padding-left: 15px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: color var(--transition-speed) ease;
+}
+
+.sidebar ul li:hover a .icon,
+.sidebar ul li:hover a .text,
+.sidebar ul li a:focus .icon,
+.sidebar ul li a:focus .text {
+  color: var(--hover-color);
+}
+
+.sidebar .active a .icon::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  width: 60px;
+  background: var(--sidebar-bg);
+  border-radius: 50%;
+  transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease;
+  border: 7px solid var(--hover-color);
+  box-sizing: border-box;
+}
+
+/* 内容区块样式 */
+section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: 900 100px 'Arial', sans-serif;
+  color: var(--section-text-color);
+  padding-left: 84px;
+  transition: color var(--transition-speed) ease;
+}
+
+/* ============ 主题切换开关样式 ============ */
+/* ============ 主题切换开关样式 (复刻版 WpfGorgeousThemeSwitch) ============ */
+.theme-switch-li {
+  margin-top: auto;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 0;
+  background: none !important;
+}
+
+.theme-switch-li::before,
+.theme-switch-li::after {
+  display: none !important;
+}
+
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+  min-width: 60px;
+  height: 80px;
+}
+
+/* Theme 文字默认隐藏，悬停时显示 */
+.theme-switch-li .text {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* 这里我们保留了 .theme-switch 类名，
+  是为了让 script.js 仍能正确找到点击目标 
+*/
+.theme-switch:hover + .text {
+  opacity: 1;
+}
+
+/* 新的开关容器 */
+.theme-switch {
+  position: relative;
+  width: 70px; /* 宽度 (WPF 100/40, 我们用 70/36) */
+  height: 36px; /* 高度 */
+  border-radius: 18px; /* 圆角 */
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  margin-left: 5px;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 开关轨道 (背景) */
+.gorgeous-switch-track {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  background: #171E33; /* 默认深色背景 */
+  transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 开关滑块 (太阳/月亮) */
+.gorgeous-switch-thumb {
+  position: absolute;
+  width: 30px; /* 滑块大小 */
+  height: 30px; /* 滑块大小 */
+  top: 3px;
+  left: 3px;
+  border-radius: 50%;
+  background: #C4C9D4; /* 默认是月亮 */
+  transform: translateX(0px);
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 弹性动画 */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 太阳 (默认隐藏) */
+.thumb-sun {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #F3C62B;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.5s ease;
+}
+
+/* 月亮 (默认显示) */
+.thumb-moon {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #C4C9D4;
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.5s ease;
+}
+
+/* 月亮上的坑 */
+.crater {
+  position: absolute;
+  background: #9A9FB2;
+  border-radius: 50%;
+  opacity: 0.6;
+  width: var(--crater-size, 6px);
+  height: var(--crater-size, 6px);
+  top: var(--crater-top, 5px);
+  left: var(--crater-left, 15px);
+}
+
+/* 星星 (默认显示) */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.5s ease;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  width: var(--star-size, 2px);
+  height: var(--star-size, 2px);
+  top: var(--star-top, 10px);
+  left: var(--star-left, 25px);
+  animation: twinkle 2s infinite ease-in-out;
+  animation-delay: var(--star-delay, 0s);
+}
+
+/* 星星闪烁动画 */
+@keyframes twinkle {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.5); opacity: 0.5; }
+}
+
+/* 云朵 (默认隐藏) */
+.clouds {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.6s ease;
+}
+
+.cloud {
+  position: absolute;
+  width: 20px;
+  height: 8px;
+  background: white;
+  border-radius: 10px;
+  top: var(--cloud-top, 10px);
+  left: var(--cloud-left, 10px);
+  scale: var(--cloud-scale, 1);
+  animation: drift 5s infinite linear;
+  animation-delay: var(--cloud-delay, 0s);
+}
+.cloud::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  top: -6px;
+  left: 3px;
+}
+.cloud::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  top: -4px;
+  right: 2px;
+}
+
+/* 云朵漂浮动画 */
+@keyframes drift {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+
+/* ====== 明亮模式 (light-mode) 激活时的样式 ====== */
+
+/* 轨道背景变蓝 */
+body.light-mode .gorgeous-switch-track {
+  background: #4685C0;
+}
+
+/* 滑块右移 */
+body.light-mode .gorgeous-switch-thumb {
+  transform: translateX(34px); /* 70px (宽) - 30px (滑块) - 3px (左) - 3px (右) */
+}
+
+/* 太阳显示 */
+body.light-mode .thumb-sun {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 月亮隐藏 */
+body.light-mode .thumb-moon {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+/* 星星隐藏 */
+body.light-mode .stars {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* 云朵显示 */
+body.light-mode .clouds {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* (移除旧的 .sun 和 .moon 样式) */
+.sun, .moon {
+  display: none;
+}
+
+/* ============ 迷你播放器容器 ============ */
+.mini-player {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+
+/* 播放器底座 */
+.turntable-base {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    inset 0 2px 5px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.turntable-base:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 12px 40px rgba(102, 126, 234, 0.4),
+    inset 0 2px 5px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.turntable-base::before {
+  content: '';
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+/* 迷你黑胶唱片 */
+.mini-vinyl {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #1a1a1a 0%, #000000 30%, #0a0a0a 50%, #000000 100%);
+  box-shadow:
+    0 0 0 2px #000,
+    0 4px 15px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: visible;
+}
+
+.mini-vinyl.playing {
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 唱片边缘高光标记 - 增强旋转可见性 */
+.mini-vinyl::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(102, 126, 234, 0.8);
+  border-radius: 50%;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 6px rgba(102, 126, 234, 0.8);
+}
+
+.mini-vinyl::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(245, 87, 108, 0.8);
+  border-radius: 50%;
+  bottom: 8px;
+  right: 12px;
+  box-shadow: 0 0 5px rgba(245, 87, 108, 0.8);
+}
+
+/* 迷你唱片纹路 */
+.mini-grooves {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle at center,
+    transparent 0px,
+    transparent 1px,
+    rgba(255, 255, 255, 0.05) 1px,
+    rgba(255, 255, 255, 0.05) 2px
+  );
+}
+
+/* 迷你唱片中心 */
+.mini-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #c41e3a 0%, #8b0000 70%, #5a0000 100%);
+  box-shadow:
+    0 0 10px rgba(196, 30, 58, 0.4),
+    inset 0 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-center::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+  position: absolute;
+}
+
+/* 唱片上的视觉标记 - 增强旋转可见性 */
+.mini-center::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 2px;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 迷你唱臂 */
+.mini-tonearm {
+  position: absolute;
+  top: 15%;
+  right: 8%;
+  width: 35px;
+  height: 4px;
+  background: linear-gradient(to right, #6a6a6a 0%, #888 50%, #6a6a6a 100%);
+  border-radius: 10px;
+  transform-origin: right center;
+  transform: rotate(-20deg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  transition: transform 0.4s ease;
+}
+
+.mini-tonearm::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid #999;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+
+.mini-tonearm::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #444;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.turntable-base:hover .mini-tonearm {
+  transform: rotate(-30deg);
+}
+
+.mini-vinyl.playing ~ .mini-tonearm {
+  transform: rotate(-35deg);
+}
+
+/* 播放状态指示灯 */
+.status-light {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #333;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.status-light.active {
+  background: #4ade80;
+  box-shadow:
+    0 0 10px rgba(74, 222, 128, 0.6),
+    0 0 20px rgba(74, 222, 128, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  animation: pulse-light 2s ease-in-out infinite;
+}
+
+@keyframes pulse-light {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* 展开的播放器面板 */
+.player-panel {
+  position: absolute;
+  bottom: 90px;
+  right: 0;
+  width: 320px;
+  max-height: 450px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+}
+
+.player-panel.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+/* 音频波浪动画容器 */
+.audio-wave-container {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 10px 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(102, 126, 234, 0.05) 60%, rgba(102, 126, 234, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 10;
+  pointer-events: none;
+  border-radius: 20px 20px 0 0;
+  overflow: visible;
+}
+
+.audio-wave-container.active {
+  opacity: 1;
+}
+
+/* 波浪条 */
+.wave-bar {
+  flex: 1;
+  min-height: 8px;
+  background: linear-gradient(180deg, rgba(102, 126, 234, 0.3) 0%, #667eea 50%, #764ba2 100%);
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    0 0 12px rgba(102, 126, 234, 0.6),
+    0 0 6px rgba(118, 75, 162, 0.4);
+  transform-origin: bottom;
+  will-change: height;
+}
+
+/* 不同的波浪条动画 - 更动感、更随机 */
+.wave-bar:nth-child(1) {
+  animation: wave-dance-1 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(2) {
+  animation: wave-dance-2 1.4s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(3) {
+  animation: wave-dance-3 1.0s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(4) {
+  animation: wave-dance-4 1.6s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(5) {
+  animation: wave-dance-5 1.1s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(6) {
+  animation: wave-dance-6 1.3s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(7) {
+  animation: wave-dance-7 1.5s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(8) {
+  animation: wave-dance-8 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(9) {
+  animation: wave-dance-9 1.4s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(10) {
+  animation: wave-dance-10 1.0s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(11) {
+  animation: wave-dance-1 1.3s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(12) {
+  animation: wave-dance-2 1.1s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(13) {
+  animation: wave-dance-3 1.5s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(14) {
+  animation: wave-dance-4 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(15) {
+  animation: wave-dance-5 1.4s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(16) {
+  animation: wave-dance-6 1.0s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(17) {
+  animation: wave-dance-7 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(18) {
+  animation: wave-dance-8 1.5s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(19) {
+  animation: wave-dance-9 1.1s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(20) {
+  animation: wave-dance-10 1.3s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(21) {
+  animation: wave-dance-1 1.4s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(22) {
+  animation: wave-dance-2 1.6s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(23) {
+  animation: wave-dance-3 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(24) {
+  animation: wave-dance-4 1.0s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(25) {
+  animation: wave-dance-5 1.5s ease-in-out infinite;
+}
+
+/* 各种不同高度的动画关键帧 - 模拟真实音频波形 */
+@keyframes wave-dance-1 {
+  0%, 100% { height: 12px; opacity: 0.7; }
+  25% { height: 45px; opacity: 1; }
+  50% { height: 25px; opacity: 0.85; }
+  75% { height: 65px; opacity: 1; }
+}
+
+@keyframes wave-dance-2 {
+  0%, 100% { height: 20px; opacity: 0.75; }
+  30% { height: 55px; opacity: 1; }
+  60% { height: 30px; opacity: 0.8; }
+}
+
+@keyframes wave-dance-3 {
+  0%, 100% { height: 15px; opacity: 0.7; }
+  20% { height: 70px; opacity: 1; }
+  40% { height: 35px; opacity: 0.85; }
+  80% { height: 50px; opacity: 0.95; }
+}
+
+@keyframes wave-dance-4 {
+  0%, 100% { height: 25px; opacity: 0.8; }
+  35% { height: 40px; opacity: 0.9; }
+  70% { height: 60px; opacity: 1; }
+}
+
+@keyframes wave-dance-5 {
+  0%, 100% { height: 18px; opacity: 0.75; }
+  25% { height: 75px; opacity: 1; }
+  50% { height: 28px; opacity: 0.8; }
+  75% { height: 55px; opacity: 0.95; }
+}
+
+@keyframes wave-dance-6 {
+  0%, 100% { height: 22px; opacity: 0.7; }
+  40% { height: 48px; opacity: 0.9; }
+  80% { height: 68px; opacity: 1; }
+}
+
+@keyframes wave-dance-7 {
+  0%, 100% { height: 16px; opacity: 0.75; }
+  30% { height: 62px; opacity: 1; }
+  60% { height: 32px; opacity: 0.85; }
+}
+
+@keyframes wave-dance-8 {
+  0%, 100% { height: 20px; opacity: 0.8; }
+  25% { height: 52px; opacity: 0.95; }
+  50% { height: 70px; opacity: 1; }
+  75% { height: 38px; opacity: 0.85; }
+}
+
+@keyframes wave-dance-9 {
+  0%, 100% { height: 14px; opacity: 0.7; }
+  35% { height: 58px; opacity: 1; }
+  70% { height: 42px; opacity: 0.9; }
+}
+
+@keyframes wave-dance-10 {
+  0%, 100% { height: 24px; opacity: 0.75; }
+  20% { height: 65px; opacity: 1; }
+  40% { height: 30px; opacity: 0.8; }
+  80% { height: 72px; opacity: 1; }
+}
+
+/* 面板头部 */
+.panel-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+}
+
+.current-song {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.current-song-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current-song-artist {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 播放控制 */
+.panel-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+/* 进度条容器 */
+.progress-container {
+  padding: 0 20px;
+  margin-top: 15px;
+}
+
+.progress-time {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  cursor: grab;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: 7px 0;
+}
+
+.progress-bar-wrapper:active {
+  cursor: grabbing;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  position: relative;
+  overflow: visible;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.progress-bar-wrapper:hover .progress-bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.progress-bar-wrapper.dragging .progress-bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.progress-bar-wrapper:hover .progress-bar-filled {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.progress-bar-wrapper:hover .progress-bar-thumb {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.2);
+}
+
+.progress-bar-filled {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 80%);
+  border-radius: 3px;
+  width: 0%;
+  position: relative;
+  pointer-events: none;
+}
+
+.progress-bar-filled.dragging {
+  transition: none !important;
+}
+
+.progress-bar-thumb {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.progress-bar-filled.active .progress-bar-thumb {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.3);
+}
+
+.panel-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.panel-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.panel-btn.play-btn {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.panel-btn.play-btn:hover {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+}
+
+/* 播放模式按钮 */
+.panel-btn.mode-btn {
+  width: 35px;
+  height: 35px;
+  font-size: 14px;
+}
+
+.mode-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: white;
+}
+
+.mode-icon i {
+  font-size: 16px;
+}
+
+.panel-btn.mode-btn.random {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+}
+
+.panel-btn.mode-btn.random:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.5), rgba(118, 75, 162, 0.5));
+}
+
+/* 播放图标 - 三角形 */
+.play-icon {
+  width: 0;
+  height: 0;
+  border-left: 12px solid white;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  margin-left: 3px;
+}
+
+/* 暂停图标 - 两条竖线 */
+.pause-icon {
+  display: flex;
+  gap: 4px;
+}
+
+.pause-icon::before,
+.pause-icon::after {
+  content: '';
+  width: 4px;
+  height: 14px;
+  background: white;
+  border-radius: 2px;
+}
+
+/* 上一首/下一首图标 */
+.prev-icon,
+.next-icon {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.prev-icon::before,
+.prev-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.prev-icon::before {
+  left: 8px;
+  transform: translateY(-50%);
+  border-right: 8px solid white;
+}
+
+.prev-icon::after {
+  left: 2px;
+  transform: translateY(-50%);
+  border-right: 8px solid white;
+}
+
+.next-icon::before,
+.next-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.next-icon::before {
+  left: 4px;
+  transform: translateY(-50%);
+  border-left: 8px solid white;
+}
+
+.next-icon::after {
+  left: 10px;
+  transform: translateY(-50%);
+  border-left: 8px solid white;
+}
+
+/* 音乐列表 */
+.playlist-section {
+  padding: 15px 0;
+}
+
+.playlist-header {
+  padding: 0 20px 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.playlist {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0 10px;
+}
+
+.playlist::-webkit-scrollbar {
+  width: 6px;
+}
+
+.playlist::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.playlist::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.playlist::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.playlist-item {
+  padding: 12px 10px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.playlist-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.playlist-item.active {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+  border-left: 3px solid #667eea;
+}
+
+.playlist-item-index {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.playlist-item.active .playlist-item-index {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.playlist-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.playlist-item-title {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist-item-artist {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist-item.active .playlist-item-title {
+  color: #667eea;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .mini-player {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .turntable-base {
+    width: 85px;
+    height: 85px;
+  }
+
+  .mini-vinyl {
+    width: 60px;
+    height: 60px;
+  }
+
+  .mini-center {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mini-tonearm {
+    width: 30px;
+    height: 3px;
+  }
+
+  .player-panel {
+    width: 280px;
+    bottom: 95px;
+  }
+
+  .panel-header {
+    padding: 15px;
+  }
+
+  .current-song-title {
+    font-size: 16px;
+  }
+}
+
+/* ============ Loading Animation Overlay ============ */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  /* 格子背景 */
+  --grid-color: rgba(114, 114, 114, 0.3);
+  background-color: #191a1a;
+  background-image: linear-gradient(0deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent),
+      linear-gradient(90deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent);
+  background-size: 55px 55px;
+  transition: opacity 0.8s ease-out;
+}
+
+.loading-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============ Gearbox CSS ============ */
+@keyframes clockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes counter-clockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+.loading-overlay .gearbox {
+  background: transparent;
+  height: 150px;
+  width: 200px;
+  position: relative;
+  border: none;
+  overflow: visible;
+  border-radius: 6px;
+  box-shadow: none;
+  transform: scale(1.3);
+}
+
+.loading-overlay .gearbox .overlay {
+  border-radius: 6px;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  box-shadow: none;
+  transition: background 0.2s;
+  background: transparent;
+}
+
+.loading-overlay .gear {
+  position: absolute;
+  height: 60px;
+  width: 60px;
+  box-shadow: 0px -1px 0px 0px #888888, 0px 1px 0px 0px black;
+  border-radius: 30px;
+}
+
+.loading-overlay .gear.large {
+  height: 120px;
+  width: 120px;
+  border-radius: 60px;
+}
+
+.loading-overlay .gear.large:after {
+  height: 96px;
+  width: 96px;
+  border-radius: 48px;
+  margin-left: -48px;
+  margin-top: -48px;
+}
+
+.loading-overlay .gear.one {
+  top: 12px;
+  left: 10px;
+}
+
+.loading-overlay .gear.two {
+  top: 61px;
+  left: 60px;
+}
+
+.loading-overlay .gear.three {
+  top: 110px;
+  left: 10px;
+}
+
+.loading-overlay .gear.four {
+  top: 13px;
+  left: 128px;
+  font-size: 14px;
+  --dur: 2s;
+}
+
+.loading-overlay .gear:after {
+  content: "";
+  position: absolute;
+  height: 36px;
+  width: 36px;
+  border-radius: 36px;
+  background: #191a1a;
+  top: 50%;
+  left: 50%;
+  margin-left: -18px;
+  margin-top: -18px;
+  z-index: 2;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3), inset 0px 0px 10px rgba(0, 0, 0, 0.2), inset 0px 2px 0px 0px rgba(50, 50, 50, 0.5), inset 0px -1px 0px 0px #888888;
+}
+
+.loading-overlay .gear-inner {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: #555;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading-overlay .large .gear-inner {
+  border-radius: 60px;
+}
+
+.loading-overlay .gear.one .gear-inner {
+  animation: counter-clockwise 2s infinite linear;
+}
+
+.loading-overlay .gear.two .gear-inner {
+  animation: clockwise 2s infinite linear;
+}
+
+.loading-overlay .gear.three .gear-inner {
+  animation: counter-clockwise 2s infinite linear;
+}
+
+.loading-overlay .gear.four .gear-inner {
+  animation: counter-clockwise 4s infinite linear;
+}
+
+.loading-overlay .gear-inner .bar {
+  background: #555;
+  height: 16px;
+  width: 76px;
+  position: absolute;
+  left: 50%;
+  margin-left: -38px;
+  top: 50%;
+  margin-top: -8px;
+  border-radius: 2px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading-overlay .large .gear-inner .bar {
+  margin-left: -68px;
+  width: 136px;
+}
+
+.loading-overlay .gear-inner .bar:nth-child(2) {
+  transform: rotate(60deg);
+}
+
+.loading-overlay .gear-inner .bar:nth-child(3) {
+  transform: rotate(120deg);
+}
+
+.loading-overlay .gear-inner .bar:nth-child(4) {
+  transform: rotate(90deg);
+}
+
+.loading-overlay .gear-inner .bar:nth-child(5) {
+  transform: rotate(30deg);
+}
+
+.loading-overlay .gear-inner .bar:nth-child(6) {
+  transform: rotate(150deg);
+}
+
+/* ============ Hamster CSS ============ */
+.loading-overlay .hamster,
+.loading-overlay .hamster div {
+  position: absolute;
+}
+
+.loading-overlay .hamster {
+  animation: hamster var(--dur) ease-in-out infinite;
+  top: 50%;
+  left: 50%;
+  width: 2.7em;
+  height: 1.44em;
+  transform: rotate(4deg) translate(-3.0em, 0.9em) scale(0.6);
+  transform-origin: 50% 50%;
+  z-index: 5;
+}
+
+.loading-overlay .hamster__head {
+  animation: hamsterHead var(--dur) ease-in-out infinite;
+  background: hsl(30, 90%, 55%);
+  border-radius: 70% 30% 0 100% / 40% 25% 25% 60%;
+  box-shadow: 0 -0.25em 0 hsl(30, 90%, 80%) inset,
+    0.75em -1.55em 0 hsl(30, 90%, 90%) inset;
+  top: 0;
+  left: -2em;
+  width: 2.75em;
+  height: 2.5em;
+  transform-origin: 100% 50%;
+}
+
+.loading-overlay .hamster__ear {
+  animation: hamsterEar var(--dur) ease-in-out infinite;
+  background: hsl(0, 90%, 85%);
+  border-radius: 50%;
+  box-shadow: -0.25em 0 hsl(30, 90%, 55%) inset;
+  top: -0.25em;
+  right: -0.25em;
+  width: 0.75em;
+  height: 0.75em;
+  transform-origin: 50% 75%;
+}
+
+.loading-overlay .hamster__eye {
+  animation: hamsterEye var(--dur) linear infinite;
+  background-color: hsl(0, 0%, 0%);
+  border-radius: 50%;
+  top: 0.375em;
+  left: 1.25em;
+  width: 0.5em;
+  height: 0.5em;
+}
+
+.loading-overlay .hamster__nose {
+  background: hsl(0, 90%, 75%);
+  border-radius: 35% 65% 85% 15% / 70% 50% 50% 30%;
+  top: 0.75em;
+  left: 0;
+  width: 0.2em;
+  height: 0.25em;
+}
+
+.loading-overlay .hamster__body {
+  animation: hamsterBody var(--dur) ease-in-out infinite;
+  background: hsl(30, 90%, 90%);
+  border-radius: 50% 30% 50% 30% / 15% 60% 40% 40%;
+  box-shadow: 0.1em 0.75em 0 hsl(30, 90%, 55%) inset,
+    0.15em -0.5em 0 hsl(30, 90%, 80%) inset;
+  top: 0.25em;
+  left: 2em;
+  width: 4.5em;
+  height: 3em;
+  transform-origin: 17% 50%;
+  transform-style: preserve-3d;
+}
+
+.loading-overlay .hamster__limb--fr,
+.loading-overlay .hamster__limb--fl {
+  clip-path: polygon(0 0, 100% 0, 70% 80%, 60% 100%, 0% 100%, 40% 80%);
+  top: 2em;
+  left: 0.5em;
+  width: 1em;
+  height: 1.5em;
+  transform-origin: 50% 0;
+}
+
+.loading-overlay .hamster__limb--fr {
+  animation: hamsterFRLimb var(--dur) linear infinite;
+  background: linear-gradient(hsl(30, 90%, 80%) 80%, hsl(0, 90%, 75%) 80%);
+  transform: rotate(15deg) translateZ(-1px);
+}
+
+.loading-overlay .hamster__limb--fl {
+  animation: hamsterFLLimb var(--dur) linear infinite;
+  background: linear-gradient(hsl(30, 90%, 90%) 80%, hsl(0, 90%, 85%) 80%);
+  transform: rotate(15deg);
+}
+
+.loading-overlay .hamster__limb--br,
+.loading-overlay .hamster__limb--bl {
+  border-radius: 0.75em 0.75em 0 0;
+  clip-path: polygon(0 0, 100% 0, 100% 30%, 70% 90%, 70% 100%, 30% 100%, 40% 90%, 0% 30%);
+  top: 1em;
+  left: 2.8em;
+  width: 1.5em;
+  height: 2.5em;
+  transform-origin: 50% 30%;
+}
+
+.loading-overlay .hamster__limb--br {
+  animation: hamsterBRLimb var(--dur) linear infinite;
+  background: linear-gradient(hsl(30, 90%, 80%) 90%, hsl(0, 90%, 75%) 90%);
+  transform: rotate(-25deg) translateZ(-1px);
+}
+
+.loading-overlay .hamster__limb--bl {
+  animation: hamsterBLLimb var(--dur) linear infinite;
+  background: linear-gradient(hsl(30, 90%, 90%) 90%, hsl(0, 90%, 85%) 90%);
+  transform: rotate(-25deg);
+}
+
+.loading-overlay .hamster__tail {
+  animation: hamsterTail var(--dur) linear infinite;
+  background: hsl(0, 90%, 85%);
+  border-radius: 0.25em 50% 50% 0.25em;
+  box-shadow: 0 -0.2em 0 hsl(0, 90%, 75%) inset;
+  top: 1.5em;
+  right: -0.5em;
+  width: 1em;
+  height: 0.5em;
+  transform: rotate(30deg) translateZ(-1px);
+  transform-origin: 0.25em 0.25em;
+}
+
+/* ============ Hamster Animations ============ */
+@keyframes hamster {
+  from, to {
+    transform: rotate(4deg) translate(-3.0em, 0.9em) scale(0.6);
+  }
+  50% {
+    transform: rotate(0) translate(-3.0em, 0.9em) scale(0.6);
+  }
+}
+
+@keyframes hamsterHead {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(0);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes hamsterEye {
+  from, 90%, to {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes hamsterEar {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(0);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes hamsterBody {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(0);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes hamsterFRLimb {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(50deg) translateZ(-1px);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(-30deg) translateZ(-1px);
+  }
+}
+
+@keyframes hamsterFLLimb {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(-30deg);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(50deg);
+  }
+}
+
+@keyframes hamsterBRLimb {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(-60deg) translateZ(-1px);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(20deg) translateZ(-1px);
+  }
+}
+
+@keyframes hamsterBLLimb {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(20deg);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(-60deg);
+  }
+}
+
+@keyframes hamsterTail {
+  from, 25%, 50%, 75%, to {
+    transform: rotate(30deg) translateZ(-1px);
+  }
+  12.5%, 37.5%, 62.5%, 87.5% {
+    transform: rotate(10deg) translateZ(-1px);
+  }
+}
+
+/* ============ Loading Text CSS ============ */
+.loading-overlay .loader {
+  --main-size: 4em;
+  --text-color: #bbbbbb;
+  --shine-color: #bbbbbb40;
+  --shadow-color: #777777;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+  font-size: var(--main-size);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--text-color);
+  width: 7.3em;
+  height: 1em;
+  filter: drop-shadow(0 0 0.05em var(--shine-color));
+}
+
+.loading-overlay .loader .text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  position: absolute;
+}
+
+.loading-overlay .loader .text:nth-child(1) {
+  clip-path: polygon(0% 0%, 11.11% 0%, 11.11% 100%, 0% 100%);
+  font-size: calc(var(--main-size) / 20);
+  margin-left: -2.1em;
+  opacity: 0.6;
+}
+
+.loading-overlay .loader .text:nth-child(2) {
+  clip-path: polygon(11.11% 0%, 22.22% 0%, 22.22% 100%, 11.11% 100%);
+  font-size: calc(var(--main-size) / 16);
+  margin-left: -0.98em;
+  opacity: 0.7;
+}
+
+.loading-overlay .loader .text:nth-child(3) {
+  clip-path: polygon(22.22% 0%, 33.33% 0%, 33.33% 100%, 22.22% 100%);
+  font-size: calc(var(--main-size) / 13);
+  margin-left: -0.33em;
+  opacity: 0.8;
+}
+
+.loading-overlay .loader .text:nth-child(4) {
+  clip-path: polygon(33.33% 0%, 44.44% 0%, 44.44% 100%, 33.33% 100%);
+  font-size: calc(var(--main-size) / 11);
+  margin-left: -0.05em;
+  opacity: 0.9;
+}
+
+.loading-overlay .loader .text:nth-child(5) {
+  clip-path: polygon(44.44% 0%, 55.55% 0%, 55.55% 100%, 44.44% 100%);
+  font-size: calc(var(--main-size) / 10);
+  margin-left: 0em;
+  opacity: 1;
+}
+
+.loading-overlay .loader .text:nth-child(6) {
+  clip-path: polygon(55.55% 0%, 66.66% 0%, 66.66% 100%, 55.55% 100%);
+  font-size: calc(var(--main-size) / 11);
+  margin-left: 0.05em;
+  opacity: 0.9;
+}
+
+.loading-overlay .loader .text:nth-child(7) {
+  clip-path: polygon(66.66% 0%, 77.77% 0%, 77.77% 100%, 66.66% 100%);
+  font-size: calc(var(--main-size) / 13);
+  margin-left: 0.33em;
+  opacity: 0.8;
+}
+
+.loading-overlay .loader .text:nth-child(8) {
+  clip-path: polygon(77.77% 0%, 88.88% 0%, 88.88% 100%, 77.77% 100%);
+  font-size: calc(var(--main-size) / 16);
+  margin-left: 0.98em;
+  opacity: 0.7;
+}
+
+.loading-overlay .loader .text:nth-child(9) {
+  clip-path: polygon(88.88% 0%, 100% 0%, 100% 100%, 88.88% 100%);
+  font-size: calc(var(--main-size) / 20);
+  margin-left: 2.1em;
+  opacity: 0.6;
+}
+
+.loading-overlay .loader .text span {
+  animation:
+    scrolling 2s cubic-bezier(0.1, 0.6, 0.9, 0.4) infinite,
+    shadow 2s cubic-bezier(0.1, 0.6, 0.9, 0.4) infinite;
+}
+
+.loading-overlay .loader .text:nth-child(1) span {
+  background: linear-gradient(to right, var(--text-color) 4%, var(--shadow-color) 7%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .text:nth-child(2) span {
+  background: linear-gradient(to right, var(--text-color) 9%, var(--shadow-color) 13%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .text:nth-child(3) span {
+  background: linear-gradient(to right, var(--text-color) 15%, var(--shadow-color) 18%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .text:nth-child(4) span {
+  background: linear-gradient(to right, var(--text-color) 20%, var(--shadow-color) 23%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .text:nth-child(6) span {
+  background: linear-gradient(to right, var(--shadow-color) 29%, var(--text-color) 32%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .text:nth-child(7) span {
+  background: linear-gradient(to right, var(--shadow-color) 34%, var(--text-color) 37%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .text:nth-child(8) span {
+  background: linear-gradient(to right, var(--shadow-color) 39%, var(--text-color) 42%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .text:nth-child(9) span {
+  background: linear-gradient(to right, var(--shadow-color) 45%, var(--text-color) 48%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.loading-overlay .loader .line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 0.05em;
+  width: calc(var(--main-size) / 2);
+  margin-top: 0.9em;
+  border-radius: 0.05em;
+}
+
+.loading-overlay .loader .line::before {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: var(--text-color);
+  opacity: 0.3;
+}
+
+.loading-overlay .loader .line::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 0%;
+  background-color: var(--text-color);
+  border-radius: 0.05em;
+  animation: loading 5s ease-out forwards;
+}
+
+@keyframes loading {
+  0% {
+    width: 0%;
+    left: 0;
+  }
+  100% {
+    width: 100%;
+    left: 0;
+  }
+}
+
+@keyframes scrolling {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes shadow {
+  0% {
+    background-position: -98% 0;
+  }
+  100% {
+    background-position: 102% 0;
+  }
+}
+
+/* 隐藏 Home section 的文字 */
+#home {
+  color: transparent;
+  font-size: 0;
+}

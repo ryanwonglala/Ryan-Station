@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Ryan's Station</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Loading Animation Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="gearbox">
+      <div class="overlay"></div>
+      <div class="gear one">
+        <div class="gear-inner">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div class="gear two">
+        <div class="gear-inner">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div class="gear three">
+        <div class="gear-inner">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div class="gear four large">
+        <div class="gear-inner">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <div class="hamster">
+          <div class="hamster__body">
+            <div class="hamster__head">
+              <div class="hamster__ear"></div>
+              <div class="hamster__eye"></div>
+              <div class="hamster__nose"></div>
+            </div>
+            <div class="hamster__limb hamster__limb--fr"></div>
+            <div class="hamster__limb hamster__limb--fl"></div>
+            <div class="hamster__limb hamster__limb--br"></div>
+            <div class="hamster__limb hamster__limb--bl"></div>
+            <div class="hamster__tail"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="loader">
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="text"><span>Loading</span></div>
+      <div class="line"></div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <ul class="nav">
+      <li class="active" id="logo">
+        <a href="#home">
+          <div class="icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <div class="text">Ryan's Station</div>
+        </a>
+      </li>
+      <li>
+        <a href="#about">
+          <div class="icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="text">About</div>
+        </a>
+      </li>
+      <li>
+        <a href="#projects">
+          <div class="icon">
+            <i class="fas fa-code"></i>
+          </div>
+          <div class="text">Projects</div>
+        </a>
+      </li>
+      <li>
+        <a href="#skills">
+          <div class="icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="text">Skills</div>
+        </a>
+      </li>
+      <li>
+        <a href="#experience">
+          <div class="icon">
+            <i class="fas fa-briefcase"></i>
+          </div>
+          <div class="text">Experience</div>
+        </a>
+      </li>
+      <li>
+        <a href="#contact">
+          <div class="icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="text">Contact</div>
+        </a>
+      </li>
+
+     <li class="theme-switch-li">
+        <div class="theme-switch-wrapper">
+          <div class="theme-switch">
+            <div class="gorgeous-switch-track">
+              <div class="stars">
+                <div class="star" style="--star-delay: 0s; --star-top: 10px; --star-left: 25px; --star-size: 3px;"></div>
+                <div class="star" style="--star-delay: 0.2s; --star-top: 5px; --star-left: 15px; --star-size: 2px;"></div>
+                <div class="star" style="--star-delay: 0.4s; --star-top: 18px; --star-left: 20px; --star-size: 2px;"></div>
+                <div class="star" style="--star-delay: 0.6s; --star-top: 15px; --star-left: 35px; --star-size: 2px;"></div>
+                <div class="star" style="--star-delay: 0.8s; --star-top: 8px; --star-left: 45px; --star-size: 3px;"></div>
+                <div class="star" style="--star-delay: 1s; --star-top: 20px; --star-left: 50px; --star-size: 2px;"></div>
+              </div>
+              <div class="clouds">
+                <div class="cloud" style="--cloud-delay: 0s; --cloud-top: 18px; --cloud-left: 10px; --cloud-scale: 0.8;"></div>
+                <div class="cloud" style="--cloud-delay: 0.3s; --cloud-top: 10px; --cloud-left: 30px; --cloud-scale: 1;"></div>
+              </div>
+            </div>
+            <div class="gorgeous-switch-thumb">
+              <div class="thumb-sun"></div>
+              <div class="thumb-moon">
+                <div class="crater" style="--crater-top: 4px; --crater-left: 15px; --crater-size: 6px;"></div>
+                <div class="crater" style="--crater-top: 10px; --crater-left: 5px; --crater-size: 8px;"></div>
+                <div class="crater" style="--crater-top: 18px; --crater-left: 12px; --crater-size: 4px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text">Theme</div>
+      </li>
+    </ul>
+  </div>
+
+  <section id="home">Home</section>
+  <section id="about">About</section>
+  <section id="projects">Projects</section>
+  <section id="skills">Skills</section>
+  <section id="experience">Experience</section>
+  <section id="contact">Contact</section>
+
+  <div class="mini-player">
+    <div class="player-panel" id="playerPanel">
+      <div class="audio-wave-container" id="audioWaveContainer">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+      <div class="panel-header">
+        <div class="current-song">
+          <div class="current-song-title" id="panelTitle">未加载音乐</div>
+          <div class="current-song-artist" id="panelArtist">--</div>
+        </div>
+        
+        <div class="panel-controls">
+          <button class="panel-btn mode-btn" id="playModeBtn" title="顺序播放" aria-label="切换播放模式">
+            <div class="mode-icon" id="modeIcon">
+              <i class="fas fa-list"></i>
+            </div>
+          </button>
+          <button class="panel-btn" id="panelPrevBtn" aria-label="上一首">
+            <div class="prev-icon"></div>
+          </button>
+          <button class="panel-btn play-btn" id="panelPlayBtn" aria-label="播放/暂停">
+            <div class="play-icon" id="panelPlayIcon"></div>
+          </button>
+          <button class="panel-btn" id="panelNextBtn" aria-label="下一首">
+            <div class="next-icon"></div>
+          </button>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-time">
+            <span id="currentTime">0:00</span>
+            <span id="totalTime">0:00</span>
+          </div>
+          <div class="progress-bar-wrapper" id="progressBar">
+            <div class="progress-bar-track">
+              <div class="progress-bar-filled" id="progressFilled">
+                <div class="progress-bar-thumb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="playlist-section">
+        <div class="playlist-header">播放列表</div>
+        <div class="playlist" id="playlist"></div>
+      </div>
+    </div>
+
+    <div class="turntable-base" id="turntableBase">
+      <div class="mini-vinyl" id="miniVinyl">
+        <div class="mini-grooves"></div>
+        <div class="mini-center"></div>
+      </div>
+      <div class="mini-tonearm"></div>
+      <div class="status-light" id="statusLight"></div>
+    </div>
+  </div>
+
+  <audio id="backgroundMusic"></audio>
+
+  <!-- WebGL 背景系统 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="background_shader.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
