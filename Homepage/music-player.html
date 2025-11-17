@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Zone - Ryan's Station</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="music-player.css">
+</head>
+<body>
+  <!-- 返回主页按钮 -->
+  <a href="index.html" class="back-home-btn" title="返回主页 / Back to Home">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+
+  <!-- 音乐播放器主容器 -->
+  <div class="music-player-container">
+    <div class="player-grid">
+      <!-- 左列：歌曲详情 -->
+      <section class="panel-card song-panel">
+        <div class="song-header">
+          <div class="mini-vinyl">
+            <div class="mini-vinyl-disc vinyl-disc" id="vinylDisc">
+              <div class="mini-vinyl-label vinyl-label" id="vinylLabel">
+                <span class="mini-label-title label-title" id="labelTitle">未加载音乐</span>
+                <span class="mini-label-artist label-artist" id="labelArtist">--</span>
+              </div>
+            </div>
+          </div>
+          <div class="song-meta">
+            <div class="audio-visualizer" id="audioVisualizer">
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+          <div class="visualizer-bar"></div>
+            </div>
+            <div class="panel-label">Song · 当前歌曲</div>
+            <div class="current-track-info">
+              <h1 id="currentTitle">未加载音乐</h1>
+              <h2 id="currentArtist">--</h2>
+            </div>
+          </div>
+        </div>
+        <div class="progress-section">
+          <div class="time-display">
+            <span id="currentTimeDisplay">0:00</span>
+            <span id="totalTimeDisplay">0:00</span>
+          </div>
+          <div class="progress-bar-container" id="progressBarContainer">
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progressBarFill">
+                <div class="progress-thumb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="playback-controls">
+          <button class="control-btn mode-btn" id="modeBtnPlayer" title="顺序播放">
+            <i class="fas fa-list"></i>
+          </button>
+          <button class="control-btn" id="prevBtnPlayer">
+            <i class="fas fa-step-backward"></i>
+          </button>
+          <button class="control-btn play-btn-large" id="playBtnPlayer">
+            <i class="fas fa-play" id="playIconPlayer"></i>
+          </button>
+          <button class="control-btn" id="nextBtnPlayer">
+            <i class="fas fa-step-forward"></i>
+          </button>
+          <button class="control-btn volume-btn" id="volumeBtn" title="音量控制">
+            <i class="fas fa-volume-up"></i>
+          </button>
+          <div class="volume-control" id="volumeControl">
+            <div class="volume-shell">
+              <div class="volume-rail">
+                <div class="volume-fill" id="volumeFill"></div>
+                <div class="volume-thumb" id="volumeThumb"></div>
+                <input type="range" min="0" max="100" value="100" id="volumeSlider" class="volume-slider">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playlist-container embedded-playlist">
+          <div class="playlist-header" id="playlistToggle">
+            <div class="playlist-header-left">
+              <i class="fas fa-music"></i>
+              <span>播放列表 / Playlist</span>
+              <span class="playlist-count" id="playlistCount">(0)</span>
+            </div>
+            <i class="fas fa-chevron-down playlist-toggle-icon" id="playlistToggleIcon"></i>
+          </div>
+          <div class="playlist-items" id="playlistItems"></div>
+        </div>
+      </section>
+
+      <!-- 右列：视频占位 -->
+      <section class="panel-card media-panel">
+        <div class="panel-label">视频占位符</div>
+        <div class="media-placeholder"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 音频元素 -->
+  <audio id="audioPlayer"></audio>
+
+  <script src="music-player.js"></script>
+</body>
+</html>

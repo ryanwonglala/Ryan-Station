@@ -2038,3 +2038,186 @@ body.light-mode .clouds {
   color: transparent;
   font-size: 0;
 }
+
+/* ============ 音乐区域确认弹窗样式 ============ */
+.music-modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.music-modal.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.music-modal-content {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+  padding: 40px 50px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.4s ease-out;
+  max-width: 450px;
+  width: 90%;
+}
+
+body.light-mode .music-modal-content {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 240, 255, 0.95) 100%);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.music-modal-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  animation: pulse-icon 2s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+  }
+}
+
+.music-modal-content h2 {
+  color: #e2e8f0;
+  font-size: 28px;
+  margin: 0 0 5px 0;
+  font-weight: bold;
+}
+
+body.light-mode .music-modal-content h2 {
+  color: #334155;
+}
+
+.music-modal-content h3 {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 20px;
+  margin: 0 0 25px 0;
+  font-weight: normal;
+  font-style: italic;
+}
+
+body.light-mode .music-modal-content h3 {
+  color: rgba(51, 65, 85, 0.7);
+}
+
+.music-modal-content p {
+  color: #cbd5e1;
+  font-size: 18px;
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+body.light-mode .music-modal-content p {
+  color: #475569;
+}
+
+.music-modal-content p.english {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  font-style: italic;
+  margin-bottom: 30px;
+}
+
+body.light-mode .music-modal-content p.english {
+  color: rgba(71, 85, 105, 0.7);
+}
+
+.music-modal-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.music-modal-btn {
+  padding: 14px 35px;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.music-modal-btn.cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+body.light-mode .music-modal-btn.cancel {
+  background: rgba(71, 85, 105, 0.1);
+  color: #334155;
+  border: 2px solid rgba(71, 85, 105, 0.3);
+}
+
+.music-modal-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.light-mode .music-modal-btn.cancel:hover {
+  background: rgba(71, 85, 105, 0.2);
+  border-color: rgba(71, 85, 105, 0.5);
+}
+
+.music-modal-btn.confirm {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: 2px solid transparent;
+}
+
+.music-modal-btn.confirm:hover {
+  background: linear-gradient(135deg, #7c8ff5 0%, #8a5bb5 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}

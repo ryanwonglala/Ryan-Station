@@ -124,6 +124,15 @@
         </a>
       </li>
 
+      <li id="music-trigger">
+        <a href="javascript:void(0);">
+          <div class="icon">
+            <i class="fas fa-music"></i>
+          </div>
+          <div class="text">Music Zone</div>
+        </a>
+      </li>
+
      <li class="theme-switch-li">
         <div class="theme-switch-wrapper">
           <div class="theme-switch">
@@ -163,90 +172,27 @@
   <section id="experience">Experience</section>
   <section id="contact">Contact</section>
 
-  <div class="mini-player">
-    <div class="player-panel" id="playerPanel">
-      <div class="audio-wave-container" id="audioWaveContainer">
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-      </div>
-      <div class="panel-header">
-        <div class="current-song">
-          <div class="current-song-title" id="panelTitle">未加载音乐</div>
-          <div class="current-song-artist" id="panelArtist">--</div>
-        </div>
-        
-        <div class="panel-controls">
-          <button class="panel-btn mode-btn" id="playModeBtn" title="顺序播放" aria-label="切换播放模式">
-            <div class="mode-icon" id="modeIcon">
-              <i class="fas fa-list"></i>
-            </div>
-          </button>
-          <button class="panel-btn" id="panelPrevBtn" aria-label="上一首">
-            <div class="prev-icon"></div>
-          </button>
-          <button class="panel-btn play-btn" id="panelPlayBtn" aria-label="播放/暂停">
-            <div class="play-icon" id="panelPlayIcon"></div>
-          </button>
-          <button class="panel-btn" id="panelNextBtn" aria-label="下一首">
-            <div class="next-icon"></div>
-          </button>
-        </div>
 
-        <div class="progress-container">
-          <div class="progress-time">
-            <span id="currentTime">0:00</span>
-            <span id="totalTime">0:00</span>
-          </div>
-          <div class="progress-bar-wrapper" id="progressBar">
-            <div class="progress-bar-track">
-              <div class="progress-bar-filled" id="progressFilled">
-                <div class="progress-bar-thumb"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <!-- 音乐区域确认弹窗 -->
+  <div id="music-confirm-modal" class="music-modal">
+    <div class="music-modal-content">
+      <div class="music-modal-icon">
+        <i class="fas fa-music"></i>
       </div>
-
-      <div class="playlist-section">
-        <div class="playlist-header">播放列表</div>
-        <div class="playlist" id="playlist"></div>
+      <h2>请注意</h2>
+      <h3>Please Note</h3>
+      <p>即将进入休闲区域</p>
+      <p class="english">You are about to enter the leisure zone</p>
+      <div class="music-modal-buttons">
+        <button id="music-cancel-btn" class="music-modal-btn cancel">
+          <span>否 / No</span>
+        </button>
+        <button id="music-confirm-btn" class="music-modal-btn confirm">
+          <span>是 / Yes</span>
+        </button>
       </div>
-    </div>
-
-    <div class="turntable-base" id="turntableBase">
-      <div class="mini-vinyl" id="miniVinyl">
-        <div class="mini-grooves"></div>
-        <div class="mini-center"></div>
-      </div>
-      <div class="mini-tonearm"></div>
-      <div class="status-light" id="statusLight"></div>
     </div>
   </div>
-
-  <audio id="backgroundMusic"></audio>
 
   <!-- WebGL 背景系统 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
