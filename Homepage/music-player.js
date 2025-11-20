@@ -29,7 +29,11 @@ const seekBar = document.getElementById('seekBar');
 const mascotContainer = document.querySelector('.mascot-container');
 const crtStatus = document.querySelector('.crt-status');
 const staticNoise = document.querySelector('.static-noise');
+const crtTv = document.querySelector('.crt-tv');
+const crtVideo = document.getElementById('mv-player');
 const aiInput = document.getElementById('ai-input');
+const aiSettingsBtn = document.getElementById('ai-settings-btn');
+const terminalLog = document.getElementById('terminal-log');
 
 // State
 let playlist = [];
@@ -38,6 +42,33 @@ let isPlaying = false;
 let playMode = 'sequential';
 let isSeeking = false;
 let sidebarOpen = false;
+
+// ========================================================================
+// ========================= ⚙️ Gemini Helpers ============================
+// ========================================================================
+
+function getGeminiKey() {
+  return localStorage.getItem('GEMINI_API_KEY') || '';
+}
+
+function setGeminiKey(value) {
+  if (value) {
+    localStorage.setItem('GEMINI_API_KEY', value);
+  }
+}
+
+function clearGeminiKey() {
+  localStorage.removeItem('GEMINI_API_KEY');
+}
+
+function appendToTerminalLog(message, role = 'system') {
+  if (!terminalLog) return;
+  const line = document.createElement('div');
+  line.className = `terminal-line ${role}`;
+  line.textContent = message;
+  terminalLog.appendChild(line);
+  terminalLog.scrollTop = terminalLog.scrollHeight;
+}
 
 // ========================================================================
 // ========================= 🎼 播放列表加载 ===============================
@@ -132,6 +163,7 @@ function loadTrack(index) {
   currentTrackIndex = index;
   audioPlayer.src = track.src;
   audioPlayer.load();
+  configureTrackVideo(track);
 
   writeTrackInfo(track);
   if (trackDurationEl) {
@@ -238,6 +270,7 @@ function updatePlaybackState(playing) {
   }
   updateMascotState(playing);
   updateTvState(playing);
+  syncVideoPlayback(playing);
 }
 
 function updateMascotState(playing) {
@@ -249,6 +282,165 @@ function updateTvState(playing) {
   if (!crtStatus || !staticNoise) return;
   crtStatus.textContent = playing ? 'PLAYING...' : 'NO SIGNAL';
   staticNoise.classList.toggle('is-playing', playing);
+}
+
+function configureTrackVideo(track) {
+  if (!crtVideo || !crtTv) return;
+
+  if (track && track.mv) {
+    const nextSrc = track.mv;
+    const currentSrc = crtVideo.getAttribute('src');
+    if (currentSrc !== nextSrc) {
+      crtVideo.src = nextSrc;
+    }
+    crtVideo.load();
+    try {
+      crtVideo.currentTime = 0;
+    } catch (error) {
+      // ignore
+    }
+    crtTv.classList.add('has-mv');
+  } else {
+    fallbackToStatic();
+  }
+}
+
+function alignVideoToCurrentAudio(time = audioPlayer.currentTime) {
+  if (!crtVideo || !crtTv || !crtTv.classList.contains('has-mv')) return;
+  try {
+    crtVideo.currentTime = time;
+  } catch (error) {
+    // ignore desync adjustments until video is ready
+  }
+}
+
+function enforceVideoSyncThreshold() {
+  if (!crtVideo || !crtTv || !crtTv.classList.contains('has-mv')) return;
+  const diff = Math.abs((crtVideo.currentTime || 0) - (audioPlayer.currentTime || 0));
+  if (diff > 0.3) {
+    alignVideoToCurrentAudio();
+  }
+}
+
+function syncVideoPlayback(playing) {
+  if (!crtVideo || !crtTv || !crtTv.classList.contains('has-mv')) return;
+  if (playing) {
+    alignVideoToCurrentAudio();
+    const playPromise = crtVideo.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch((error) => {
+        console.warn('MV playback interrupted:', error);
+        fallbackToStatic();
+      });
+    }
+  } else {
+    crtVideo.pause();
+  }
+}
+
+function fallbackToStatic() {
+  if (!crtVideo || !crtTv) return;
+  try {
+    crtVideo.pause();
+  } catch (error) {
+    // ignore
+  }
+  if (crtVideo.getAttribute('src')) {
+    crtVideo.removeAttribute('src');
+  }
+  crtVideo.load();
+  try {
+    crtVideo.currentTime = 0;
+  } catch (error) {
+    // ignore
+  }
+  crtTv.classList.remove('has-mv');
+  if (crtStatus) {
+    crtStatus.textContent = 'NO SIGNAL';
+  }
+  if (staticNoise) {
+    staticNoise.classList.remove('is-playing');
+  }
+}
+
+// ========================================================================
+// ========================= 🤖 Gemini Integration ========================
+// ========================================================================
+
+async function callGeminiAI(userText) {
+  const apiKey = getGeminiKey();
+  if (!apiKey) {
+    return { error: 'Gemini API key missing. Click the gear icon to add it.' };
+  }
+
+  const contextList = playlist.map((track, index) => {
+    const tags = Array.isArray(track.tags) && track.tags.length ? track.tags.join(', ') : 'none';
+    return `${index + 1}. "${track.title}" [tags: ${tags}]`;
+  }).join(', ');
+
+  const payloadText = [
+    'System: You are the DJ of Ryan Station. Pick a song from the Context list that matches the user\'s input. If the request is vague, pick a random fitting song.',
+    'Output strictly JSON: { "reply": "...", "command": "PLAY_SONG", "target": "Exact Song Title" }.',
+    `Context: ${contextList}`,
+    `User: ${userText}`
+  ].join('\n\n');
+
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: payloadText }]
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { error: `Gemini API error (${response.status}): ${errorText}` };
+    }
+
+    const data = await response.json();
+    const raw = data?.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || '')
+      .join('\n')
+      .trim();
+
+    if (!raw) {
+      return { error: 'Gemini API returned no response.' };
+    }
+
+    return { raw };
+  } catch (error) {
+    return { error: `Gemini request failed: ${error.message}` };
+  }
+}
+
+function parseGeminiResponse(rawText) {
+  if (!rawText) {
+    throw new Error('Empty AI response.');
+  }
+  const trimmed = rawText.trim();
+  try {
+    return JSON.parse(trimmed);
+  } catch (error) {
+    const match = trimmed.match(/\{[\s\S]*\}/);
+    if (match) {
+      return JSON.parse(match[0]);
+    }
+    throw new Error('Unable to parse AI JSON response.');
+  }
+}
+
+function findTrackIndexByTitle(targetTitle) {
+  if (!targetTitle) return -1;
+  const normalized = targetTitle.trim().toLowerCase();
+  return playlist.findIndex(track => (track.title || '').trim().toLowerCase() === normalized);
 }
 
 // ========================================================================
@@ -283,6 +475,7 @@ function handleSeekInput(event) {
   const newTime = audioPlayer.duration * percentage;
   audioPlayer.currentTime = newTime;
   currentTimeDisplay.textContent = formatTime(newTime);
+  alignVideoToCurrentAudio(newTime);
 }
 
 function setSeekingState(state) {
@@ -336,6 +529,9 @@ if (modeBtnPlayer) modeBtnPlayer.addEventListener('click', togglePlayMode);
 if (volumeBtn) volumeBtn.addEventListener('click', toggleVolumeControl);
 if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
 if (playlistTab) playlistTab.addEventListener('click', toggleSidebar);
+if (crtVideo) {
+  crtVideo.addEventListener('error', fallbackToStatic);
+}
 
 if (seekBar) {
   seekBar.addEventListener('input', handleSeekInput);
@@ -347,6 +543,7 @@ if (seekBar) {
 }
 
 audioPlayer.addEventListener('timeupdate', updateProgress);
+audioPlayer.addEventListener('timeupdate', enforceVideoSyncThreshold);
 audioPlayer.addEventListener('loadedmetadata', () => {
   currentTimeDisplay.textContent = '0:00';
   totalTimeDisplay.textContent = formatTime(audioPlayer.duration);
@@ -397,13 +594,29 @@ document.addEventListener('keydown', (e) => {
 });
 
 if (aiInput) {
-  aiInput.addEventListener('keydown', (event) => {
+  aiInput.addEventListener('keydown', async (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       const mood = aiInput.value.trim();
       if (!mood) return;
-      hackTheSystem(mood);
       aiInput.value = '';
+      await hackTheSystem(mood);
+    }
+  });
+}
+
+if (aiSettingsBtn) {
+  aiSettingsBtn.addEventListener('click', () => {
+    const existing = getGeminiKey();
+    const input = window.prompt('Enter Gemini API Key (leave blank to clear):', existing);
+    if (input === null) return;
+    const trimmed = input.trim();
+    if (trimmed) {
+      setGeminiKey(trimmed);
+      appendToTerminalLog('> SYSTEM: Gemini API key saved.', 'system');
+    } else {
+      clearGeminiKey();
+      appendToTerminalLog('> SYSTEM: Gemini API key cleared.', 'system');
     }
   });
 }
@@ -412,9 +625,39 @@ if (aiInput) {
 // ========================= 🛰️ AI Terminal Stub ==========================
 // ========================================================================
 
-function hackTheSystem(mood) {
-  console.log('[AI TERMINAL] hackTheSystem ->', mood);
-  // TODO: integrate Gemini API here
+async function hackTheSystem(mood) {
+  appendToTerminalLog(`> USER: ${mood}`, 'user');
+
+  const result = await callGeminiAI(mood);
+  if (result.error) {
+    appendToTerminalLog(`> SYSTEM: ${result.error}`, 'system');
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = parseGeminiResponse(result.raw);
+  } catch (error) {
+    appendToTerminalLog(`> SYSTEM: ${error.message}`, 'system');
+    return;
+  }
+
+  const reply = parsed.reply || 'Command acknowledged.';
+  appendToTerminalLog(`> AI: ${reply}`, 'ai');
+
+  if (parsed.command && parsed.command.toUpperCase() === 'PLAY_SONG') {
+    const target = parsed.target || '';
+    const index = findTrackIndexByTitle(target);
+    if (index >= 0) {
+      loadTrack(index);
+      playTrack();
+      appendToTerminalLog(`> SYSTEM: Playing "${playlist[index].title}"`, 'system');
+    } else {
+      appendToTerminalLog(`> SYSTEM: Could not find "${target}".`, 'system');
+    }
+  } else if (parsed.command) {
+    appendToTerminalLog(`> SYSTEM: Unknown command "${parsed.command}".`, 'system');
+  }
 }
 
 // ========================================================================

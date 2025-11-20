@@ -51,10 +51,23 @@ TITLE: <span class="track-title">未加载音乐</span>
 ARTIST: <span class="track-artist">--</span>
 DURATION: <span class="track-duration">0:00</span>
       </pre>
+      <div class="ai-terminal">
+        <div class="ai-terminal-header">
+          <label for="ai-input">AI TERMINAL</label>
+          <button id="ai-settings-btn" class="ai-settings-btn" type="button" title="Configure Gemini API Key">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+        <input id="ai-input" type="text" placeholder="> enter mood to hack the system">
+        <div id="terminal-log" class="terminal-log" aria-live="polite">
+          <div class="terminal-line system">> SYSTEM: Ready for commands.</div>
+        </div>
+      </div>
     </section>
 
     <section class="visual-stack">
       <div class="crt-tv">
+        <video id="mv-player" class="crt-video" muted playsinline preload="metadata"></video>
         <div class="static-noise"></div>
         <p class="crt-status">NO SIGNAL</p>
       </div>
@@ -75,10 +88,6 @@ DURATION: <span class="track-duration">0:00</span>
         <div class="volume-control" id="volumeControl">
           <input type="range" min="0" max="100" value="100" id="volumeSlider">
         </div>
-      </div>
-      <div class="ai-terminal">
-        <label for="ai-input">AI TERMINAL</label>
-        <input id="ai-input" type="text" placeholder="> enter mood to hack the system">
       </div>
     </section>
   </main>

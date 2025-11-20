@@ -107,14 +107,19 @@ main.brutalist-container {
 
 .control-stack,
 .visual-stack {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+.control-stack {
+  flex: 0.85;
+}
+
 .visual-stack {
+  flex: 1.25;
   position: relative;
+  gap: 2rem;
 }
 
 .zone-heading {
@@ -201,10 +206,25 @@ main.brutalist-container {
 .crt-tv {
   position: relative;
   border: 6px solid var(--alert-red);
-  aspect-ratio: 4 / 3;
+  border-top-width: 10px;
+  aspect-ratio: 4 / 3.1;
   background: #111;
   box-shadow: inset 0 0 50px #000, 12px 12px 0 rgba(0, 0, 0, 0.8);
   overflow: hidden;
+}
+
+.crt-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 0.3s ease;
+  background: #000;
+  transform: scale(1.12) translate(1%, -15%);
+  transform-origin: center top;
 }
 
 .crt-tv::before {
@@ -213,6 +233,7 @@ main.brutalist-container {
   inset: 5%;
   border: 3px solid rgba(77, 243, 255, 0.3);
   pointer-events: none;
+  z-index: 3;
 }
 
 .static-noise {
@@ -223,6 +244,7 @@ main.brutalist-container {
   opacity: 0.2;
   mix-blend-mode: screen;
   animation: noiseStatic 0.35s steps(3) infinite;
+  z-index: 1;
 }
 
 .static-noise.is-playing {
@@ -241,6 +263,20 @@ main.brutalist-container {
   color: var(--acid-lime);
   text-shadow: 0 0 10px rgba(204, 255, 0, 0.8);
   letter-spacing: 0.25em;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.crt-tv.has-mv .crt-video {
+  opacity: 1;
+}
+
+.crt-tv.has-mv .crt-status {
+  opacity: 0;
+}
+
+.crt-tv.has-mv .static-noise {
+  opacity: 0.2;
 }
 
 .glitch-controls {
@@ -250,6 +286,7 @@ main.brutalist-container {
   box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.7);
   display: grid;
   gap: 1rem;
+  margin-top: auto;
 }
 
 .time-display {
@@ -338,6 +375,7 @@ main.brutalist-container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-top: auto;
 }
 
 .ai-terminal label {
@@ -357,6 +395,61 @@ main.brutalist-container {
 
 .ai-terminal input::placeholder {
   color: rgba(204, 255, 0, 0.5);
+}
+
+.ai-terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ai-settings-btn {
+  background: transparent;
+  border: 2px solid var(--alert-red);
+  color: var(--acid-lime);
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ai-settings-btn:hover,
+.ai-settings-btn:focus-visible {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.terminal-log {
+  border: 2px solid var(--acid-lime);
+  background: rgba(2, 2, 2, 0.85);
+  min-height: 80px;
+  max-height: 140px;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.terminal-line {
+  color: var(--acid-lime);
+  word-break: break-word;
+}
+
+.terminal-line.user {
+  color: #4df3ff;
+}
+
+.terminal-line.system {
+  color: var(--alert-red);
+}
+
+.terminal-line.ai {
+  color: var(--acid-lime);
 }
 
 .mascot-container {
