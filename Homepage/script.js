@@ -22,10 +22,10 @@ window.addEventListener('DOMContentLoaded', () => {
 // ========================================================================
 
 // ========================================================================
-// ========================= 🧭 侧边栏导航逻辑 =============================
+// ========================= 🧭 胶囊导航逻辑 ===============================
 // ========================================================================
 
-let navItems = document.querySelectorAll(".nav li");
+const navItems = document.querySelectorAll(".glass-capsule-nav .nav-links li");
 
 function activeLink() {
   navItems.forEach((item) => item.classList.remove("active"));
@@ -33,6 +33,55 @@ function activeLink() {
 }
 
 navItems.forEach((item) => item.addEventListener("click", activeLink));
+
+document.addEventListener('DOMContentLoaded', () => {
+  const nav = document.querySelector('.glass-capsule-nav');
+  const cursor = document.getElementById('nav-cursor');
+  const navLinks = document.querySelectorAll('.glass-capsule-nav .nav-links a');
+  const musicTrigger = document.getElementById('music-trigger');
+  const themeSwitchLi = document.querySelector('.theme-switch-li');
+
+  if (!nav || !cursor) {
+    return;
+  }
+
+  const resetToContainer = () => {
+    cursor.style.left = '0px';
+    cursor.style.width = `${nav.clientWidth}px`;
+    cursor.classList.remove('highlight');
+  };
+
+  const snapToLink = (target) => {
+    if (!target) return;
+    const navRect = nav.getBoundingClientRect();
+    const linkRect = target.getBoundingClientRect();
+    const navOffsetLeft = navRect.left + nav.clientLeft;
+    cursor.style.left = `${linkRect.left - navOffsetLeft}px`;
+    cursor.style.width = `${linkRect.width}px`;
+    cursor.classList.add('highlight');
+  };
+
+  navLinks.forEach((link) => {
+    link.addEventListener('mouseenter', () => snapToLink(link));
+    link.addEventListener('focus', () => snapToLink(link));
+  });
+
+  nav.addEventListener('mouseleave', resetToContainer);
+
+  if (musicTrigger) {
+    musicTrigger.addEventListener('mouseenter', resetToContainer);
+    musicTrigger.addEventListener('focus', resetToContainer);
+  }
+
+  if (themeSwitchLi) {
+    themeSwitchLi.addEventListener('mouseenter', resetToContainer);
+    themeSwitchLi.addEventListener('focusin', resetToContainer);
+  }
+
+  window.addEventListener('resize', resetToContainer);
+
+  requestAnimationFrame(resetToContainer);
+});
 
 // ========================================================================
 // ========================= 🌓 明暗主题切换逻辑 ===========================
