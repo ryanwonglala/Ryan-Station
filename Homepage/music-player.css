@@ -57,6 +57,7 @@ h1, h2, h3, h4 {
 .back-home-btn:focus-visible,
 .glitch-btn:focus-visible,
 .ai-terminal input:focus-visible,
+.terminal-toggle:focus-visible,
 .volume-control input:focus-visible,
 #seekBar:focus-visible {
   outline: 3px solid var(--glow-blue);
@@ -142,6 +143,8 @@ main.brutalist-container {
   max-width: 260px;
   width: 100%;
   align-self: flex-start;
+  position: relative;
+  overflow: visible;
 }
 
 .vinyl-frame {
@@ -160,8 +163,16 @@ main.brutalist-container {
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   background:
-    radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.9) 61%),
-    repeating-radial-gradient(circle, rgba(255, 255, 255, 0.08) 0 2px, rgba(0, 0, 0, 0.8) 2px 4px);
+    conic-gradient(
+      from 0deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.12) 12%,
+      transparent 32%,
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 74%
+    ),
+    radial-gradient(circle, rgba(20, 20, 20, 0.95) 0%, #000 100%),
+    repeating-radial-gradient(circle, rgba(255, 255, 255, 0.08) 0 2px, rgba(0, 0, 0, 0.85) 2px 4px);
   animation: vinylSpin 12s linear infinite;
   animation-play-state: paused;
 }
@@ -174,17 +185,65 @@ main.brutalist-container {
   position: absolute;
   inset: 35%;
   border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.2), transparent 55%), var(--alert-red);
+  box-shadow: inset 0 0 0 3px #111;
+}
+
+.vinyl-label::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  right: 18%;
+  top: 24%;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+ .tonearm {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 200px;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), var(--acid-lime));
+  transform-origin: top right;
+  transform: rotate(-15deg);
+  transition: transform 0.5s cubic-bezier(0.46, 0.03, 0.52, 0.96), box-shadow 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.65);
+}
+
+.tonearm::before {
+  content: '';
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   background: var(--alert-red);
-  color: #050505;
-  font-size: 0.65rem;
-  font-weight: 700;
-  line-height: 1.2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0.25rem;
+  border: 3px solid #111;
+  right: 0;
+  top: -12px;
+  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.tonearm::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 10px;
+  background: var(--acid-lime);
+  bottom: -6px;
+  left: 8px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.vinyl-wrapper.playing .tonearm {
+  transform: rotate(-45deg);
 }
 
 .track-data {
@@ -241,14 +300,14 @@ main.brutalist-container {
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   background-size: cover;
-  opacity: 0.2;
+  opacity: 0.45;
   mix-blend-mode: screen;
   animation: noiseStatic 0.35s steps(3) infinite;
   z-index: 1;
 }
 
 .static-noise.is-playing {
-  opacity: 0.4;
+  opacity: 0.6;
   filter: drop-shadow(0 0 15px rgba(204, 255, 0, 0.7));
 }
 
@@ -267,16 +326,16 @@ main.brutalist-container {
   transition: opacity 0.3s ease;
 }
 
-.crt-tv.has-mv .crt-video {
+.crt-tv.signal-received .crt-video {
   opacity: 1;
 }
 
-.crt-tv.has-mv .crt-status {
+.crt-tv.signal-received .crt-status {
   opacity: 0;
 }
 
-.crt-tv.has-mv .static-noise {
-  opacity: 0.2;
+.crt-tv.signal-received .static-noise {
+  opacity: 0.15;
 }
 
 .glitch-controls {
@@ -335,6 +394,37 @@ main.brutalist-container {
   text-transform: uppercase;
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.8);
   transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+
+.glitch-btn#modeBtnPlayer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+#modeBtnPlayer .fa-shuffle {
+  transform: translateY(-1px);
+}
+
+.mode-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--abyss-black);
+  color: var(--acid-lime);
+  border: 2px solid var(--alert-red);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
 }
 
 .glitch-btn:hover {
@@ -397,6 +487,39 @@ main.brutalist-container {
   color: rgba(204, 255, 0, 0.5);
 }
 
+.ai-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ai-input-row input {
+  flex: 1;
+}
+
+.terminal-toggle {
+  background: transparent;
+  border: 2px solid var(--acid-lime);
+  color: var(--acid-lime);
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.7);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.terminal-toggle:hover {
+  background: var(--alert-red);
+  color: #050505;
+}
+
+.terminal-toggle:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.9);
+}
+
 .ai-terminal-header {
   display: flex;
   align-items: center;
@@ -426,6 +549,7 @@ main.brutalist-container {
   background: rgba(2, 2, 2, 0.85);
   min-height: 80px;
   max-height: 140px;
+  overflow: hidden;
   overflow-y: auto;
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.85rem;
@@ -433,6 +557,17 @@ main.brutalist-container {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+}
+
+.terminal-log.collapsed {
+  max-height: 0;
+  min-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
 }
 
 .terminal-line {

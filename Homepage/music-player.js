@@ -5,9 +5,8 @@
 // DOM references
 const audioPlayer = document.getElementById('audioPlayer');
 const vinylDisc = document.getElementById('vinylDisc');
+const vinylWrapper = document.querySelector('.vinyl-wrapper');
 const vinylLabel = document.getElementById('vinylLabel');
-const labelTitle = document.getElementById('labelTitle');
-const labelArtist = document.getElementById('labelArtist');
 const trackTitleEl = document.querySelector('.track-title');
 const trackArtistEl = document.querySelector('.track-artist');
 const trackDurationEl = document.querySelector('.track-duration');
@@ -34,6 +33,7 @@ const crtVideo = document.getElementById('mv-player');
 const aiInput = document.getElementById('ai-input');
 const aiSettingsBtn = document.getElementById('ai-settings-btn');
 const terminalLog = document.getElementById('terminal-log');
+const terminalToggle = document.getElementById('terminal-toggle');
 
 // State
 let playlist = [];
@@ -42,6 +42,19 @@ let isPlaying = false;
 let playMode = 'sequential';
 let isSeeking = false;
 let sidebarOpen = false;
+let terminalCollapsed = true;
+
+const PLAY_MODE_ICONS = {
+  sequential: 'fa-list-ul',
+  random: 'fa-shuffle',
+  single: 'fa-repeat',
+};
+
+const PLAY_MODE_LABELS = {
+  sequential: '顺序播放',
+  random: '随机播放',
+  single: '单曲循环',
+};
 
 // ========================================================================
 // ========================= ⚙️ Gemini Helpers ============================
@@ -68,6 +81,31 @@ function appendToTerminalLog(message, role = 'system') {
   line.textContent = message;
   terminalLog.appendChild(line);
   terminalLog.scrollTop = terminalLog.scrollHeight;
+}
+
+function setSignalReceived(state) {
+  if (!crtTv) return;
+  if (state && !crtTv.classList.contains('has-mv')) {
+    return;
+  }
+  crtTv.classList.toggle('signal-received', state);
+}
+
+function updateTerminalToggleUI() {
+  if (!terminalToggle) return;
+  const expanded = !terminalCollapsed;
+  const icon = expanded ? 'fa-chevron-up' : 'fa-chevron-down';
+  terminalToggle.innerHTML = `<i class="fas ${icon}"></i>`;
+  terminalToggle.setAttribute('aria-expanded', expanded.toString());
+  terminalToggle.setAttribute('aria-label', expanded ? '折叠终端日志' : '展开终端日志');
+  terminalToggle.title = expanded ? 'Collapse terminal log' : 'Expand terminal log';
+}
+
+function toggleTerminalLogVisibility() {
+  if (!terminalLog) return;
+  terminalCollapsed = !terminalCollapsed;
+  terminalLog.classList.toggle('collapsed', terminalCollapsed);
+  updateTerminalToggleUI();
 }
 
 // ========================================================================
@@ -198,31 +236,31 @@ function togglePlay() {
   }
 }
 
-function playPrevious() {
-  let newIndex;
+function playPrevious(autoPlay = isPlaying) {
+  let newIndex = currentTrackIndex;
   if (playMode === 'random') {
     newIndex = getRandomIndex();
-  } else {
+  } else if (playMode === 'sequential') {
     newIndex = currentTrackIndex - 1;
     if (newIndex < 0) newIndex = playlist.length - 1;
   }
 
   loadTrack(newIndex);
-  if (isPlaying) {
+  if (autoPlay) {
     playTrack();
   }
 }
 
-function playNext() {
-  let newIndex;
+function playNext(autoPlay = isPlaying) {
+  let newIndex = currentTrackIndex;
   if (playMode === 'random') {
     newIndex = getRandomIndex();
-  } else {
+  } else if (playMode === 'sequential') {
     newIndex = (currentTrackIndex + 1) % playlist.length;
   }
 
   loadTrack(newIndex);
-  if (isPlaying) {
+  if (autoPlay) {
     playTrack();
   }
 }
@@ -236,18 +274,38 @@ function getRandomIndex() {
   return randomIndex;
 }
 
+function handleTrackEnd() {
+  if (playMode === 'single') {
+    audioPlayer.currentTime = 0;
+    playTrack();
+    return;
+  }
+  playNext(true);
+}
+
+function updatePlayModeUI() {
+  if (!modeBtnPlayer) return;
+  const iconClass = PLAY_MODE_ICONS[playMode] || PLAY_MODE_ICONS.sequential;
+  const label = PLAY_MODE_LABELS[playMode] || '播放模式';
+  const isSingle = playMode === 'single';
+
+  const badge = isSingle ? '<span class="mode-badge">1</span>' : '';
+  modeBtnPlayer.innerHTML = `<i class="fas ${iconClass}"></i>${badge}`;
+  modeBtnPlayer.title = label;
+  modeBtnPlayer.setAttribute('aria-label', label);
+  modeBtnPlayer.classList.toggle('random', playMode === 'random');
+  modeBtnPlayer.classList.toggle('single', isSingle);
+}
+
 function togglePlayMode() {
   if (playMode === 'sequential') {
     playMode = 'random';
-    modeBtnPlayer.textContent = 'RND';
-    modeBtnPlayer.title = '随机播放';
-    modeBtnPlayer.classList.add('random');
+  } else if (playMode === 'random') {
+    playMode = 'single';
   } else {
     playMode = 'sequential';
-    modeBtnPlayer.textContent = 'SEQ';
-    modeBtnPlayer.title = '顺序播放';
-    modeBtnPlayer.classList.remove('random');
   }
+  updatePlayModeUI();
 }
 
 function writeTrackInfo(track = {}) {
@@ -256,12 +314,13 @@ function writeTrackInfo(track = {}) {
 
   if (trackTitleEl) trackTitleEl.textContent = title;
   if (trackArtistEl) trackArtistEl.textContent = artist;
-  if (labelTitle) labelTitle.textContent = title;
-  if (labelArtist) labelArtist.textContent = artist;
 }
 
 function updatePlaybackState(playing) {
   isPlaying = playing;
+  if (vinylWrapper) {
+    vinylWrapper.classList.toggle('playing', playing);
+  }
   if (vinylDisc) {
     vinylDisc.classList.toggle('playing', playing);
   }
@@ -300,6 +359,9 @@ function configureTrackVideo(track) {
       // ignore
     }
     crtTv.classList.add('has-mv');
+    if (!isPlaying) {
+      setSignalReceived(false);
+    }
   } else {
     fallbackToStatic();
   }
@@ -317,7 +379,7 @@ function alignVideoToCurrentAudio(time = audioPlayer.currentTime) {
 function enforceVideoSyncThreshold() {
   if (!crtVideo || !crtTv || !crtTv.classList.contains('has-mv')) return;
   const diff = Math.abs((crtVideo.currentTime || 0) - (audioPlayer.currentTime || 0));
-  if (diff > 0.3) {
+  if (diff > 0.5) {
     alignVideoToCurrentAudio();
   }
 }
@@ -327,11 +389,14 @@ function syncVideoPlayback(playing) {
   if (playing) {
     alignVideoToCurrentAudio();
     const playPromise = crtVideo.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch((error) => {
+    const onSuccess = () => setSignalReceived(true);
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise.then(onSuccess).catch((error) => {
         console.warn('MV playback interrupted:', error);
         fallbackToStatic();
       });
+    } else {
+      onSuccess();
     }
   } else {
     crtVideo.pause();
@@ -355,6 +420,7 @@ function fallbackToStatic() {
     // ignore
   }
   crtTv.classList.remove('has-mv');
+  setSignalReceived(false);
   if (crtStatus) {
     crtStatus.textContent = 'NO SIGNAL';
   }
@@ -522,6 +588,12 @@ function toggleSidebar() {
 // ========================= 📡 事件监听器 =================================
 // ========================================================================
 
+updatePlayModeUI();
+if (terminalLog) {
+  terminalLog.classList.toggle('collapsed', terminalCollapsed);
+}
+updateTerminalToggleUI();
+
 if (playBtnPlayer) playBtnPlayer.addEventListener('click', togglePlay);
 if (prevBtnPlayer) prevBtnPlayer.addEventListener('click', playPrevious);
 if (nextBtnPlayer) nextBtnPlayer.addEventListener('click', playNext);
@@ -529,6 +601,7 @@ if (modeBtnPlayer) modeBtnPlayer.addEventListener('click', togglePlayMode);
 if (volumeBtn) volumeBtn.addEventListener('click', toggleVolumeControl);
 if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
 if (playlistTab) playlistTab.addEventListener('click', toggleSidebar);
+if (terminalToggle) terminalToggle.addEventListener('click', toggleTerminalLogVisibility);
 if (crtVideo) {
   crtVideo.addEventListener('error', fallbackToStatic);
 }
@@ -544,6 +617,8 @@ if (seekBar) {
 
 audioPlayer.addEventListener('timeupdate', updateProgress);
 audioPlayer.addEventListener('timeupdate', enforceVideoSyncThreshold);
+audioPlayer.addEventListener('play', () => updatePlaybackState(true));
+audioPlayer.addEventListener('pause', () => updatePlaybackState(false));
 audioPlayer.addEventListener('loadedmetadata', () => {
   currentTimeDisplay.textContent = '0:00';
   totalTimeDisplay.textContent = formatTime(audioPlayer.duration);
@@ -552,9 +627,7 @@ audioPlayer.addEventListener('loadedmetadata', () => {
   }
   updateProgress();
 });
-audioPlayer.addEventListener('ended', () => {
-  playNext();
-});
+audioPlayer.addEventListener('ended', handleTrackEnd);
 
 document.addEventListener('keydown', (e) => {
   switch (e.code) {
