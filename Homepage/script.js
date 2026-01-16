@@ -268,8 +268,8 @@ document.addEventListener('DOMContentLoaded', () => {
       subtitle: '',
       descriptionHtml: 'This project is a one-week team-based competition combining mechanism design and control theory on a real robotic platform.<br><br>The task required a 6-DOF robotic arm to grasp objects at arbitrary positions, place them onto a mobile vehicle, and trigger the vehicle to autonomously navigate a color-coded maze.<br><br>I was primarily responsible for the robotic arm control, focusing on motion planning, calibration, and reliable execution under real-world hardware constraints.',
       meta: [],
-      media1Src: '../Project/Project1/pic2.JPG',
-      media2Src: '../Project/Project1/pic3.png',
+      media1Src: 'assets/projects/project1/pic2.JPG',
+      media2Src: 'assets/projects/project1/pic3.png',
       media1Alt: 'Project 1 detail media 1',
       media2Alt: 'Project 1 detail media 2',
       media1Type: 'image',
@@ -292,10 +292,10 @@ document.addEventListener('DOMContentLoaded', () => {
       description: 'Hango is a semester-long collaborative design project developed by a five-person interdisciplinary team. Through four staged presentations, we refined the concept from early research into a final prototype and exhibition narrative—balancing clarity, feasibility, and visitor experience. My contributions focused on visual communication, presentation structure, and the final exhibition prototype display video.',
       meta: [],
       media1Type: 'image',
-      media1Src: '../Project/Project2/Pic1.jpg',
+      media1Src: 'assets/projects/project2/Pic1.jpg',
       media1Alt: 'Project 2 poster image',
       media2Type: 'image',
-      media2Src: '../Project/Project2/Pic3.JPG',
+      media2Src: 'assets/projects/project2/Pic3.JPG',
       media2Alt: 'Project 2 detail photo',
       splits: [
         {
