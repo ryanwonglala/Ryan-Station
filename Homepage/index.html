@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Ryan's Station</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Manrope:wght@300;400;500;600&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="splash-active">
   <!-- Loading Animation Overlay -->
   <div id="loading-overlay" class="loading-overlay">
+    <div class="splash-logo">Ryan's Station</div>
     <div class="gearbox">
       <div class="overlay"></div>
       <div class="gear one">
@@ -73,85 +75,235 @@
     </div>
   </div>
 
-  <nav class="glass-capsule-nav">
-    <ul class="nav-links">
-      <li class="active">
-        <a href="#home">Home</a>
-      </li>
-      <li>
-        <a href="#about">About</a>
-      </li>
-      <li>
-        <a href="#projects">Projects</a>
-      </li>
-      <li>
-        <a href="#experience">Experience</a>
-      </li>
-      <li>
-        <a href="#contact">Contact</a>
-      </li>
-    </ul>
-    <div id="nav-cursor" class="nav-cursor"></div>
+  <div id="page-content" class="page-content">
+    <nav class="glass-capsule-nav">
+      <ul class="nav-links">
+        <li class="active">
+          <a href="#home">Home</a>
+        </li>
+        <li>
+          <a href="#about">About</a>
+        </li>
+        <li>
+          <a href="#projects">Projects</a>
+        </li>
+        <li>
+          <a href="#experience">Experience</a>
+        </li>
+        <li>
+          <a href="#contact">Contact</a>
+        </li>
+      </ul>
+      <div id="nav-cursor" class="nav-cursor"></div>
 
-    <a href="javascript:void(0);" class="music-cta" id="music-trigger">
-      Music Zone
-    </a>
+      <a href="javascript:void(0);" class="music-cta" id="music-trigger">
+        Music Zone
+      </a>
 
-    <div class="theme-switch-li">
-      <div class="theme-switch-wrapper">
-        <div class="theme-switch">
-          <div class="gorgeous-switch-track">
-            <div class="stars">
-              <div class="star" style="--star-delay: 0s; --star-top: 10px; --star-left: 25px; --star-size: 3px;"></div>
-              <div class="star" style="--star-delay: 0.2s; --star-top: 5px; --star-left: 15px; --star-size: 2px;"></div>
-              <div class="star" style="--star-delay: 0.4s; --star-top: 18px; --star-left: 20px; --star-size: 2px;"></div>
-              <div class="star" style="--star-delay: 0.6s; --star-top: 15px; --star-left: 35px; --star-size: 2px;"></div>
-              <div class="star" style="--star-delay: 0.8s; --star-top: 8px; --star-left: 45px; --star-size: 3px;"></div>
-              <div class="star" style="--star-delay: 1s; --star-top: 20px; --star-left: 50px; --star-size: 2px;"></div>
+      <div class="theme-switch-li">
+        <div class="theme-switch-wrapper">
+          <div class="theme-switch">
+            <div class="gorgeous-switch-track">
+              <div class="stars">
+                <div class="star" style="--star-delay: 0s; --star-top: 10px; --star-left: 25px; --star-size: 3px;"></div>
+                <div class="star" style="--star-delay: 0.2s; --star-top: 5px; --star-left: 15px; --star-size: 2px;"></div>
+                <div class="star" style="--star-delay: 0.4s; --star-top: 18px; --star-left: 20px; --star-size: 2px;"></div>
+                <div class="star" style="--star-delay: 0.6s; --star-top: 15px; --star-left: 35px; --star-size: 2px;"></div>
+                <div class="star" style="--star-delay: 0.8s; --star-top: 8px; --star-left: 45px; --star-size: 3px;"></div>
+                <div class="star" style="--star-delay: 1s; --star-top: 20px; --star-left: 50px; --star-size: 2px;"></div>
+              </div>
+              <div class="clouds">
+                <div class="cloud" style="--cloud-delay: 0s; --cloud-top: 18px; --cloud-left: 10px; --cloud-scale: 0.8;"></div>
+                <div class="cloud" style="--cloud-delay: 0.3s; --cloud-top: 10px; --cloud-left: 30px; --cloud-scale: 1;"></div>
+              </div>
             </div>
-            <div class="clouds">
-              <div class="cloud" style="--cloud-delay: 0s; --cloud-top: 18px; --cloud-left: 10px; --cloud-scale: 0.8;"></div>
-              <div class="cloud" style="--cloud-delay: 0.3s; --cloud-top: 10px; --cloud-left: 30px; --cloud-scale: 1;"></div>
-            </div>
-          </div>
-          <div class="gorgeous-switch-thumb">
-            <div class="thumb-sun"></div>
-            <div class="thumb-moon">
-              <div class="crater" style="--crater-top: 4px; --crater-left: 15px; --crater-size: 6px;"></div>
-              <div class="crater" style="--crater-top: 10px; --crater-left: 5px; --crater-size: 8px;"></div>
-              <div class="crater" style="--crater-top: 18px; --crater-left: 12px; --crater-size: 4px;"></div>
+            <div class="gorgeous-switch-thumb">
+              <div class="thumb-sun"></div>
+              <div class="thumb-moon">
+                <div class="crater" style="--crater-top: 4px; --crater-left: 15px; --crater-size: 6px;"></div>
+                <div class="crater" style="--crater-top: 10px; --crater-left: 5px; --crater-size: 8px;"></div>
+                <div class="crater" style="--crater-top: 18px; --crater-left: 12px; --crater-size: 4px;"></div>
+              </div>
             </div>
           </div>
         </div>
+        <div class="text">Theme</div>
       </div>
-      <div class="text">Theme</div>
-    </div>
-  </nav>
+    </nav>
 
-  <section id="home">Home</section>
-  <section id="about">About</section>
-  <section id="projects">Projects</section>
-  <section id="experience">Experience</section>
-  <section id="contact">Contact</section>
-
-
-  <!-- 音乐区域确认弹窗 -->
-  <div id="music-confirm-modal" class="music-modal">
-    <div class="music-modal-content">
-      <div class="music-modal-icon">
-        <i class="fas fa-music"></i>
+    <section id="home">
+      <div class="hero">
+        <p class="hero-eyebrow">Welcome</p>
+        <h1 class="hero-title">ENGINEERING IDEAS</h1>
+        <p class="hero-subtitle">Selected works and journey of Ryan.</p>
+        <a class="hero-cta" href="#about">View Work</a>
       </div>
-      <h2>请注意</h2>
-      <h3>Please Note</h3>
-      <p>即将进入休闲区域</p>
-      <p class="english">You are about to enter the leisure zone</p>
-      <div class="music-modal-buttons">
-        <button id="music-cancel-btn" class="music-modal-btn cancel">
-          <span>否 / No</span>
-        </button>
-        <button id="music-confirm-btn" class="music-modal-btn confirm">
-          <span>是 / Yes</span>
-        </button>
+    </section>
+    <section id="about">
+      <div class="about-inner">
+        <div class="about-content">
+          <div class="about-text">
+            <h2 class="about-title">Engineering in Motion</h2>
+            <p class="about-description">I am currently pursuing my Master's degree in Robotics&amp;Automation. I believe that great automation comes from the perfect synchronization of hardware design and software control. This website is my digital lab bench, where I document my learning process, course projects, and my exploration into the future of automation.</p>
+          </div>
+          <div class="about-photo" role="img" aria-label="Portrait placeholder"></div>
+        </div>
+        <div class="about-skills">
+          <div class="about-skill">
+            <h3 class="about-skill-title">Mechanical Design</h3>
+            <p class="about-skill-text">Understanding the skeleton of robots. I study Kinematics and Mechanism Design, using tools like SolidWorks/CAD to turn theoretical motion into physical reality.</p>
+          </div>
+          <div class="about-skill">
+            <h3 class="about-skill-title">Modeling &amp; Control</h3>
+            <p class="about-skill-text">The nervous system. I work with MATLAB &amp; Simulink to model dynamic systems. My focus is on System Dynamics and classical control theories (PID) to ensure stability.</p>
+          </div>
+          <div class="about-skill">
+            <h3 class="about-skill-title">Code &amp; Web</h3>
+            <p class="about-skill-text">Expanding my toolkit. While deepening my engineering roots, I am also exploring Fullstack Development and AI tools (like building this site) to present my engineering work to the world.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="projects" class="projects-section">
+      <div class="projects-frame">
+        <div class="projects-stage" aria-label="Project showcase">
+          <div class="projects-ambient"></div>
+          <div class="projects-axis" aria-hidden="true"></div>
+          <div class="projects-axis-horizontal" aria-hidden="true">
+            <span class="axis-diamond"></span>
+          </div>
+
+          <div class="project-sphere" role="img" aria-label="Project preview sphere">
+            <div class="sphere-image-layer">
+              <video class="sphere-image sphere-video is-active" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/pic1.MP4" autoplay muted loop playsinline aria-label="Project 1 hero media video"></video>
+            <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/Hango%20V1.1.mp4" autoplay muted loop playsinline aria-label="Project 2 hero media video"></video>
+              <img class="sphere-image" src="assets/project-03.svg" alt="Project Lumen placeholder image">
+            </div>
+            <div class="sphere-specular"></div>
+            <div class="sphere-shadow"></div>
+          </div>
+
+          <div class="projects-copy">
+            <article class="project-copy is-active" data-index="0">
+              <div class="project-centerline">
+                <div class="project-left">
+                  <p class="project-eyebrow">Project 01</p>
+                  <h2 class="project-title">Robotic Arm Challenge</h2>
+                </div>
+                <div class="project-right">
+                  <p class="project-subtitle">A showcase-oriented kinetic lighting prototype.</p>
+                  <button class="project-detail-trigger" type="button">View Detail</button>
+                </div>
+              </div>
+            </article>
+            <article class="project-copy" data-index="1">
+              <div class="project-centerline">
+                <div class="project-left">
+                  <p class="project-eyebrow">Project 02</p>
+                  <h2 class="project-title">Hango</h2>
+                </div>
+                <div class="project-right">
+                  <p class="project-subtitle">A semester-long interdisciplinary innovation design project.</p>
+                  <button class="project-detail-trigger" type="button">View Detail</button>
+                </div>
+              </div>
+            </article>
+            <article class="project-copy" data-index="2">
+              <div class="project-centerline">
+                <div class="project-left">
+                  <p class="project-eyebrow">Project 03</p>
+                  <h2 class="project-title">Lumen Arc</h2>
+                </div>
+                <div class="project-right">
+                  <p class="project-subtitle">Layered imagery and gradient drift that create a window-display illusion.</p>
+                  <button class="project-detail-trigger" type="button">View Detail</button>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="projects-nav">
+            <div class="project-progress">
+              <span class="project-progress-current">01</span>
+              <span class="project-progress-divider">/</span>
+              <span class="project-progress-total">03</span>
+            </div>
+          </div>
+
+          <svg class="projects-filters" aria-hidden="true" width="0" height="0">
+            <filter id="sphere-distortion" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="8" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </svg>
+        </div>
+        <div class="project-detail-view" aria-hidden="true">
+          <div class="project-detail-header">
+            <div class="project-detail-panel">
+              <p class="detail-kicker" data-detail="kicker">Project 01</p>
+              <h3 class="detail-title" data-detail="title">Aurora Lens</h3>
+              <p class="detail-subtitle" data-detail="subtitle">A kinetic lighting prototype for exhibition spaces.</p>
+              <p class="detail-description" data-detail="description">This project is a one-week team-based competition combining mechanism design and control theory on a real robotic platform.<br><br>The task required a 6-DOF robotic arm to grasp objects at arbitrary positions, place them onto a mobile vehicle, and trigger the vehicle to autonomously navigate a color-coded maze.<br><br>I was primarily responsible for the robotic arm control, focusing on motion planning, calibration, and reliable execution under real-world hardware constraints.</p>
+              <div class="detail-meta">
+                <span data-detail="meta1">Role: Interaction + Visual</span>
+                <span data-detail="meta2">Timeline: 8 weeks</span>
+              </div>
+            </div>
+          </div>
+          <div class="project-detail-sections">
+            <article class="detail-split">
+            <div class="detail-media" data-detail="media1">
+              <img src="../Project/Project1/pic2.JPG" alt="Project 1 detail media 1">
+            </div>
+              <div class="detail-split-text">
+                <h4 data-detail="split1-title">Material Study</h4>
+                <p data-detail="split1-body">Surface tests, light diffusion swatches, and the final material stack.</p>
+              </div>
+            </article>
+            <article class="detail-split">
+            <div class="detail-media" data-detail="media2">
+              <img src="../Project/Project1/pic3.png" alt="Project 1 detail media 2">
+            </div>
+              <div class="detail-split-text">
+                <h4 data-detail="split2-title">Motion Behavior</h4>
+                <p data-detail="split2-body">Actuation rhythm, timing curves, and the final tuning notes.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+      <button class="project-back" type="button">Back to showroom</button>
+      <div class="detail-lightbox" aria-hidden="true">
+        <div class="lightbox-frame" role="dialog" aria-label="Media preview">
+          <button class="lightbox-close" type="button" aria-label="Close preview">Close</button>
+          <img class="lightbox-media lightbox-image" alt="">
+          <video class="lightbox-media lightbox-video" muted loop playsinline controls></video>
+        </div>
+      </div>
+
+    </section>
+    <section id="experience">Experience</section>
+    <section id="contact">Contact</section>
+
+
+    <!-- 音乐区域确认弹窗 -->
+    <div id="music-confirm-modal" class="music-modal">
+      <div class="music-modal-content">
+        <div class="music-modal-icon">
+          <i class="fas fa-music"></i>
+        </div>
+        <h2>请注意</h2>
+        <h3>Please Note</h3>
+        <p>即将进入休闲区域</p>
+        <p class="english">You are about to enter the leisure zone</p>
+        <div class="music-modal-buttons">
+          <button id="music-cancel-btn" class="music-modal-btn cancel">
+            <span>否 / No</span>
+          </button>
+          <button id="music-confirm-btn" class="music-modal-btn confirm">
+            <span>是 / Yes</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
