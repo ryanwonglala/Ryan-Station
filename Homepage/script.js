@@ -807,6 +807,261 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================================================
+// ========================= 🗓️ Experience Timeline =======================
+// ========================================================================
+
+const experienceItems = [
+  {
+    id: 'tust-undergrad',
+    periodLabel: '2018–2021',
+    stageTag: 'Undergraduate',
+    orgName: 'Tianjin University of Science and Technology',
+    roleOrMajor: 'B.Eng. in Mechatronic Engineering',
+    summary: 'Completed undergraduate training in Mechatronic Engineering, following a structured curriculum with foundational exposure to mechanical systems, electronics, and applied engineering coursework.',
+    highlights: [
+      'Followed a full undergraduate curriculum covering mechanics, electronics, and control fundamentals',
+      'Participated in selected academic competitions alongside coursework',
+      'Developed disciplined study habits through structured engineering education',
+      'University Scholarship recipient (2018–2021); First Prize in a university-level Mathematical Modeling Competition',
+    ],
+    tags: ['Mechatronics', 'Engineering Fundamentals', 'Mathematical Modeling', 'Undergraduate Study'],
+    media: {
+      mode: 'none',
+      images: [],
+    },
+  },
+  {
+    id: 'foxconn-work',
+    periodLabel: '2023–2024',
+    stageTag: 'Work',
+    orgName: 'Foxconn',
+    roleOrMajor: 'Project Management (Automation Engineering)',
+    summary: 'Supported project management activities within an automation engineering team, contributing to the planning, coordination, and ramp-up of automated production lines for consumer electronics manufacturing.',
+    highlights: [
+      'Assisted cross-functional teams in automation project execution and schedule alignment',
+      'Supported automated production line setup, validation, and readiness for mass production',
+      'Supported DFM documentation preparation and manufacturing feasibility verification',
+      'Contributed to ramp-up activities to meet production volume and delivery readiness',
+    ],
+    tags: ['Project Management', 'Automation', 'DFM', 'Cross-functional Collaboration', 'PDCA'],
+    media: {
+      mode: 'none',
+      images: [],
+    },
+  },
+  {
+    id: 'luxshare-work',
+    periodLabel: '2024–2025',
+    stageTag: 'Work',
+    orgName: 'Luxshare',
+    roleOrMajor: 'Assistant Product Design Engineer',
+    summary: 'Worked as an assistant product design engineer, supporting the design and documentation of internal mechanical components for consumer electronics products.',
+    highlights: [
+      'Assisted in mechanical component design and engineering drawing management',
+      'Prepared and maintained design change documentation during development iterations',
+      'Supported component design verification and requirement alignment',
+      'Collaborated with engineering teams throughout development cycles toward acceptance readiness',
+    ],
+    tags: ['Product Design', 'Mechanical Components', 'Engineering Documentation', 'AutoCAD', 'UG'],
+    media: {
+      mode: 'none',
+      images: [],
+    },
+  },
+  {
+    id: 'sutd-grad',
+    periodLabel: '2025–2026',
+    stageTag: 'Graduate (Ongoing)',
+    orgName: 'Singapore University of Technology and Design (SUTD)',
+    roleOrMajor: 'MSc in Robotics and Automation (In Progress)',
+    summary: 'Currently pursuing graduate studies in Robotics and Automation, focusing on building a solid foundation in robotics systems, control, and applied programming.',
+    highlights: [
+      'Studying core robotics and automation coursework during the first academic term',
+      'Developing foundational skills in robot control, embedded systems, and system integration',
+      'Applying programming and analytical tools through coursework and hands-on projects',
+      'Selected course projects and technical work are showcased in the Projects section',
+    ],
+    tags: ['Robotics', 'Automation', 'Control Systems', 'Python', 'Arduino', 'MATLAB'],
+    media: {
+      mode: 'none',
+      images: [],
+    },
+  },
+];
+
+const experienceSection = document.getElementById('experience');
+if (experienceSection) {
+  const timelineList = experienceSection.querySelector('.experience-timeline-list');
+  const card = experienceSection.querySelector('[data-experience-card]');
+  const mediaEl = experienceSection.querySelector('[data-experience-media]');
+  const orgEl = experienceSection.querySelector('[data-experience-org]');
+  const roleEl = experienceSection.querySelector('[data-experience-role]');
+  const summaryEl = experienceSection.querySelector('[data-experience-summary]');
+  const highlightsEl = experienceSection.querySelector('[data-experience-highlights]');
+  const tagsEl = experienceSection.querySelector('[data-experience-tags]');
+  const linksEl = experienceSection.querySelector('[data-experience-links]');
+
+  let activeIndex = 0;
+
+  const buildMedia = (media) => {
+    if (!mediaEl) return;
+    mediaEl.innerHTML = '';
+    mediaEl.classList.remove('is-collage', 'is-single', 'is-none');
+
+    if (media.mode === 'single' && media.images && media.images.length > 0) {
+      mediaEl.classList.add('is-single');
+      const img = document.createElement('img');
+      img.src = media.images[0];
+      img.alt = 'Experience media';
+      mediaEl.appendChild(img);
+      return;
+    }
+
+    if (media.mode === 'collage' && media.images && media.images.length > 1) {
+      mediaEl.classList.add('is-collage');
+      const collage = document.createElement('div');
+      collage.className = 'experience-media-collage';
+      media.images.slice(0, 2).forEach((src) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Experience media collage';
+        collage.appendChild(img);
+      });
+      mediaEl.appendChild(collage);
+      return;
+    }
+
+    mediaEl.classList.add('is-none');
+    const placeholder = document.createElement('div');
+    placeholder.className = 'experience-media-placeholder';
+    mediaEl.appendChild(placeholder);
+  };
+
+  const renderDetail = (item) => {
+    if (!item || !card) return;
+    card.classList.remove('is-visible');
+
+    if (orgEl) orgEl.textContent = item.orgName;
+    if (roleEl) roleEl.textContent = item.roleOrMajor;
+    if (summaryEl) summaryEl.textContent = item.summary;
+
+    if (highlightsEl) {
+      highlightsEl.innerHTML = '';
+      item.highlights.forEach((highlight) => {
+        const li = document.createElement('li');
+        li.textContent = highlight;
+        highlightsEl.appendChild(li);
+      });
+    }
+
+    if (tagsEl) {
+      tagsEl.innerHTML = '';
+      item.tags.forEach((tag) => {
+        const span = document.createElement('span');
+        span.className = 'experience-tag';
+        span.textContent = tag;
+        tagsEl.appendChild(span);
+      });
+    }
+
+    if (linksEl) {
+      linksEl.innerHTML = '';
+      if (item.links && item.links.length > 0) {
+        linksEl.style.display = '';
+        item.links.forEach((link) => {
+          const a = document.createElement('a');
+          a.href = link.href;
+          a.textContent = link.label;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          linksEl.appendChild(a);
+        });
+      } else {
+        linksEl.style.display = 'none';
+      }
+    }
+
+    buildMedia(item.media);
+
+    requestAnimationFrame(() => {
+      card.classList.add('is-visible');
+    });
+  };
+
+  const setActive = (index, { focus = false } = {}) => {
+    if (!timelineList) return;
+    const clampedIndex = Math.max(0, Math.min(experienceItems.length - 1, index));
+    if (clampedIndex === activeIndex) return;
+    activeIndex = clampedIndex;
+
+    const buttons = Array.from(timelineList.querySelectorAll('.experience-timeline-item'));
+    buttons.forEach((button, idx) => {
+      const isActive = idx === activeIndex;
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      button.setAttribute('tabindex', isActive ? '0' : '-1');
+      if (isActive && focus) {
+        button.focus({ preventScroll: true });
+        button.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      }
+    });
+
+    renderDetail(experienceItems[activeIndex]);
+  };
+
+  if (timelineList) {
+    timelineList.innerHTML = '';
+    experienceItems.forEach((item, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'experience-timeline-item';
+      button.setAttribute('role', 'tab');
+      button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+      button.setAttribute('tabindex', index === 0 ? '0' : '-1');
+      button.dataset.index = String(index);
+
+      const period = document.createElement('span');
+      period.className = 'experience-period';
+      period.textContent = item.periodLabel;
+
+      const stage = document.createElement('span');
+      stage.className = 'experience-stage-tag';
+      stage.textContent = item.stageTag;
+
+      if (index === 0) {
+        button.classList.add('is-active');
+      }
+
+      button.appendChild(period);
+      button.appendChild(stage);
+      button.addEventListener('click', () => setActive(index, { focus: true }));
+      timelineList.appendChild(button);
+    });
+
+    timelineList.addEventListener('keydown', (event) => {
+      const keys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+      if (!keys.includes(event.key)) return;
+      event.preventDefault();
+
+      let nextIndex = activeIndex;
+      if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        nextIndex = activeIndex + 1;
+      } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        nextIndex = activeIndex - 1;
+      } else if (event.key === 'Home') {
+        nextIndex = 0;
+      } else if (event.key === 'End') {
+        nextIndex = experienceItems.length - 1;
+      }
+
+      setActive(nextIndex, { focus: true });
+    });
+  }
+
+  setActive(0);
+}
+
+// ========================================================================
 // ========================= 🌓 明暗主题切换逻辑 ===========================
 // ========================================================================
 
