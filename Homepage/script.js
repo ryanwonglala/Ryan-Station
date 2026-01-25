@@ -988,10 +988,10 @@ if (experienceSection) {
     });
   };
 
-  const setActive = (index, { focus = false } = {}) => {
+  const setActive = (index, { focus = false, force = false } = {}) => {
     if (!timelineList) return;
     const clampedIndex = Math.max(0, Math.min(experienceItems.length - 1, index));
-    if (clampedIndex === activeIndex) return;
+    if (!force && clampedIndex === activeIndex) return;
     activeIndex = clampedIndex;
 
     const buttons = Array.from(timelineList.querySelectorAll('.experience-timeline-item'));
@@ -1058,7 +1058,7 @@ if (experienceSection) {
     });
   }
 
-  setActive(0);
+  setActive(0, { force: true });
 }
 
 // ========================================================================
@@ -1154,3 +1154,47 @@ if (musicModal) {
     }
   });
 }
+
+// ========================================================================
+// ====================== 📋 Contact Copy Buttons ==========================
+// ========================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const copyButtons = document.querySelectorAll('[data-copy]');
+  if (!copyButtons.length) return;
+
+  const fallbackCopy = (text) => {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.setAttribute('readonly', '');
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+  };
+
+  copyButtons.forEach((button) => {
+    const originalLabel = button.textContent;
+    button.addEventListener('click', async () => {
+      const text = button.getAttribute('data-copy');
+      if (!text) return;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          fallbackCopy(text);
+        }
+        button.textContent = 'Copied';
+        button.disabled = true;
+        window.setTimeout(() => {
+          button.textContent = originalLabel;
+          button.disabled = false;
+        }, 1200);
+      } catch (error) {
+        console.warn('Copy failed', error);
+      }
+    });
+  });
+});

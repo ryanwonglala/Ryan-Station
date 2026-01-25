@@ -3779,6 +3779,191 @@ body.light-mode #experience .experience-timeline-item.is-active .experience-peri
   color: rgba(15, 23, 42, 0.95);
 }
 
+/* ============ Contact ============ */
+#contact.contact-section {
+  align-items: stretch;
+  justify-content: center;
+  padding: 120px 0;
+  color: #f8fafc;
+  font: 400 16px "Manrope", "Segoe UI", sans-serif;
+}
+
+#contact.contact-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(8, 12, 24, 0.65), rgba(8, 12, 24, 0.35));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#contact .contact-inner {
+  width: 100%;
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 0 40px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+#contact .contact-header h2 {
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
+  font-size: clamp(2.1rem, 3.5vw, 3.1rem);
+  margin: 0 0 8px;
+  color: rgba(248, 250, 252, 0.98);
+}
+
+#contact .contact-header p {
+  margin: 0;
+  color: rgba(248, 250, 252, 0.65);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+#contact .contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px 22px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+#contact .contact-item {
+  padding: 16px 0;
+}
+
+#contact .contact-item + .contact-item {
+  border-top: 1px solid rgba(248, 250, 252, 0.12);
+}
+
+#contact .contact-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: nowrap;
+}
+
+#contact .contact-row + .contact-row {
+  margin-top: 8px;
+}
+
+#contact .contact-label {
+  flex: 0 0 110px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(248, 250, 252, 0.5);
+}
+
+#contact .contact-info {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  color: rgba(248, 250, 252, 0.9);
+  white-space: nowrap;
+}
+
+#contact .contact-email {
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+#contact .contact-link {
+  color: rgba(248, 250, 252, 0.85);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(248, 250, 252, 0.3);
+  padding-bottom: 2px;
+  width: fit-content;
+}
+
+#contact .contact-note {
+  margin: 8px 0 0;
+  padding-left: 128px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.55);
+}
+
+#contact .contact-action {
+  margin-left: auto;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 250, 252, 0.35);
+  color: rgba(248, 250, 252, 0.85);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: transparent;
+  transition: border-color 200ms ease, color 200ms ease, background 200ms ease;
+  white-space: nowrap;
+}
+
+#contact .contact-action.primary {
+  border-color: rgba(248, 250, 252, 0.45);
+  background: rgba(248, 250, 252, 0.08);
+  color: rgba(248, 250, 252, 0.95);
+}
+
+#contact .contact-action:hover {
+  border-color: rgba(248, 250, 252, 0.6);
+  color: #ffffff;
+}
+
+body.light-mode #contact.contact-section {
+  color: #0f172a;
+}
+
+body.light-mode #contact.contact-section::before {
+  background: linear-gradient(120deg, rgba(248, 250, 252, 0.92), rgba(226, 232, 240, 0.75));
+  border-top-color: rgba(15, 23, 42, 0.12);
+  border-bottom-color: rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode #contact .contact-header h2 {
+  color: rgba(15, 23, 42, 0.95);
+}
+
+body.light-mode #contact .contact-header p,
+body.light-mode #contact .contact-note {
+  color: rgba(15, 23, 42, 0.6);
+}
+
+body.light-mode #contact .contact-list {
+  background: rgba(248, 250, 252, 0.9);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+body.light-mode #contact .contact-label {
+  color: rgba(15, 23, 42, 0.6);
+}
+
+body.light-mode #contact .contact-info,
+body.light-mode #contact .contact-link {
+  color: rgba(15, 23, 42, 0.85);
+  border-bottom-color: rgba(15, 23, 42, 0.25);
+}
+
+body.light-mode #contact .contact-action {
+  border-color: rgba(15, 23, 42, 0.35);
+  color: rgba(15, 23, 42, 0.85);
+}
+
+body.light-mode #contact .contact-action.primary {
+  border-color: rgba(15, 23, 42, 0.35);
+  background: rgba(15, 23, 42, 0.08);
+  color: rgba(15, 23, 42, 0.95);
+}
+
 
 @media (max-width: 720px) {
   .projects-frame {
@@ -3912,6 +4097,37 @@ body.light-mode #experience .experience-timeline-item.is-active .experience-peri
     grid-template-rows: 1fr;
   }
 
+  #contact.contact-section {
+    padding: 100px 0;
+  }
+
+}
+
+@media (max-width: 720px) {
+  #contact .contact-list {
+    padding: 10px 16px;
+  }
+
+  #contact .contact-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  #contact .contact-label {
+    flex: 0 0 100%;
+  }
+
+  #contact .contact-info {
+    white-space: normal;
+  }
+
+  #contact .contact-action {
+    margin-left: 0;
+  }
+
+  #contact .contact-note {
+    padding-left: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
