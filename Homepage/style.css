@@ -203,6 +203,21 @@ body.light-mode .glass-capsule-nav {
   box-shadow: 0 15px 35px rgba(15, 23, 42, 0.2);
 }
 
+body.light-mode .glass-capsule-nav .nav-links li a {
+  color: rgba(15, 23, 42, 0.72);
+}
+
+body.light-mode .glass-capsule-nav .nav-links li a:hover,
+body.light-mode .glass-capsule-nav .nav-links li a:focus {
+  color: rgba(15, 23, 42, 0.95);
+  text-shadow: 0 0 8px rgba(15, 23, 42, 0.2);
+}
+
+body.light-mode .glass-capsule-nav .nav-links li.active a {
+  color: rgba(15, 23, 42, 0.98);
+  text-shadow: 0 0 10px rgba(15, 23, 42, 0.25);
+}
+
 .glass-capsule-nav .nav-links {
   display: flex;
   align-items: center;
@@ -265,6 +280,12 @@ body.light-mode .glass-capsule-nav {
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+body.light-mode #nav-cursor::before,
+body.light-mode #nav-cursor::after {
+  border-color: rgba(15, 23, 42, 0.65);
+  box-shadow: 0 0 8px rgba(15, 23, 42, 0.2);
+}
+
 #nav-cursor::before {
   top: 0;
   left: 0;
@@ -312,6 +333,14 @@ body.light-mode .glass-capsule-nav {
   border: none;
   border-bottom: 2px solid rgba(255, 255, 255, 0.95);
   opacity: 1;
+}
+
+body.light-mode #nav-cursor.highlight::before {
+  border-top-color: rgba(15, 23, 42, 0.75);
+}
+
+body.light-mode #nav-cursor.highlight::after {
+  border-bottom-color: rgba(15, 23, 42, 0.75);
 }
 
 .music-cta {
@@ -3070,6 +3099,107 @@ body.detail-mode {
   transform: translateY(-2px);
 }
 
+.project-detail-hotspot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2) 45%, rgba(15, 23, 42, 0.2) 70%),
+    rgba(15, 23, 42, 0.35);
+  box-shadow:
+    0 0 0 0 rgba(56, 189, 248, 0.35),
+    0 18px 35px rgba(5, 8, 20, 0.35);
+  color: rgba(248, 250, 252, 0.95);
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  cursor: pointer;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease, background 220ms ease;
+  animation: hotspot-pulse 2.4s ease-in-out infinite;
+}
+
+.project-detail-hotspot::before,
+.project-detail-hotspot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+}
+
+.project-detail-hotspot::before {
+  width: 26px;
+  height: 3px;
+}
+
+.project-detail-hotspot::after {
+  width: 3px;
+  height: 26px;
+}
+
+.project-detail-hotspot:hover,
+.project-detail-hotspot:focus-visible {
+  transform: translate(-50%, -50%) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 10px rgba(56, 189, 248, 0.2),
+    0 24px 45px rgba(5, 8, 20, 0.45);
+  outline: none;
+}
+
+.project-detail-hotspot.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  animation: none;
+  box-shadow:
+    0 0 0 0 rgba(56, 189, 248, 0.15),
+    0 12px 24px rgba(5, 8, 20, 0.25);
+}
+
+.project-detail-hotspot.is-disabled::before,
+.project-detail-hotspot.is-disabled::after {
+  opacity: 0.6;
+}
+
+.projects-section.is-detail .project-detail-hotspot {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.light-mode .project-detail-hotspot {
+  border-color: rgba(15, 23, 42, 0.25);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(226, 232, 240, 0.5) 50%, rgba(148, 163, 184, 0.25) 75%),
+    rgba(248, 250, 252, 0.85);
+  color: rgba(15, 23, 42, 0.8);
+  box-shadow:
+    0 0 0 0 rgba(56, 189, 248, 0.25),
+    0 18px 35px rgba(15, 23, 42, 0.18);
+}
+
+@keyframes hotspot-pulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(56, 189, 248, 0.35),
+      0 18px 35px rgba(5, 8, 20, 0.35);
+  }
+  60% {
+    box-shadow:
+      0 0 0 16px rgba(56, 189, 248, 0.08),
+      0 22px 40px rgba(5, 8, 20, 0.3);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(56, 189, 248, 0.35),
+      0 18px 35px rgba(5, 8, 20, 0.35);
+  }
+}
+
 
 .projects-nav {
   position: absolute;
@@ -3620,7 +3750,7 @@ body.light-mode .detail-title {
 #experience .experience-card-media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -3756,6 +3886,10 @@ body.light-mode #experience .experience-links a {
 
 body.light-mode #experience .experience-timeline-item {
   color: rgba(15, 23, 42, 0.7);
+}
+
+body.light-mode #experience .experience-stage-tag {
+  color: rgba(15, 23, 42, 0.55);
 }
 
 body.light-mode #experience .experience-timeline-item::before {

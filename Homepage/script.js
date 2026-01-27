@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressTotal = projectsSection.querySelector('.project-progress-total');
   const displacementMap = projectsSection.querySelector('#sphere-distortion feDisplacementMap');
   const detailView = projectsSection.querySelector('.project-detail-view');
-  const detailTriggers = Array.from(projectsSection.querySelectorAll('.project-detail-trigger'));
+  const detailHotspot = projectsSection.querySelector('.project-detail-hotspot');
   const backButton = projectsSection.querySelector('.project-back');
   const lightbox = projectsSection.querySelector('.detail-lightbox');
   const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
@@ -259,6 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
       progressCurrent.textContent = String(activeIndex + 1).padStart(2, '0');
     }
 
+    if (detailHotspot) {
+      detailHotspot.classList.toggle('is-disabled', activeIndex === 2);
+    }
   };
 
   const detailContent = [
@@ -310,9 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       kicker: 'Project 03',
-      title: 'Lumen Arc',
-      subtitle: 'Layered imagery for a window-display illusion.',
-      description: 'The detail pass focuses on how the layers sync with the ambient light envelope.',
+      title: 'Ongoing Works',
+      subtitle: 'Continuously evolving — more updates to come.',
+      description: 'This slot is reserved for new experiments and future updates.',
       meta: ['Role: Creative Direction', 'Timeline: 5 weeks'],
       media1Src: 'assets/project-03.svg',
       media2Src: 'assets/project-03.svg',
@@ -493,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const openDetail = (index, fromHistory = false) => {
+    if (index === 2) return;
     if (detailOpen && activeIndex === index) return;
     detailOpen = true;
     activeIndex = index;
@@ -668,13 +672,12 @@ document.addEventListener('DOMContentLoaded', () => {
     pointerLocked = false;
   });
 
-  detailTriggers.forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const parent = trigger.closest('.project-copy');
-      const index = parent ? parseInt(parent.dataset.index, 10) : activeIndex;
-      openDetail(Number.isNaN(index) ? activeIndex : index);
+  if (detailHotspot) {
+    detailHotspot.addEventListener('click', () => {
+      if (activeIndex === 2) return;
+      openDetail(activeIndex);
     });
-  });
+  }
 
   projectsSection.addEventListener('click', (event) => {
     if (!detailOpen) return;
@@ -826,8 +829,8 @@ const experienceItems = [
     ],
     tags: ['Mechatronics', 'Engineering Fundamentals', 'Mathematical Modeling', 'Undergraduate Study'],
     media: {
-      mode: 'none',
-      images: [],
+      mode: 'single',
+      images: ['../Experience/1.jpeg'],
     },
   },
   {
@@ -845,8 +848,8 @@ const experienceItems = [
     ],
     tags: ['Project Management', 'Automation', 'DFM', 'Cross-functional Collaboration', 'PDCA'],
     media: {
-      mode: 'none',
-      images: [],
+      mode: 'single',
+      images: ['../Experience/2.jpeg'],
     },
   },
   {
@@ -864,8 +867,8 @@ const experienceItems = [
     ],
     tags: ['Product Design', 'Mechanical Components', 'Engineering Documentation', 'AutoCAD', 'UG'],
     media: {
-      mode: 'none',
-      images: [],
+      mode: 'single',
+      images: ['../Experience/3.jpg'],
     },
   },
   {
@@ -883,8 +886,8 @@ const experienceItems = [
     ],
     tags: ['Robotics', 'Automation', 'Control Systems', 'Python', 'Arduino', 'MATLAB'],
     media: {
-      mode: 'none',
-      images: [],
+      mode: 'single',
+      images: ['../Experience/4.jpg'],
     },
   },
 ];
