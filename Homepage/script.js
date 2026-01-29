@@ -195,6 +195,52 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  const viewHintModal = document.getElementById('view-hint-modal');
+  const viewHintConfirm = document.getElementById('view-hint-confirm');
+  if (!viewHintModal || !viewHintConfirm) {
+    return;
+  }
+
+  const seenKey = 'viewHintSeen';
+  const isPortraitPhone = () => (
+    window.matchMedia('(max-width: 900px)').matches &&
+    window.matchMedia('(orientation: portrait)').matches
+  );
+
+  const showHint = () => {
+    viewHintModal.classList.add('show');
+    viewHintModal.setAttribute('aria-hidden', 'false');
+  };
+
+  const hideHint = () => {
+    viewHintModal.classList.remove('show');
+    viewHintModal.setAttribute('aria-hidden', 'true');
+  };
+
+  const acknowledge = () => {
+    localStorage.setItem(seenKey, '1');
+    hideHint();
+  };
+
+  if (!localStorage.getItem(seenKey) && isPortraitPhone()) {
+    showHint();
+  }
+
+  viewHintConfirm.addEventListener('click', acknowledge);
+  viewHintModal.addEventListener('click', (event) => {
+    if (event.target === viewHintModal) {
+      acknowledge();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (!localStorage.getItem(seenKey) && isPortraitPhone()) {
+      showHint();
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
   const projectsSection = document.querySelector('.projects-section');
   if (!projectsSection) {
     return;

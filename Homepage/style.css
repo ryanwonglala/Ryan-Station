@@ -4265,6 +4265,197 @@ body.light-mode #contact .contact-action.primary {
   }
 }
 
+@media (max-width: 480px) {
+  :root {
+    --projects-sphere-size: clamp(220px, 70vw, 360px);
+    --nav-safe-top: 72px;
+    --detail-media-width: min(90vw, 360px);
+    --detail-media-height: clamp(180px, 48vw, 260px);
+  }
+
+  section {
+    min-height: 100svh;
+    padding: 0 20px;
+  }
+
+  .glass-capsule-nav {
+    top: 10px;
+    left: 12px;
+    right: 12px;
+    height: auto;
+    padding: 8px 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .glass-capsule-nav .nav-links {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .glass-capsule-nav .nav-links li a {
+    font-size: 11px;
+    padding: 4px 8px;
+    letter-spacing: 0.3px;
+  }
+
+  #nav-cursor {
+    display: none;
+  }
+
+  #music-trigger {
+    margin-left: 0;
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  .theme-switch-li {
+    margin-left: 0;
+    border-left: none;
+  }
+
+  .theme-switch {
+    width: 60px;
+    height: 32px;
+  }
+
+  body.light-mode .gorgeous-switch-thumb {
+    transform: translateX(28px);
+  }
+
+  .gorgeous-switch-thumb {
+    width: 26px;
+    height: 26px;
+  }
+
+  #home {
+    padding-top: 90px;
+  }
+
+  #home .hero {
+    gap: 14px;
+  }
+
+  .hero-eyebrow {
+    letter-spacing: 0.3em;
+    font-size: 0.9rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.1rem, 10vw, 3.2rem);
+    letter-spacing: 0.06em;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .hero-cta {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+
+  #about .about-inner {
+    width: min(960px, 92vw);
+  }
+
+  #about .about-description,
+  #about .about-skill-text {
+    font-size: 0.95rem;
+  }
+
+  #about .about-title {
+    font-size: clamp(1.9rem, 7vw, 2.6rem);
+  }
+
+  .projects-section {
+    padding-top: calc(var(--nav-safe-top) + 24px);
+  }
+
+  .projects-stage,
+  .projects-frame {
+    min-height: 75vh;
+  }
+
+  .projects-copy {
+    padding: 0 4vw;
+  }
+
+  .project-title {
+    font-size: clamp(1.3rem, 6vw, 2rem);
+  }
+
+  .project-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .project-detail-panel {
+    padding: 24px;
+  }
+
+  .project-detail-sections {
+    margin-top: clamp(36px, 8vh, 80px);
+    gap: 24px;
+  }
+
+  .project-back {
+    left: 16px;
+    top: 16px;
+  }
+
+  .detail-split {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    text-align: left;
+  }
+
+  .detail-split:nth-child(even) {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-media {
+    height: clamp(160px, 52vw, 240px);
+    transform: none;
+  }
+
+  .detail-split-text h4 {
+    font-size: 0.95rem;
+  }
+
+  .detail-split-text p {
+    font-size: 0.8rem;
+  }
+
+  #experience.experience-section {
+    padding: 90px 0;
+  }
+
+  #experience .experience-header h2 {
+    font-size: clamp(1.8rem, 7vw, 2.4rem);
+  }
+
+  #contact .contact-header h2 {
+    font-size: clamp(1.8rem, 7vw, 2.4rem);
+  }
+
+  #contact .contact-action {
+    font-size: 0.6rem;
+    padding: 6px 12px;
+  }
+
+  .mini-player {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .player-panel {
+    width: min(90vw, 300px);
+    bottom: 90px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .project-sphere,
   .project-copy,
