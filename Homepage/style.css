@@ -532,14 +532,15 @@ body.light-mode .hero-cta {
 
 #about .about-photo {
   justify-self: center;
-  width: min(520px, 90%);
+  width: min(483px, 92%);
   aspect-ratio: 16 / 10;
   border-radius: 18px;
-  background:
-    linear-gradient(135deg, rgba(197, 160, 89, 0.25), rgba(10, 10, 10, 0.2)),
-    radial-gradient(circle at 20% 20%, rgba(240, 240, 240, 0.08), rgba(10, 10, 10, 0.7));
-  border: 1px solid rgba(197, 160, 89, 0.22);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  background-image: url("../About Me/1.jpg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: none;
+  box-shadow: none;
   opacity: 0;
   transform: translateY(var(--about-photo-shift));
   transition: opacity var(--about-enter-duration) ease, transform var(--about-enter-duration) ease;
