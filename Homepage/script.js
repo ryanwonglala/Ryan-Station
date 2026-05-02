@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (detailHotspot) {
-      detailHotspot.classList.toggle('is-disabled', activeIndex === 2);
+      detailHotspot.classList.remove('is-disabled');
     }
   };
 
@@ -359,24 +359,38 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       kicker: 'Project 03',
-      title: 'Ongoing Works',
-      subtitle: 'Continuously evolving — more updates to come.',
-      description: 'This slot is reserved for new experiments and future updates.',
-      meta: ['Role: Creative Direction', 'Timeline: 5 weeks'],
-      media1Src: 'assets/project-03.svg',
-      media2Src: 'assets/project-03.svg',
-      media1Alt: 'Project 3 placeholder media 1',
-      media2Alt: 'Project 3 placeholder media 2',
-      media1Type: 'image',
-      media2Type: 'image',
+      title: 'FlexiLock: Variable Stiffness Support',
+      subtitle: 'Soft compliant rest, rigid on demand.',
+      description: 'Addressing the clinical need for "compliant at rest and stiff on demand" support, FlexiLock utilizes a bio-inspired vacuum-actuated scale jamming mechanism. It transitions from a highly flexible state to a rigid structure capable of outputting 5.88 Nm of bending moment at -60 kPa, specifically designed to manage MAS Grade 3-4 upper-limb spasticity.',
+      meta: ['Role: Soft Robotics & Mechanism Design', 'Tech: 3D Printing, Vacuum Actuation'],
+      paperUrl: 'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/Team%20Paper.pdf',
       splits: [
         {
-          title: 'Layer Stack',
-          body: 'Composite ordering to avoid visual collision and preserve depth.',
+          title: 'Bio-Inspired Scale Jamming',
+          body: 'Inspired by pangolin armour geometry, we developed a variable stiffness mechanism utilizing geometric interlocking. Vacuum actuation creates robust friction between overlapping scales, allowing for rapid transition from soft to rigid states.',
+          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%90%AF%E5%8F%91.png'],
+          mediaAlts: ['Bio-inspired scale jamming mechanism'],
         },
         {
-          title: 'Calibration Pass',
-          body: 'Final adjustments for color drift and angular brightness.',
+          title: 'Design Iteration & Fabrication',
+          body: 'The scale morphology underwent rigorous iterations to optimize the overlap ratio and friction interface. The final wearable assembly integrates these 3D-printed PLA scales within a custom-sealed nylon envelope to ensure reliable vacuum distribution.',
+          mediaSrcs: [
+            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E9%B3%9E%E7%89%87%E8%BF%AD%E4%BB%A3.png',
+            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%B7%A5%E8%89%BA%E6%B5%81%E7%A8%8B.png',
+          ],
+          mediaAlts: ['Scale morphology iterations', 'Fabrication process workflow'],
+        },
+        {
+          title: 'Mechanical Validation',
+          body: 'Quantitative testing demonstrated the device\'s exceptional load-bearing capacity. Under a -60 kPa operating pressure, FlexiLock successfully withstood a 10 kg dead-weight load without visible deformation, yielding a 5.88 Nm bending moment.',
+          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/10kg%E8%B4%9F%E8%BD%BD%E8%AF%95%E9%AA%8C.png'],
+          mediaAlts: ['10 kg dead-weight load validation test'],
+        },
+        {
+          title: 'Mathematical Modeling & Analysis',
+          body: 'Beyond physical prototyping, a dimensional analysis was performed to extract core non-dimensional groups. A power-law regression model was subsequently established to accurately predict force output based on overlap ratio, vacuum pressure, and structural deflection.',
+          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/model.png'],
+          mediaAlts: ['Mathematical modeling and regression analysis'],
         },
       ],
     },
@@ -420,38 +434,84 @@ document.addEventListener('DOMContentLoaded', () => {
     if (metaBlock) {
       metaBlock.style.display = data.meta.length ? 'grid' : 'none';
     }
-    setText('[data-detail="split1-title"]', data.splits[0].title);
-    setText('[data-detail="split1-body"]', data.splits[0].body);
-    setText('[data-detail="split2-title"]', data.splits[1].title);
-    setText('[data-detail="split2-body"]', data.splits[1].body);
-    const split1Title = detailView.querySelector('[data-detail="split1-title"]');
-    const split2Title = detailView.querySelector('[data-detail="split2-title"]');
-    if (split1Title) split1Title.style.display = data.splits[0].title ? 'block' : 'none';
-    if (split2Title) split2Title.style.display = data.splits[1].title ? 'block' : 'none';
 
-    const media1 = detailView.querySelector('[data-detail="media1"]');
-    const media2 = detailView.querySelector('[data-detail="media2"]');
-    const renderMedia = (container, media) => {
-      if (!container) return;
-      container.innerHTML = '';
-      if (media.type === 'video') {
-        const video = document.createElement('video');
-        video.src = media.src;
-        video.muted = true;
-        video.loop = true;
-        video.playsInline = true;
-        video.autoplay = true;
-        video.setAttribute('aria-label', media.alt || 'Detail media video');
-        container.appendChild(video);
-      } else {
-        const img = document.createElement('img');
-        img.src = media.src;
-        img.alt = media.alt || 'Detail media image';
-        container.appendChild(img);
-      }
-    };
-    renderMedia(media1, { type: data.media1Type || 'image', src: data.media1Src, alt: data.media1Alt });
-    renderMedia(media2, { type: data.media2Type || 'image', src: data.media2Src, alt: data.media2Alt });
+    const panel = detailView.querySelector('.project-detail-panel');
+    const existingPaperLink = detailView.querySelector('.detail-paper-link');
+    if (existingPaperLink) existingPaperLink.remove();
+    if (data.paperUrl && panel) {
+      const paperLink = document.createElement('a');
+      paperLink.className = 'detail-paper-link';
+      paperLink.href = data.paperUrl;
+      paperLink.target = '_blank';
+      paperLink.rel = 'noopener noreferrer';
+      paperLink.innerHTML = '<i class="fas fa-file-pdf"></i> View Full Research Paper';
+      panel.appendChild(paperLink);
+    }
+
+    const sectionsContainer = detailView.querySelector('.project-detail-sections');
+    if (sectionsContainer) {
+      sectionsContainer.innerHTML = '';
+      (data.splits || []).forEach((split, idx) => {
+        const article = document.createElement('article');
+        article.className = 'detail-split';
+
+        const mediaDiv = document.createElement('div');
+        mediaDiv.className = 'detail-media';
+        mediaDiv.setAttribute('data-detail', `media${idx + 1}`);
+
+        if (split.mediaSrcs && split.mediaSrcs.length > 0) {
+          if (split.mediaSrcs.length > 1) {
+            mediaDiv.classList.add('detail-media--pair');
+            const pair = document.createElement('div');
+            pair.className = 'detail-media-pair';
+            split.mediaSrcs.forEach((src, imgIdx) => {
+              const img = document.createElement('img');
+              img.src = src;
+              img.alt = (split.mediaAlts && split.mediaAlts[imgIdx]) || '';
+              pair.appendChild(img);
+            });
+            mediaDiv.appendChild(pair);
+          } else {
+            const img = document.createElement('img');
+            img.src = split.mediaSrcs[0];
+            img.alt = (split.mediaAlts && split.mediaAlts[0]) || '';
+            mediaDiv.appendChild(img);
+          }
+        } else {
+          const legacySrc = idx === 0 ? data.media1Src : data.media2Src;
+          const legacyAlt = idx === 0 ? data.media1Alt : data.media2Alt;
+          const legacyType = idx === 0 ? (data.media1Type || 'image') : (data.media2Type || 'image');
+          if (legacyType === 'video') {
+            const video = document.createElement('video');
+            video.src = legacySrc;
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.autoplay = true;
+            video.setAttribute('aria-label', legacyAlt || 'Detail media video');
+            mediaDiv.appendChild(video);
+          } else {
+            const img = document.createElement('img');
+            img.src = legacySrc;
+            img.alt = legacyAlt || '';
+            mediaDiv.appendChild(img);
+          }
+        }
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'detail-split-text';
+        const h4 = document.createElement('h4');
+        h4.textContent = split.title;
+        const p = document.createElement('p');
+        p.textContent = split.body;
+        textDiv.appendChild(h4);
+        textDiv.appendChild(p);
+
+        article.appendChild(mediaDiv);
+        article.appendChild(textDiv);
+        sectionsContainer.appendChild(article);
+      });
+    }
 
     detailView.querySelectorAll('.detail-media').forEach((media) => {
       media.onclick = () => {
@@ -542,7 +602,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const openDetail = (index, fromHistory = false) => {
-    if (index === 2) return;
     if (detailOpen && activeIndex === index) return;
     detailOpen = true;
     activeIndex = index;
@@ -720,7 +779,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (detailHotspot) {
     detailHotspot.addEventListener('click', () => {
-      if (activeIndex === 2) return;
       openDetail(activeIndex);
     });
   }
