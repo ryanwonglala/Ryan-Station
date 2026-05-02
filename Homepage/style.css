@@ -532,11 +532,11 @@ body.light-mode .hero-cta {
 
 #about .about-photo {
   justify-self: center;
-  width: min(483px, 92%);
-  aspect-ratio: 16 / 10;
+  width: min(340px, 60%);
+  aspect-ratio: 3 / 4;
   border-radius: 18px;
-  background-image: url("assets/avatar.jpg");
-  background-size: contain;
+  background-image: url("https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/1.jpg");
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   border: none;
