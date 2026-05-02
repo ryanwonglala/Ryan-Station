@@ -394,6 +394,30 @@ document.addEventListener('DOMContentLoaded', () => {
         },
       ],
     },
+    {
+      kicker: 'Project 04',
+      title: 'Lab Security Guardian',
+      subtitle: 'From Uncharted Exploration to AI-Driven Threat Detection.',
+      description: 'This project implements a fully autonomous security agent for the SUTD Robotics Lab. The system is capable of exploring unknown environments without prior maps using a custom frontier-based SLAM algorithm. Once mapped, the robot executes multi-room patrol missions, utilizing an asynchronous vision server that combines YOLOv8 with OpenAI\'s CLIP model for real-time, zero-shot classification of staff and intruders.',
+      meta: ['Role: System Architecture & Control | Tech: ROS2, YOLOv8, CLIP (ViT-B/32), Nav2, Lidar'],
+      splits: [
+        {
+          title: 'AI Vision & Asynchronous Reasoning',
+          body: 'To ensure non-blocking navigation, the vision server operates via an asynchronous task queue. It integrates YOLOv8 for detection and the CLIP (ViT-B/32) model for semantic classification. By fusing horizontal camera bearings with Lidar point clouds, the system accurately projects classified threat markers (Staff vs. Intruder) onto the global map with <20cm error.',
+          mediaSrcs: [
+            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/intruder%E6%A3%80%E6%B5%8B.png',
+            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/staff%E6%A3%80%E6%B5%8B.png',
+          ],
+          mediaAlts: ['Intruder detection result', 'Staff detection result'],
+        },
+        {
+          title: 'Mission Orchestration & Navigation',
+          body: 'A robust state machine (MissionState) manages the patrolling lifecycle. The scheduler dispatches the robot to target rooms using Nav2, performs systematic 360° surveillance through timed 90° incremental rotations, and monitors for visual \'STOP\' signs to dynamically respect restricted operational zones.',
+          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E5%AE%9E%E6%8B%8D%E5%9B%BE.jpg'],
+          mediaAlts: ['Test environment photo'],
+        },
+      ],
+    },
   ];
 
   const renderDetail = (index) => {
@@ -406,7 +430,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const setAll = (selector, values) => {
       const items = Array.from(detailView.querySelectorAll(selector));
       items.forEach((item, idx) => {
-        item.textContent = values[idx] || values[values.length - 1] || '';
+        const text = values[idx] || '';
+        item.textContent = text;
+        item.style.display = text ? '' : 'none';
       });
     };
     setText('[data-detail="kicker"]', data.kicker);
@@ -471,6 +497,15 @@ document.addEventListener('DOMContentLoaded', () => {
               pair.appendChild(img);
             });
             mediaDiv.appendChild(pair);
+          } else if (split.mediaType === 'video') {
+            const video = document.createElement('video');
+            video.src = split.mediaSrcs[0];
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.autoplay = true;
+            video.setAttribute('aria-label', (split.mediaAlts && split.mediaAlts[0]) || 'Detail media video');
+            mediaDiv.appendChild(video);
           } else {
             const img = document.createElement('img');
             img.src = split.mediaSrcs[0];
@@ -481,20 +516,22 @@ document.addEventListener('DOMContentLoaded', () => {
           const legacySrc = idx === 0 ? data.media1Src : data.media2Src;
           const legacyAlt = idx === 0 ? data.media1Alt : data.media2Alt;
           const legacyType = idx === 0 ? (data.media1Type || 'image') : (data.media2Type || 'image');
-          if (legacyType === 'video') {
-            const video = document.createElement('video');
-            video.src = legacySrc;
-            video.muted = true;
-            video.loop = true;
-            video.playsInline = true;
-            video.autoplay = true;
-            video.setAttribute('aria-label', legacyAlt || 'Detail media video');
-            mediaDiv.appendChild(video);
-          } else {
-            const img = document.createElement('img');
-            img.src = legacySrc;
-            img.alt = legacyAlt || '';
-            mediaDiv.appendChild(img);
+          if (legacySrc) {
+            if (legacyType === 'video') {
+              const video = document.createElement('video');
+              video.src = legacySrc;
+              video.muted = true;
+              video.loop = true;
+              video.playsInline = true;
+              video.autoplay = true;
+              video.setAttribute('aria-label', legacyAlt || 'Detail media video');
+              mediaDiv.appendChild(video);
+            } else {
+              const img = document.createElement('img');
+              img.src = legacySrc;
+              img.alt = legacyAlt || '';
+              mediaDiv.appendChild(img);
+            }
           }
         }
 
@@ -507,7 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
         textDiv.appendChild(h4);
         textDiv.appendChild(p);
 
-        article.appendChild(mediaDiv);
+        if (mediaDiv.hasChildNodes()) {
+          article.appendChild(mediaDiv);
+        }
         article.appendChild(textDiv);
         sectionsContainer.appendChild(article);
       });
