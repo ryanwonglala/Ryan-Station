@@ -104,8 +104,22 @@ body.light-mode {
   text-decoration: none;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 html {
   scroll-behavior: smooth;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
 }
 
 body {
@@ -126,7 +140,6 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
   overflow-y: auto;
-  overflow-x: hidden;
   position: relative;
   transition: background var(--transition-speed) ease;
 }
@@ -397,6 +410,7 @@ body.light-mode .music-cta {
     justify-content: center;
     right: 20px;
     left: 20px;
+    max-width: calc(100vw - 40px);
   }
 }
 
@@ -509,6 +523,7 @@ body.light-mode .hero-cta {
   flex-direction: column;
   gap: 20px;
   justify-self: center;
+  max-width: 42rem;
   opacity: 0;
   transform: translateY(var(--about-text-shift));
   transition: opacity var(--about-enter-duration) ease, transform var(--about-enter-duration) ease;
@@ -520,14 +535,16 @@ body.light-mode .hero-cta {
   font-weight: 500;
   letter-spacing: 0.02em;
   color: var(--about-text-primary);
-  font-family: 'Playfair Display', 'Times New Roman', serif;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
 }
 
 #about .about-description {
   font-size: 1.12rem;
-  line-height: 1.9;
+  line-height: 1.72;
   color: var(--about-text-secondary);
-  max-width: 36rem;
+  max-width: 40rem;
 }
 
 #about .about-photo {
@@ -579,12 +596,14 @@ body.light-mode .hero-cta {
   text-transform: uppercase;
   color: var(--about-accent);
   margin-bottom: 12px;
-  font-family: 'Playfair Display', 'Times New Roman', serif;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  font-family: "Cormorant Garamond", "Times New Roman", serif;
 }
 
 #about .about-skill-text {
   font-size: 0.98rem;
-  line-height: 1.8;
+  line-height: 1.65;
   color: var(--about-text-secondary);
 }
 
@@ -4233,11 +4252,17 @@ body.light-mode #contact .contact-action.primary {
   }
 
   #experience.experience-section {
-    padding: 100px 0;
+    padding: 92px 0;
   }
 
   #experience .experience-shell {
     grid-template-columns: 1fr;
+    padding: 0 28px;
+    gap: 22px;
+  }
+
+  #experience .experience-header {
+    padding: 0 28px;
   }
 
   #experience .experience-timeline-inner {
@@ -4247,8 +4272,10 @@ body.light-mode #contact .contact-action.primary {
   #experience .experience-timeline-list {
     flex-direction: row;
     overflow-x: auto;
+    overscroll-behavior-inline: contain;
     padding-bottom: 8px;
     gap: 12px;
+    scrollbar-width: thin;
   }
 
   #experience .experience-timeline-item {
@@ -4256,6 +4283,7 @@ body.light-mode #contact .contact-action.primary {
     border-radius: 999px;
     background: rgba(248, 250, 252, 0.08);
     white-space: nowrap;
+    flex: 0 0 auto;
   }
 
   #experience .experience-timeline-item.is-active {
@@ -4277,11 +4305,15 @@ body.light-mode #contact .contact-action.primary {
 
   #experience .experience-card {
     flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    padding: 22px;
   }
 
   #experience .experience-card-media {
     width: 100%;
     max-width: none;
+    min-width: 0;
     height: clamp(170px, 50vw, 220px);
     max-height: 220px;
   }
@@ -4295,6 +4327,129 @@ body.light-mode #contact .contact-action.primary {
     padding: 100px 0;
   }
 
+}
+
+@media (max-width: 768px) {
+  section {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .glass-capsule-nav {
+    top: 14px;
+    left: 16px;
+    right: 16px;
+    height: auto;
+    max-width: calc(100vw - 32px);
+    padding: 8px 10px;
+    gap: 8px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+
+  .glass-capsule-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .glass-capsule-nav .nav-links {
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+
+  .glass-capsule-nav .nav-links li a {
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+
+  #nav-cursor {
+    display: none;
+  }
+
+  #music-trigger {
+    margin-left: 0;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .theme-switch-li {
+    flex: 0 0 auto;
+    margin-left: 0;
+    padding-left: 10px;
+  }
+
+  .theme-switch-li .text {
+    display: none;
+  }
+
+  #home {
+    padding-top: 104px;
+  }
+
+  #about {
+    align-items: flex-start;
+    padding-top: 96px;
+    padding-bottom: 72px;
+    min-height: auto;
+  }
+
+  #about .about-inner {
+    width: 100%;
+    gap: 32px;
+    align-items: stretch;
+  }
+
+  #about .about-content {
+    gap: 28px;
+  }
+
+  #about .about-text {
+    gap: 16px;
+    max-width: none;
+  }
+
+  #about .about-description {
+    max-width: none;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  #about .about-photo {
+    width: min(360px, 100%);
+  }
+
+  #about .about-skills {
+    width: 100%;
+    gap: 18px;
+  }
+
+  #about .about-skill {
+    width: 100%;
+    max-width: 100%;
+    padding-bottom: 4px;
+  }
+
+  #experience .experience-card-content,
+  #experience .experience-summary,
+  #experience .experience-highlights {
+    line-height: 1.65;
+  }
+
+  #experience .experience-org {
+    font-size: clamp(1.25rem, 5vw, 1.45rem);
+    overflow-wrap: anywhere;
+  }
+
+  #experience .experience-tags {
+    gap: 7px;
+  }
+
+  #experience .experience-tag {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.25;
+  }
 }
 
 @media (max-width: 720px) {
@@ -4334,29 +4489,31 @@ body.light-mode #contact .contact-action.primary {
 
   section {
     min-height: 100svh;
-    padding: 0 20px;
+    padding: 0 16px;
   }
 
   .glass-capsule-nav {
     top: 10px;
     left: 12px;
     right: 12px;
+    max-width: calc(100vw - 24px);
     height: auto;
-    padding: 8px 10px;
-    gap: 8px;
+    padding: 7px 8px;
+    gap: 6px;
     flex-wrap: wrap;
     justify-content: center;
+    overflow-x: visible;
   }
 
   .glass-capsule-nav .nav-links {
-    gap: 6px;
+    gap: 4px;
     flex-wrap: wrap;
     justify-content: center;
   }
 
   .glass-capsule-nav .nav-links li a {
     font-size: 11px;
-    padding: 4px 8px;
+    padding: 5px 7px;
     letter-spacing: 0.3px;
   }
 
@@ -4390,7 +4547,7 @@ body.light-mode #contact .contact-action.primary {
   }
 
   #home {
-    padding-top: 90px;
+    padding-top: 108px;
   }
 
   #home .hero {
@@ -4417,16 +4574,23 @@ body.light-mode #contact .contact-action.primary {
   }
 
   #about .about-inner {
-    width: min(960px, 92vw);
+    width: 100%;
+    gap: 26px;
   }
 
   #about .about-description,
   #about .about-skill-text {
     font-size: 0.95rem;
+    line-height: 1.62;
   }
 
   #about .about-title {
     font-size: clamp(1.9rem, 7vw, 2.6rem);
+  }
+
+  #about .about-skill-title {
+    font-size: 1rem;
+    letter-spacing: 0.05em;
   }
 
   .projects-section {
@@ -4488,11 +4652,65 @@ body.light-mode #contact .contact-action.primary {
   }
 
   #experience.experience-section {
-    padding: 90px 0;
+    padding: 86px 0 72px;
+  }
+
+  #experience .experience-header,
+  #experience .experience-shell {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   #experience .experience-header h2 {
     font-size: clamp(1.8rem, 7vw, 2.4rem);
+  }
+
+  #experience .experience-header p {
+    line-height: 1.4;
+  }
+
+  #experience .experience-timeline-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow-x: visible;
+    gap: 8px;
+  }
+
+  #experience .experience-timeline-item {
+    width: 100%;
+    white-space: normal;
+    padding: 9px 10px;
+    text-align: center;
+  }
+
+  #experience .experience-period {
+    font-size: 0.88rem;
+  }
+
+  #experience .experience-card {
+    padding: 18px;
+    border-radius: 18px;
+    gap: 18px;
+  }
+
+  #experience .experience-card-media {
+    height: clamp(150px, 48vw, 190px);
+  }
+
+  #experience .experience-role,
+  #experience .experience-summary,
+  #experience .experience-highlights {
+    font-size: 0.92rem;
+  }
+
+  #experience .experience-highlights {
+    padding-left: 16px;
+  }
+
+  #experience .experience-tag {
+    padding: 6px 9px;
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
   }
 
   #contact .contact-header h2 {

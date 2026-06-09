@@ -202,16 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const seenKey = 'viewHintSeen';
-  const isPortraitPhone = () => (
-    window.matchMedia('(max-width: 900px)').matches &&
-    window.matchMedia('(orientation: portrait)').matches
-  );
-
-  const showHint = () => {
-    viewHintModal.classList.add('show');
-    viewHintModal.setAttribute('aria-hidden', 'false');
-  };
-
   const hideHint = () => {
     viewHintModal.classList.remove('show');
     viewHintModal.setAttribute('aria-hidden', 'true');
@@ -222,20 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
     hideHint();
   };
 
-  if (!localStorage.getItem(seenKey) && isPortraitPhone()) {
-    showHint();
-  }
-
   viewHintConfirm.addEventListener('click', acknowledge);
   viewHintModal.addEventListener('click', (event) => {
     if (event.target === viewHintModal) {
       acknowledge();
-    }
-  });
-
-  window.addEventListener('resize', () => {
-    if (!localStorage.getItem(seenKey) && isPortraitPhone()) {
-      showHint();
     }
   });
 });
@@ -961,16 +941,15 @@ const experienceItems = [
     id: 'tust-undergrad',
     periodLabel: '2018–2021',
     stageTag: 'Undergraduate',
-    orgName: 'Tianjin University of Science and Technology',
+    orgName: 'Tianjin University of Science & Technology',
     roleOrMajor: 'B.Eng. in Mechatronic Engineering',
-    summary: 'Completed undergraduate training in Mechatronic Engineering, following a structured curriculum with foundational exposure to mechanical systems, electronics, and applied engineering coursework.',
+    summary: 'Completed undergraduate training in mechatronic engineering, building a foundation in mechanical systems, electronics, control fundamentals, and applied engineering coursework.',
     highlights: [
-      'Followed a full undergraduate curriculum covering mechanics, electronics, and control fundamentals',
-      'Participated in selected academic competitions alongside coursework',
-      'Developed disciplined study habits through structured engineering education',
-      'University Scholarship recipient (2018–2021); First Prize in a university-level Mathematical Modeling Competition',
+      'Studied mechanical design, electronics, control fundamentals, and engineering mathematics.',
+      'Developed early exposure to mathematical modeling and structured engineering problem solving.',
+      'Received university scholarship recognition and participated in academic competitions.',
     ],
-    tags: ['Mechatronics', 'Engineering Fundamentals', 'Mathematical Modeling', 'Undergraduate Study'],
+    tags: ['Mechatronics', 'Control Fundamentals', 'Engineering Mathematics', 'Mechanical Systems'],
     media: {
       mode: 'single',
       images: ['../Experience/1.jpeg'],
@@ -981,15 +960,15 @@ const experienceItems = [
     periodLabel: '2023–2024',
     stageTag: 'Work',
     orgName: 'Foxconn',
-    roleOrMajor: 'Project Management (Automation Engineering)',
-    summary: 'Supported project management activities within an automation engineering team, contributing to the planning, coordination, and ramp-up of automated production lines for consumer electronics manufacturing.',
+    roleOrMajor: 'Assistant Project Manager / Automation Engineering Support',
+    summary: 'Supported project management and manufacturing coordination activities for automated production line ramp-up in consumer electronics manufacturing.',
     highlights: [
-      'Assisted cross-functional teams in automation project execution and schedule alignment',
-      'Supported automated production line setup, validation, and readiness for mass production',
-      'Supported DFM documentation preparation and manufacturing feasibility verification',
-      'Contributed to ramp-up activities to meet production volume and delivery readiness',
+      'Coordinated cross-functional project tasks, meeting follow-ups, and action tracking during production preparation.',
+      'Supported RFP preparation, DFM review, and project documentation for new product introduction activities.',
+      'Tracked MP-stage anomalies and followed up corrective actions with manufacturing teams.',
+      'Contributed to production ramp-up readiness through schedule alignment, documentation control, and issue tracking.',
     ],
-    tags: ['Project Management', 'Automation', 'DFM', 'Cross-functional Collaboration', 'PDCA'],
+    tags: ['Project Management', 'Automation', 'NPI', 'DFM', 'Manufacturing Coordination'],
     media: {
       mode: 'single',
       images: ['../Experience/2.jpeg'],
@@ -999,16 +978,16 @@ const experienceItems = [
     id: 'luxshare-work',
     periodLabel: '2024–2025',
     stageTag: 'Work',
-    orgName: 'Luxshare',
+    orgName: 'Luxshare-ICT',
     roleOrMajor: 'Assistant Product Design Engineer',
-    summary: 'Worked as an assistant product design engineer, supporting the design and documentation of internal mechanical components for consumer electronics products.',
+    summary: 'Supported internal mechanical component design documentation, engineering change tracking, and NPI build documentation for consumer electronics products.',
     highlights: [
-      'Assisted in mechanical component design and engineering drawing management',
-      'Prepared and maintained design change documentation during development iterations',
-      'Supported component design verification and requirement alignment',
-      'Collaborated with engineering teams throughout development cycles toward acceptance readiness',
+      'Managed engineering drawing and BOM documentation for NPI builds, supporting version accuracy and release readiness.',
+      'Prepared ECR/ECO comparison reports to track design changes, revision impact, and approval requirements.',
+      'Used Siemens NX and AutoCAD to review 3D/2D drawings, mark up changes, and support manufacturing communication.',
+      'Supported component design verification, installation documentation, and cross-functional engineering coordination.',
     ],
-    tags: ['Product Design', 'Mechanical Components', 'Engineering Documentation', 'AutoCAD', 'UG'],
+    tags: ['Product Design', 'NPI', 'Engineering Documentation', 'ECO/ECR', 'Siemens NX', 'AutoCAD'],
     media: {
       mode: 'single',
       images: ['../Experience/3.jpg'],
@@ -1019,15 +998,15 @@ const experienceItems = [
     periodLabel: '2025–2026',
     stageTag: 'Graduate (Ongoing)',
     orgName: 'Singapore University of Technology and Design (SUTD)',
-    roleOrMajor: 'MSc in Robotics and Automation (In Progress)',
-    summary: 'Currently pursuing graduate studies in Robotics and Automation, focusing on building a solid foundation in robotics systems, control, and applied programming.',
+    roleOrMajor: 'MSc in Robotics & Automation',
+    summary: 'Pursuing graduate study in Robotics & Automation with hands-on coursework and projects covering mobile robotics, control, robot intelligence, soft robotics, and design project development.',
     highlights: [
-      'Studying core robotics and automation coursework during the first academic term',
-      'Developing foundational skills in robot control, embedded systems, and system integration',
-      'Applying programming and analytical tools through coursework and hands-on projects',
-      'Selected course projects and technical work are showcased in the Projects section',
+      'Built and tested course projects involving TurtleBot3, ROS navigation, visual recognition, SLAM testing, and robotic arm control.',
+      'Completed a real-robot Autonomous Security Robot demo using Ubuntu laptop + TurtleBot3, ROS navigation, YOLO/CLIP-based visual recognition, and exploratory SLAM testing.',
+      'Completed a Robotic Arm Challenge involving 6-DOF arm control, calibration, object grasping, and task integration with a mobile robot.',
+      'Developing a capstone Design Project focused on robotics/automation system integration, prototyping, testing, and final demonstration.',
     ],
-    tags: ['Robotics', 'Automation', 'Control Systems', 'Python', 'Arduino', 'MATLAB'],
+    tags: ['ROS', 'TurtleBot3', 'Robot Navigation', 'YOLO', 'CLIP', 'SLAM Testing', 'Robotic Arm', 'System Integration'],
     media: {
       mode: 'single',
       images: ['../Experience/4.jpg'],
