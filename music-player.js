@@ -45,9 +45,9 @@ let sidebarOpen = false;
 let terminalCollapsed = true;
 
 const PLAY_MODE_ICONS = {
-  sequential: 'fa-list-ul',
-  random: 'fa-shuffle',
-  single: 'fa-repeat',
+  sequential: 'icon-list-ul',
+  random: 'icon-list-ul',
+  single: 'icon-list-ul',
 };
 
 function mpT(path, fallback = '') {
@@ -96,8 +96,8 @@ function setSignalReceived(state) {
 function updateTerminalToggleUI() {
   if (!terminalToggle) return;
   const expanded = !terminalCollapsed;
-  const icon = expanded ? 'fa-chevron-up' : 'fa-chevron-down';
-  terminalToggle.innerHTML = `<i class="fas ${icon}"></i>`;
+  const rotation = expanded ? 0 : 180;
+  terminalToggle.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true" style="transform: rotate(${rotation}deg);"><use href="assets/icons.svg#icon-chevron-up"></use></svg>`;
   terminalToggle.setAttribute('aria-expanded', expanded.toString());
   const label = expanded ? mpT('collapseTerminal', 'Collapse terminal log') : mpT('expandTerminal', 'Expand terminal log');
   terminalToggle.setAttribute('aria-label', label);
@@ -288,12 +288,12 @@ function handleTrackEnd() {
 
 function updatePlayModeUI() {
   if (!modeBtnPlayer) return;
-  const iconClass = PLAY_MODE_ICONS[playMode] || PLAY_MODE_ICONS.sequential;
+  const iconId = PLAY_MODE_ICONS[playMode] || PLAY_MODE_ICONS.sequential;
   const label = mpT(`playModes.${playMode}`, mpT('playModes.fallback', 'Play mode'));
   const isSingle = playMode === 'single';
 
   const badge = isSingle ? '<span class="mode-badge">1</span>' : '';
-  modeBtnPlayer.innerHTML = `<i class="fas ${iconClass}"></i>${badge}`;
+  modeBtnPlayer.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>${badge}`;
   modeBtnPlayer.title = label;
   modeBtnPlayer.setAttribute('aria-label', label);
   modeBtnPlayer.classList.toggle('random', playMode === 'random');
@@ -328,7 +328,7 @@ function updatePlaybackState(playing) {
     vinylDisc.classList.toggle('playing', playing);
   }
   if (playIconPlayer) {
-    playIconPlayer.className = playing ? 'fas fa-pause' : 'fas fa-play';
+    playIconPlayer.setAttribute('href', playing ? 'assets/icons.svg#icon-pause' : 'assets/icons.svg#icon-play');
   }
   updateMascotState(playing);
   updateTvState(playing);
@@ -566,13 +566,8 @@ function updateVolume() {
   const volume = volumeSlider.value / 100;
   audioPlayer.volume = volume;
 
-  let iconClass;
-  if (volume === 0) iconClass = 'fa-volume-mute';
-  else if (volume < 0.5) iconClass = 'fa-volume-down';
-  else iconClass = 'fa-volume-up';
-
   if (volumeBtn) {
-    volumeBtn.innerHTML = `<i class="fas ${iconClass}"></i>`;
+    volumeBtn.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-volume-up"></use></svg>`;
   }
 }
 
