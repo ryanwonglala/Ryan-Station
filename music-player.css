@@ -780,6 +780,143 @@ main.brutalist-container {
   }
 }
 
+/* Mobile scroll & reachability fix (T109): the rules above already stack
+   control-stack/visual-stack vertically at <=1200px; this block restores
+   page scrolling (the base html/body rule hard-locks overflow:hidden which
+   clips anything below the viewport on phones), removes fixed-position
+   overlays that block controls, and enlarges tap targets. Desktop (>900px)
+   is untouched. */
+@media (max-width: 900px) {
+  html,
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto;
+  }
+
+  body {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 5.5rem 1rem 2.5rem;
+  }
+
+  main.brutalist-container {
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    padding: 1.5rem;
+  }
+
+  .control-stack,
+  .visual-stack {
+    flex: none;
+  }
+
+  .vinyl-wrapper {
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .glitch-controls,
+  .ai-terminal {
+    margin-top: 0;
+  }
+
+  .glitch-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .terminal-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ai-settings-btn {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Keep the visible track/thumb the same thin Acid Glitch line, but grow
+     the input's own hit box to a 44px-tall touch target. */
+  #seekBar,
+  .volume-control input[type="range"] {
+    height: 44px;
+    background: transparent;
+    border: none;
+  }
+
+  #seekBar::-webkit-slider-runnable-track,
+  .volume-control input[type="range"]::-webkit-slider-runnable-track {
+    height: 10px;
+    background: rgba(204, 255, 0, 0.2);
+    border: 2px solid var(--alert-red);
+  }
+
+  #seekBar::-moz-range-track,
+  .volume-control input[type="range"]::-moz-range-track {
+    height: 10px;
+    background: rgba(204, 255, 0, 0.2);
+    border: 2px solid var(--alert-red);
+  }
+
+  .volume-control.show {
+    max-height: 90px;
+  }
+
+  .music-language-switcher .language-option {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Playlist queue becomes an in-flow, collapsible panel instead of a fixed
+     left overlay so it can never sit on top of the controls below it. */
+  .playlist-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    transform: none;
+    border-right: none;
+    border-bottom: 4px solid var(--acid-lime);
+    box-shadow: 8px 8px 0 rgba(255, 42, 0, 0.4);
+    margin-bottom: 1.5rem;
+  }
+
+  .playlist-tab {
+    position: static;
+    width: 100%;
+    min-height: 44px;
+    writing-mode: horizontal-tb;
+    justify-content: center;
+    transform: none;
+  }
+
+  .playlist-shell {
+    height: 0;
+    padding: 0 1.25rem;
+    overflow: hidden;
+    transition: height 0.3s ease, padding 0.3s ease;
+  }
+
+  .playlist-sidebar.open .playlist-shell {
+    height: min(50vh, 380px);
+    padding: 1.25rem;
+    overflow-y: auto;
+  }
+
+  .mascot-container {
+    width: 96px;
+    bottom: -0.75rem;
+    right: -0.5rem;
+  }
+}
+
 @media (max-height: 780px) {
   main.brutalist-container {
     transform: scale(0.92);
