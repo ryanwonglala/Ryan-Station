@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       kicker: 'Project 04',
-      title: 'Lab Security Guardian',
+      title: 'Autonomous Security Robot',
       subtitle: 'From Uncharted Exploration to AI-Driven Threat Detection.',
       description: 'This project implements a fully autonomous security agent for the SUTD Robotics Lab. The system is capable of exploring unknown environments without prior maps using a custom frontier-based SLAM algorithm. Once mapped, the robot executes multi-room patrol missions, utilizing an asynchronous vision server that combines YOLOv8 with OpenAI\'s CLIP model for real-time, zero-shot classification of staff and intruders.',
       meta: ['Role: System Architecture & Control | Tech: ROS2, YOLOv8, CLIP (ViT-B/32), Nav2, Lidar'],

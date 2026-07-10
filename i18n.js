@@ -23,8 +23,8 @@
       },
       about: {
         title: 'Engineering in Motion',
-        intro: 'I hold an MSc in Robotics & Automation from the Singapore University of Technology and Design (SUTD), with prior experience in manufacturing, NPI, and product engineering for consumer electronics. My focus is mobile robotics, ROS-based system integration, robot navigation, visual recognition, and practical automation workflows.',
-        introSecond: 'My work sits between hardware reality and software control: understanding mechanical systems, building reliable documentation, testing robots in real environments, and translating engineering ideas into demonstrable systems. This portfolio documents my course projects, robotics experiments, and transition from manufacturing engineering into robotics and automation.',
+        intro: 'Robotics & Automation engineer with an MSc from SUTD. Before robotics I worked in consumer-electronics manufacturing — NPI, DFM, and engineering documentation at Foxconn and Luxshare-ICT. Current focus: mobile robotics, ROS-based system integration, navigation, visual recognition, and practical automation workflows.',
+        capabilitiesLabel: 'Capabilities',
         cards: [
           {
             title: 'Robotics & Automation',
@@ -68,24 +68,24 @@
         detailPreview: 'Detail preview',
         items: [
           {
-            eyebrow: 'Project 01',
+            eyebrow: 'Project 01 · Competition',
             title: 'Robotic Arm Challenge',
-            subtitle: 'A one-week team challenge involving 6-DOF robotic arm control, calibration, object grasping, and task integration with a mobile robot platform.',
+            subtitle: '4th place in the final live competition — a one-week team build where a 6-DOF arm grasps objects at arbitrary positions, loads a mobile vehicle, and triggers its run through a color-coded maze. My part: arm control (motion planning, calibration, real-hardware execution).',
           },
           {
-            eyebrow: 'Project 02',
+            eyebrow: 'Project 02 · Design',
             title: 'Hango',
-            subtitle: 'A semester-long interdisciplinary innovation design project focused on user needs, product thinking, and iterative concept development.',
+            subtitle: 'A semester-long design project by a five-person interdisciplinary team, developed through four staged reviews from research to an exhibited prototype. My part: visual communication, presentation structure, and the final exhibition video.',
           },
           {
-            eyebrow: 'Project 03',
+            eyebrow: 'Project 03 · Soft Robotics',
             title: 'FlexiLock',
-            subtitle: 'A bio-inspired variable-stiffness wearable concept for stroke rehabilitation, connecting soft robotics, mechanism design, and assistive healthcare applications.',
+            subtitle: '10 kg load at −60 kPa with a 5.88 N·m bending moment — a pangolin-inspired vacuum scale-jamming sleeve for MAS grade 3–4 spasticity rehab, soft at rest and rigid on demand. My part: mechanism and soft-robotics design.',
           },
           {
-            eyebrow: 'Project 04',
+            eyebrow: 'Project 04 · ROS2 Autonomy',
             title: 'Autonomous Security Robot',
-            subtitle: 'A real-robot course demo using Ubuntu laptop + TurtleBot3, ROS navigation, YOLO/CLIP-based visual recognition, and exploratory SLAM testing for indoor security inspection scenarios.',
+            subtitle: 'An autonomous patrol robot for the SUTD Robotics Lab — frontier-based SLAM mapping without prior maps, Nav2 patrol, and YOLOv8 + CLIP zero-shot person classification fused with Lidar (<20 cm map projection error). My part: system architecture and control.',
           },
         ],
         details: [
@@ -346,8 +346,8 @@
       },
       about: {
         title: '让工程动起来',
-        intro: '我毕业于新加坡科技设计大学（SUTD）机器人与自动化硕士项目，此前拥有消费电子制造、NPI 和产品工程相关经验。我的重点方向是移动机器人、基于 ROS 的系统集成、机器人导航、视觉识别，以及可落地的自动化工作流。',
-        introSecond: '我的兴趣位于硬件现实与软件控制之间：理解机械系统，建立可靠的工程文档，在真实环境中测试机器人，并把工程想法转化为可以演示的系统。这个网站记录了我的课程项目、机器人实验，以及我从制造工程逐步转向机器人与自动化方向的过程。',
+        intro: '机器人与自动化工程师，SUTD 硕士。进入机器人领域前在消费电子制造业工作——在富士康与立讯精密负责 NPI、DFM 与工程文档。当前方向：移动机器人、基于 ROS 的系统集成、导航、视觉识别与可落地的自动化流程。',
+        capabilitiesLabel: '能力',
         cards: [
           {
             title: '机器人与自动化',
@@ -391,24 +391,24 @@
         detailPreview: '项目详情预览',
         items: [
           {
-            eyebrow: '项目 01',
+            eyebrow: '项目 01 · 竞赛',
             title: 'Robotic Arm Challenge',
-            subtitle: '一个为期一周的团队挑战项目，涉及 6 自由度机械臂控制、标定、物体抓取，以及与移动机器人平台的任务集成。',
+            subtitle: '决赛第 4 名——一周团队竞赛：6 自由度机械臂完成任意位姿抓取、装载小车并触发其穿越颜色迷宫。我负责机械臂控制：运动规划、标定与实机执行。',
           },
           {
-            eyebrow: '项目 02',
+            eyebrow: '项目 02 · 设计',
             title: 'Hango',
-            subtitle: '一个学期制跨学科创新设计项目，聚焦用户需求、产品思维和迭代式概念开发。',
+            subtitle: '五人跨学科团队的学期设计项目，经四轮评审从调研推进到展出原型。我负责视觉传达、汇报结构与最终展览视频。',
           },
           {
-            eyebrow: '项目 03',
+            eyebrow: '项目 03 · 软体机器人',
             title: 'FlexiLock',
-            subtitle: '一个面向中风康复的仿生变刚度可穿戴概念项目，连接软体机器人、机构设计与辅助医疗应用场景。',
+            subtitle: '−60 kPa 下承载 10 kg、弯矩 5.88 N·m——穿山甲鳞片启发的真空锁止护具，静息柔顺、按需刚性，面向 MAS 3–4 级上肢痉挛康复。我负责机构与软体设计。',
           },
           {
-            eyebrow: '项目 04',
+            eyebrow: '项目 04 · ROS2 自主系统',
             title: 'Autonomous Security Robot',
-            subtitle: '一个基于 Ubuntu 笔记本与 TurtleBot3 的真实机器人课程 Demo，结合 ROS 导航、基于 YOLO/CLIP 的视觉识别，以及面向室内安防巡检场景的探索性 SLAM 测试。',
+            subtitle: 'SUTD 机器人实验室的自主巡逻机器人——frontier SLAM 无图建图、Nav2 巡逻、YOLOv8 + CLIP 零样本人员识别并与 Lidar 融合（全局投影误差 <20 cm）。我负责系统架构与控制。',
           },
         ],
         details: [

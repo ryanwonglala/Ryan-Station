@@ -756,6 +756,16 @@ body.light-mode .hero-cta-secondary:hover {
   transition-delay: var(--about-photo-delay);
 }
 
+.about-skills-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 14px;
+}
+
 #about .about-skills {
   width: min(900px, 100%);
   display: grid;
@@ -2465,6 +2475,24 @@ body.detail-mode {
   line-height: 1.7;
   margin: 0;
   max-width: 320px;
+}
+
+.project-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.project-stats span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--amber);
+  white-space: nowrap;
 }
 
 .project-detail-hotspot {
