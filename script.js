@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
       paperLink.target = '_blank';
       paperLink.rel = 'noopener noreferrer';
       const paperText = (window.PortfolioI18n && window.PortfolioI18n.t('projects.paperLink')) || 'View Full Research Paper';
-      paperLink.innerHTML = `<i class="fas fa-file-pdf"></i> ${paperText}`;
+      paperLink.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-file-pdf"></use></svg> ${paperText}`;
       panel.appendChild(paperLink);
     }
 
