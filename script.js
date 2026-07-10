@@ -1117,15 +1117,15 @@ const experienceItems = [
   {
     id: 'sutd-grad',
     periodLabel: '2025–2026',
-    stageTag: 'Graduate (Ongoing)',
+    stageTag: 'Graduate',
     orgName: 'Singapore University of Technology and Design (SUTD)',
     roleOrMajor: 'MSc in Robotics & Automation',
-    summary: 'Pursuing graduate study in Robotics & Automation with hands-on coursework and projects covering mobile robotics, control, robot intelligence, soft robotics, and design project development.',
+    summary: 'Completed an MSc in Robotics & Automation with hands-on coursework and projects covering mobile robotics, control, robot intelligence, soft robotics, and design project development.',
     highlights: [
       'Built and tested course projects involving TurtleBot3, ROS navigation, visual recognition, SLAM testing, and robotic arm control.',
       'Completed a real-robot Autonomous Security Robot demo using Ubuntu laptop + TurtleBot3, ROS navigation, YOLO/CLIP-based visual recognition, and exploratory SLAM testing.',
       'Completed a Robotic Arm Challenge involving 6-DOF arm control, calibration, object grasping, and task integration with a mobile robot.',
-      'Developing a capstone Design Project focused on robotics/automation system integration, prototyping, testing, and final demonstration.',
+      'Delivered a capstone Design Project focused on robotics/automation system integration, prototyping, testing, and final demonstration.',
     ],
     tags: ['ROS', 'TurtleBot3', 'Robot Navigation', 'YOLO', 'CLIP', 'SLAM Testing', 'Robotic Arm', 'System Integration'],
     media: {
@@ -1142,7 +1142,8 @@ const EXPERIENCE_ORG_SHORT = {
   'foxconn-work': 'Foxconn',
   'tust-undergrad': 'TUST',
 };
-const EXPERIENCE_ONGOING_ID = 'sutd-grad';
+// 已毕业：既往站点均为已出发；「检票中」灯牌归 index.html 里的静态「下一站」行
+const EXPERIENCE_ONGOING_ID = null;
 
 const getExperienceItems = () => {
   const translatedItems = (window.PortfolioI18n && window.PortfolioI18n.get('experience.items')) || [];
@@ -1326,6 +1327,17 @@ if (experienceSection) {
       timelineList.appendChild(button);
     });
   };
+
+  const nextStopBtn = experienceSection.querySelector('.experience-next-stop');
+  if (nextStopBtn) {
+    nextStopBtn.addEventListener('click', () => {
+      const contactSection = document.getElementById('contact');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', '#contact');
+      }
+    });
+  }
 
   if (timelineList) {
     buildTimeline();

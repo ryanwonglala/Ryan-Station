@@ -158,9 +158,10 @@ body.light-mode {
   --active-shadow-color: rgba(255, 255, 255, 0.85);
   --body-bg-pulse-color: rgba(255, 255, 255, 0.05);
   --hero-title-color: #211c14;
-  --hero-subtitle-color: rgba(33, 28, 20, 0.78);
+  --hero-subtitle-color: rgba(33, 28, 20, 0.82);
   --hero-eyebrow-color: #8a6320;
-  --hero-scrim: linear-gradient(90deg, rgba(244, 241, 234, 0.88) 0%, rgba(244, 241, 234, 0.5) 46%, rgba(244, 241, 234, 0.08) 76%, rgba(244, 241, 234, 0) 100%);
+  /* 日间幕布：极轻的暖雾，只提字不盖图（0.88 白雾实测刺眼，已降） */
+  --hero-scrim: linear-gradient(90deg, rgba(244, 241, 234, 0.38) 0%, rgba(244, 241, 234, 0.16) 45%, rgba(244, 241, 234, 0) 70%);
   --about-bg: transparent;
   --about-text-primary: #0f172a;
   --about-text-secondary: rgba(15, 23, 42, 0.72);
@@ -684,6 +685,12 @@ body.hero-reveal #home .hero {
 .hero-cta-secondary:hover {
   color: var(--cyan);
   border-color: var(--cyan);
+}
+
+body.light-mode .hero-title,
+body.light-mode .hero-subtitle,
+body.light-mode .hero-eyebrow {
+  text-shadow: 0 1px 22px rgba(244, 241, 234, 0.6);
 }
 
 body.light-mode .hero-cta-secondary {
@@ -3192,6 +3199,23 @@ body.light-mode .detail-title {
   border-color: rgba(217, 165, 84, 0.45);
 }
 
+/* 「下一站」求职行：常亮琥珀，点击直达 Contact */
+#experience .experience-next-stop {
+  border-top: none;
+  border-bottom: 1px solid var(--line);
+  background: rgba(217, 165, 84, 0.06);
+  color: rgba(234, 229, 214, 0.92);
+}
+
+#experience .experience-next-stop .experience-period {
+  color: var(--amber);
+}
+
+#experience .experience-next-stop:hover {
+  background: rgba(217, 165, 84, 0.13);
+  color: var(--paper);
+}
+
 #experience .experience-status.is-boarding::before {
   content: "";
   width: 5px;
@@ -3750,6 +3774,14 @@ body.light-mode #contact .contact-action.primary {
     display: none;
   }
 
+  #experience .experience-next-stop {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 10px;
+    border: 1px solid rgba(217, 165, 84, 0.45);
+    background: rgba(217, 165, 84, 0.1);
+  }
+
   /* 手机端状态牌只保留“检票中”的呼吸点 */
   #experience .experience-status {
     padding: 0;
@@ -3859,7 +3891,7 @@ body.light-mode #contact .contact-action.primary {
   }
 
   body.light-mode #home {
-    --hero-scrim: linear-gradient(180deg, rgba(244, 241, 234, 0.85) 0%, rgba(244, 241, 234, 0.5) 55%, rgba(244, 241, 234, 0.12) 100%);
+    --hero-scrim: linear-gradient(180deg, rgba(244, 241, 234, 0.42) 0%, rgba(244, 241, 234, 0.2) 55%, rgba(244, 241, 234, 0) 100%);
   }
 
   #about {

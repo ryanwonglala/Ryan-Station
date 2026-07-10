@@ -15,7 +15,7 @@
         theme: 'Theme',
       },
       home: {
-        eyebrow: 'Robotics & Automation · MSc @ SUTD',
+        eyebrow: 'Robotics & Automation Engineer · MSc, SUTD',
         heroTitle: 'Ryan Wong',
         heroSubtitle: 'I build robots that navigate, see, and act — ROS navigation, AI vision, and the manufacturing discipline to ship them into the real world.',
         cta: 'View Selected Work',
@@ -23,7 +23,7 @@
       },
       about: {
         title: 'Engineering in Motion',
-        intro: 'I am currently pursuing my MSc in Robotics & Automation at the Singapore University of Technology and Design (SUTD), with prior experience in manufacturing, NPI, and product engineering for consumer electronics. My current focus is mobile robotics, ROS-based system integration, robot navigation, visual recognition, and practical automation workflows.',
+        intro: 'I hold an MSc in Robotics & Automation from the Singapore University of Technology and Design (SUTD), with prior experience in manufacturing, NPI, and product engineering for consumer electronics. My focus is mobile robotics, ROS-based system integration, robot navigation, visual recognition, and practical automation workflows.',
         introSecond: 'My work sits between hardware reality and software control: understanding mechanical systems, building reliable documentation, testing robots in real environments, and translating engineering ideas into demonstrable systems. This portfolio documents my course projects, robotics experiments, and transition from manufacturing engineering into robotics and automation.',
         cards: [
           {
@@ -179,6 +179,10 @@
         colStatus: 'Status',
         statusBoarding: 'Boarding',
         statusDeparted: 'Departed',
+        nextPeriod: '2026—',
+        nextDest: 'Next Destination',
+        nextHint: 'Open to Robotics & Automation roles',
+        nextAria: 'Next destination — contact me',
         items: [
           {
             id: 'tust-undergrad',
@@ -230,12 +234,12 @@
             stageTag: 'Graduate',
             orgName: 'Singapore University of Technology and Design (SUTD)',
             roleOrMajor: 'MSc in Robotics & Automation',
-            summary: 'Pursuing graduate study in Robotics & Automation with hands-on coursework and projects covering mobile robotics, control, robot intelligence, soft robotics, and design project development.',
+            summary: 'Completed an MSc in Robotics & Automation with hands-on coursework and projects covering mobile robotics, control, robot intelligence, soft robotics, and design project development.',
             highlights: [
               'Built and tested course projects involving TurtleBot3, ROS navigation, visual recognition, SLAM testing, and robotic arm control.',
               'Completed a real-robot Autonomous Security Robot demo using Ubuntu laptop + TurtleBot3, ROS navigation, YOLO/CLIP-based visual recognition, and exploratory SLAM testing.',
               'Completed a Robotic Arm Challenge involving 6-DOF arm control, calibration, object grasping, and task integration with a mobile robot.',
-              'Developing a capstone Design Project focused on robotics/automation system integration, prototyping, testing, and final demonstration.',
+              'Delivered a capstone Design Project focused on robotics/automation system integration, prototyping, testing, and final demonstration.',
             ],
             tags: ['ROS', 'TurtleBot3', 'Robot Navigation', 'YOLO', 'CLIP', 'SLAM Testing', 'Robotic Arm', 'System Integration'],
           },
@@ -334,7 +338,7 @@
         theme: '主题',
       },
       home: {
-        eyebrow: '机器人与自动化 · SUTD 硕士在读',
+        eyebrow: '机器人与自动化工程师 · SUTD 硕士',
         heroTitle: 'Ryan Wong',
         heroSubtitle: '我做能自主导航、能看懂环境、能真正落地的机器人——ROS 导航、AI 视觉，以及把它们送进真实世界的制造工程功底。',
         cta: '查看精选作品',
@@ -342,7 +346,7 @@
       },
       about: {
         title: '让工程动起来',
-        intro: '我目前就读于新加坡科技设计大学（SUTD）机器人与自动化硕士项目，此前拥有消费电子制造、NPI 和产品工程相关经验。现阶段我的重点方向是移动机器人、基于 ROS 的系统集成、机器人导航、视觉识别，以及可落地的自动化工作流。',
+        intro: '我毕业于新加坡科技设计大学（SUTD）机器人与自动化硕士项目，此前拥有消费电子制造、NPI 和产品工程相关经验。我的重点方向是移动机器人、基于 ROS 的系统集成、机器人导航、视觉识别，以及可落地的自动化工作流。',
         introSecond: '我的兴趣位于硬件现实与软件控制之间：理解机械系统，建立可靠的工程文档，在真实环境中测试机器人，并把工程想法转化为可以演示的系统。这个网站记录了我的课程项目、机器人实验，以及我从制造工程逐步转向机器人与自动化方向的过程。',
         cards: [
           {
@@ -498,6 +502,10 @@
         colStatus: '状态',
         statusBoarding: '检票中',
         statusDeparted: '已出发',
+        nextPeriod: '2026—',
+        nextDest: '下一站',
+        nextHint: '机器人与自动化方向 · 开放接洽',
+        nextAria: '下一站——联系我',
         items: [
           {
             id: 'tust-undergrad',
@@ -549,12 +557,12 @@
             stageTag: '研究生阶段',
             orgName: '新加坡科技设计大学（SUTD）',
             roleOrMajor: '机器人与自动化 理学硕士',
-            summary: '正在攻读机器人与自动化硕士项目，课程与项目覆盖移动机器人、控制、机器人智能、软体机器人和设计项目开发。',
+            summary: '已完成机器人与自动化硕士项目，课程与项目覆盖移动机器人、控制、机器人智能、软体机器人和设计项目开发。',
             highlights: [
               '构建并测试涉及 TurtleBot3、ROS 导航、视觉识别、SLAM 测试和机械臂控制的课程项目。',
               '完成真实机器人 Autonomous Security Robot Demo，使用 Ubuntu 笔记本 + TurtleBot3，结合 ROS 导航、YOLO/CLIP 视觉识别和探索性 SLAM 测试。',
               '完成 Robotic Arm Challenge，涉及 6 自由度机械臂控制、标定、物体抓取和与移动机器人的任务集成。',
-              '正在推进 Capstone Design Project，重点关注机器人/自动化系统集成、原型搭建、测试和最终演示。',
+              '完成 Capstone Design Project，重点关注机器人/自动化系统集成、原型搭建、测试和最终演示。',
             ],
             tags: ['ROS', 'TurtleBot3', '机器人导航', 'YOLO', 'CLIP', 'SLAM 测试', '机械臂', '系统集成'],
           },
