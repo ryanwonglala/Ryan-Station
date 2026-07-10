@@ -55,6 +55,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('assets/fonts/noto-serif-sc-600-subset.woff2') format('woff2');
+}
+
 /* ============ SVG sprite 图标通用规则（T106） ============ */
 .icon {
   fill: currentColor;
@@ -2570,7 +2578,7 @@ body.detail-mode {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 500;
+  font-weight: 600;
   color: rgba(248, 250, 252, 0.65);
 }
 
