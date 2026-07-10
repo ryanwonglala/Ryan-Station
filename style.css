@@ -3510,42 +3510,111 @@ body.detail-mode {
     min-height: 82vh;
   }
 
+  /* T209: Projects goes from an absolutely-centered overlay (sphere and
+     centerline text both pinned to the stage's exact midpoint, which is
+     why light text sat directly on top of bright video) to a normal
+     top-to-bottom flow: sphere, then the copy panel, then the detail
+     hotspot, then the progress nav — ordered via flex `order` below.
+     Every selector here is scoped to `:not(.is-detail)` so the existing
+     (separately verified) detail-view grid layout is left untouched. */
+  .projects-section:not(.is-detail) .projects-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 0;
+    padding: 28px 0;
+    gap: 18px;
+  }
+
+  .projects-section:not(.is-detail) .project-sphere {
+    position: relative;
+    left: 0;
+    top: 0;
+    transform: none;
+    width: min(68vw, 340px);
+    height: min(68vw, 340px);
+  }
+
+  /* Formerly a full-width line absolutely centered across the stage
+     (hidden below, since it collided with the stacked copy text); now a
+     small in-flow accent between the sphere and the panel. `relative`
+     (not `static`) keeps it a valid containing block for its own
+     ::before/::after chevrons, which are otherwise untouched. */
+  .projects-section:not(.is-detail) .projects-axis-horizontal {
+    display: block;
+    position: relative;
+    left: 0;
+    right: auto;
+    top: 0;
+    order: 1;
+    width: 120px;
+    height: 2px;
+    transform: none;
+  }
+
+  .projects-section:not(.is-detail) .projects-copy {
+    position: static;
+    order: 2;
+    width: 100%;
+    display: grid;
+    overflow: hidden;
+  }
+
+  /* All four slides stack in the same single grid cell (instead of via
+     position:absolute;inset:0) so the opacity crossfade between
+     is-active/is-prev/is-next is unchanged; the stack's own height now
+     comes from its content instead of an explicitly-sized ancestor. */
+  .projects-section:not(.is-detail) .project-copy {
+    position: static;
+    grid-area: 1 / 1;
+  }
+
+  /* Text-on-video panel fix: an opaque card behind the copy so it never
+     sits directly on top of the (often bright) sphere video. */
+  .project-copy {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 16px;
+  }
+
   .project-centerline {
-    grid-template-columns: 1fr;
-    row-gap: 16px;
-    text-align: center;
+    position: static;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transform: none;
   }
 
   .project-left,
   .project-right {
-    text-align: center;
+    text-align: left;
   }
 
   .project-subtitle {
     max-width: 360px;
-    margin: 0 auto;
+    margin: 0;
   }
 
-  .projects-nav {
-    bottom: 6%;
-    gap: 12px;
-  }
-
-  /* T103: arrow decoration collides with the stacked (single-column) copy
-     above; it is purely ornamental, so hide it on small screens. */
-  .projects-axis-horizontal {
-    display: none;
-  }
-
-  /* T103: the hotspot button used to sit absolutely centered at the exact
-     midpoint of the stage, which is the same point the stacked copy text
-     occupies once .project-centerline collapses to one column above — that
-     is what caused the subtitle/button overlap. Move it into normal flow,
-     below the stage's centered content, instead. */
-  .project-detail-hotspot {
-    position: static;
-    margin: 340px auto 0;
+  /* T103 originally centered the hotspot absolutely at the stage's exact
+     midpoint with a large fixed margin; it now simply flows after the
+     panel, same size, `relative` again only to keep its own
+     ::before/::after crosshair correctly anchored. */
+  .projects-section:not(.is-detail) .project-detail-hotspot {
+    position: relative;
+    top: 0;
+    left: 0;
+    order: 3;
+    margin: 0;
     transform: none;
+  }
+
+  .projects-section:not(.is-detail) .projects-nav {
+    position: static;
+    order: 4;
+    transform: none;
+    gap: 12px;
   }
 
 }

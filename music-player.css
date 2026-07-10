@@ -795,7 +795,7 @@ main.brutalist-container {
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
-    padding: 5.5rem 1rem 2.5rem;
+    padding: 5.5rem 1rem 72px;
   }
 
   main.brutalist-container {
@@ -863,6 +863,37 @@ main.brutalist-container {
 
   .volume-control.show {
     max-height: 90px;
+  }
+
+  /* T209: HOME + language buttons used to float fixed at the top-right,
+     covering a corner of the content on narrow screens. Move both into a
+     shared bottom "safe bar" instead; the body padding-bottom above keeps
+     scrolled content clear of it. `top: auto` on both stops the browser
+     from stretching their height between the old `top` and new `bottom`
+     offsets once both are non-auto. */
+  .back-home-btn,
+  .music-language-switcher {
+    top: auto;
+    bottom: 12px;
+    border-radius: 999px;
+    background: rgba(12, 14, 21, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .back-home-btn {
+    left: 12px;
+    right: auto;
+    min-height: 44px;
+    color: var(--acid-lime);
+  }
+
+  .music-language-switcher {
+    left: auto;
+    right: 12px;
+    overflow: hidden;
   }
 
   .music-language-switcher .language-option {

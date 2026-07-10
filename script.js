@@ -584,6 +584,8 @@ document.addEventListener('DOMContentLoaded', () => {
               const img = document.createElement('img');
               img.src = src;
               img.alt = (split.mediaAlts && split.mediaAlts[imgIdx]) || '';
+              img.loading = 'lazy';
+              img.decoding = 'async';
               pair.appendChild(img);
             });
             mediaDiv.appendChild(pair);
@@ -600,6 +602,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = document.createElement('img');
             img.src = split.mediaSrcs[0];
             img.alt = (split.mediaAlts && split.mediaAlts[0]) || '';
+            img.loading = 'lazy';
+            img.decoding = 'async';
             mediaDiv.appendChild(img);
           }
         } else {
@@ -620,6 +624,8 @@ document.addEventListener('DOMContentLoaded', () => {
               const img = document.createElement('img');
               img.src = legacySrc;
               img.alt = legacyAlt || '';
+              img.loading = 'lazy';
+              img.decoding = 'async';
               mediaDiv.appendChild(img);
             }
           }
@@ -1180,6 +1186,8 @@ if (experienceSection) {
       const img = document.createElement('img');
       img.src = media.images[0];
       img.alt = (window.PortfolioI18n && window.PortfolioI18n.t('experience.mediaAlt')) || 'Experience media';
+      img.loading = 'lazy';
+      img.decoding = 'async';
       mediaEl.appendChild(img);
       return;
     }
@@ -1192,6 +1200,8 @@ if (experienceSection) {
         const img = document.createElement('img');
         img.src = src;
         img.alt = (window.PortfolioI18n && window.PortfolioI18n.t('experience.mediaCollageAlt')) || 'Experience media collage';
+        img.loading = 'lazy';
+        img.decoding = 'async';
         collage.appendChild(img);
       });
       mediaEl.appendChild(collage);
