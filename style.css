@@ -81,7 +81,7 @@
   --body-bg-pulse-color: rgba(255, 255, 255, 0.03);
   --splash-bg: #08021d;
   --splash-fade-in: 550ms;
-  --splash-hold: 1350ms;
+  --splash-hold: 450ms;
   --splash-fade-out: 1050ms;
   --hero-delay: 420ms;
   --hero-duration: 700ms;
@@ -205,10 +205,6 @@ body {
   overflow-y: auto;
   position: relative;
   transition: background var(--transition-speed) ease;
-}
-
-body.home-locked {
-  overflow: hidden;
 }
 
 .page-content {

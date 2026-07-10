@@ -14,13 +14,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   if (!location.hash || location.hash === '#home') {
-    document.body.classList.add('home-locked');
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }
 
   if (heroCta) {
     heroCta.addEventListener('click', () => {
-      document.body.classList.remove('home-locked');
       const aboutSection = document.querySelector('#about');
       if (aboutSection) {
         requestAnimationFrame(() => {
@@ -51,9 +49,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const holdMs = parseDuration(rootStyles.getPropertyValue('--splash-hold'));
   const fadeOutMs = parseDuration(rootStyles.getPropertyValue('--splash-fade-out'));
   const minDisplayMs = fadeInMs + holdMs;
-  const startTime = performance.now();
 
+  let exited = false;
   const startExit = () => {
+    if (exited) return;
+    exited = true;
+
     document.body.classList.add('splash-exit');
 
     window.setTimeout(() => {
@@ -63,11 +64,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }, fadeOutMs);
   };
 
-  window.addEventListener('load', () => {
-    const elapsed = performance.now() - startTime;
-    const remaining = Math.max(0, minDisplayMs - elapsed);
-    window.setTimeout(startExit, remaining);
-  }, { once: true });
+  // 不再等待 window load：资源在后台继续加载，开屏只按最短展示时长计时退场。
+  const holdTimer = window.setTimeout(startExit, minDisplayMs);
+
+  const skipIntro = () => {
+    window.clearTimeout(holdTimer);
+    startExit();
+  };
+
+  loadingOverlay.addEventListener('click', skipIntro, { once: true });
+  loadingOverlay.addEventListener('keydown', skipIntro, { once: true });
 });
 
 // ========================================================================
@@ -140,6 +146,49 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', resetToContainer);
 
   requestAnimationFrame(resetToContainer);
+});
+
+// ========================================================================
+// ========================= 🧭 导航 Scrollspy ==============================
+// ========================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sectionIds = ['home', 'about', 'projects', 'experience', 'contact'];
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  const navLiById = new Map();
+  navItems.forEach((li) => {
+    const link = li.querySelector('a[href^="#"]');
+    if (link) {
+      navLiById.set(link.getAttribute('href').slice(1), li);
+    }
+  });
+
+  if (!sections.length || !navLiById.size) {
+    return;
+  }
+
+  const setActiveSection = (id) => {
+    navLiById.forEach((li, key) => {
+      li.classList.toggle('active', key === id);
+    });
+  };
+
+  const scrollSpyObserver = new IntersectionObserver((entries) => {
+    // 项目详情打开时导航高亮不应跟随背后的 Projects 区块滚动状态乱跳。
+    if (document.body.classList.contains('detail-mode')) {
+      return;
+    }
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setActiveSection(entry.target.id);
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  sections.forEach((section) => scrollSpyObserver.observe(section));
 });
 
 // ========================================================================
