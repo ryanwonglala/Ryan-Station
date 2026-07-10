@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Ryan's Station</title>
+  <meta name="description" content="Ryan Wong's robotics and automation portfolio, covering ROS, TurtleBot3, robot navigation, AI vision, and manufacturing engineering experience.">
+  <title>Ryan Wong | Robotics &amp; Automation Portfolio</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Manrope:wght@300;400;500;600&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="splash-active" data-page="portfolio">
   <!-- Loading Animation Overlay -->
   <div id="loading-overlay" class="loading-overlay">
+    <div class="splash-logo">Ryan's Station</div>
     <div class="gearbox">
       <div class="overlay"></div>
       <div class="gear one">
@@ -60,80 +63,50 @@
     </div>
 
     <div class="loader">
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
-      <div class="text"><span>Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
+      <div class="text"><span data-i18n="common.loading">Loading</span></div>
       <div class="line"></div>
     </div>
   </div>
 
-  <div class="sidebar">
-    <ul class="nav">
-      <li class="active" id="logo">
-        <a href="#home">
-          <div class="icon">
-            <i class="fas fa-home"></i>
-          </div>
-          <div class="text">Ryan's Station</div>
-        </a>
-      </li>
-      <li>
-        <a href="#about">
-          <div class="icon">
-            <i class="fas fa-user"></i>
-          </div>
-          <div class="text">About</div>
-        </a>
-      </li>
-      <li>
-        <a href="#projects">
-          <div class="icon">
-            <i class="fas fa-code"></i>
-          </div>
-          <div class="text">Projects</div>
-        </a>
-      </li>
-      <li>
-        <a href="#skills">
-          <div class="icon">
-            <i class="fas fa-star"></i>
-          </div>
-          <div class="text">Skills</div>
-        </a>
-      </li>
-      <li>
-        <a href="#experience">
-          <div class="icon">
-            <i class="fas fa-briefcase"></i>
-          </div>
-          <div class="text">Experience</div>
-        </a>
-      </li>
-      <li>
-        <a href="#contact">
-          <div class="icon">
-            <i class="fas fa-envelope"></i>
-          </div>
-          <div class="text">Contact</div>
-        </a>
-      </li>
+  <div id="page-content" class="page-content">
+    <nav class="glass-capsule-nav">
+      <ul class="nav-links">
+        <li class="active">
+          <a href="#home" data-i18n="nav.home">Home</a>
+        </li>
+        <li>
+          <a href="#about" data-i18n="nav.about">About</a>
+        </li>
+        <li>
+          <a href="#projects" data-i18n="nav.projects">Projects</a>
+        </li>
+        <li>
+          <a href="#experience" data-i18n="nav.experience">Experience</a>
+        </li>
+        <li>
+          <a href="#contact" data-i18n="nav.contact">Contact</a>
+        </li>
+      </ul>
+      <div id="nav-cursor" class="nav-cursor"></div>
 
-      <li id="music-trigger">
-        <a href="javascript:void(0);">
-          <div class="icon">
-            <i class="fas fa-music"></i>
-          </div>
-          <div class="text">Music Zone</div>
-        </a>
-      </li>
+      <a href="javascript:void(0);" class="music-cta" id="music-trigger" data-i18n="nav.music">
+        Music Zone
+      </a>
 
-     <li class="theme-switch-li">
+      <div class="language-switcher" role="group" aria-label="Switch language" data-i18n-aria-label="common.switchLanguage">
+        <button class="language-option is-active" type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button class="language-option" type="button" data-lang="zh" aria-pressed="false">中文</button>
+      </div>
+
+      <div class="theme-switch-li">
         <div class="theme-switch-wrapper">
           <div class="theme-switch">
             <div class="gorgeous-switch-track">
@@ -160,36 +133,263 @@
             </div>
           </div>
         </div>
-        <div class="text">Theme</div>
-      </li>
-    </ul>
-  </div>
-
-  <section id="home">Home</section>
-  <section id="about">About</section>
-  <section id="projects">Projects</section>
-  <section id="skills">Skills</section>
-  <section id="experience">Experience</section>
-  <section id="contact">Contact</section>
-
-
-  <!-- 音乐区域确认弹窗 -->
-  <div id="music-confirm-modal" class="music-modal">
-    <div class="music-modal-content">
-      <div class="music-modal-icon">
-        <i class="fas fa-music"></i>
+        <div class="text" data-i18n="nav.theme">Theme</div>
       </div>
-      <h2>请注意</h2>
-      <h3>Please Note</h3>
-      <p>即将进入休闲区域</p>
-      <p class="english">You are about to enter the leisure zone</p>
-      <div class="music-modal-buttons">
-        <button id="music-cancel-btn" class="music-modal-btn cancel">
-          <span>否 / No</span>
-        </button>
-        <button id="music-confirm-btn" class="music-modal-btn confirm">
-          <span>是 / Yes</span>
-        </button>
+    </nav>
+
+    <section id="home">
+      <div class="hero">
+        <p class="hero-eyebrow" data-i18n="home.eyebrow">Welcome</p>
+        <h1 class="hero-title" data-i18n="home.heroTitle">Engineering in Motion</h1>
+        <p class="hero-subtitle" data-i18n="home.heroSubtitle">Selected robotics, automation, and engineering work by Ryan Wong.</p>
+        <a class="hero-cta" href="#about" data-i18n="home.cta">View Work</a>
+      </div>
+    </section>
+    <section id="about">
+      <div class="about-inner">
+        <div class="about-content">
+          <div class="about-text">
+            <h2 class="about-title" data-i18n="about.title">Engineering in Motion</h2>
+            <p class="about-description" data-i18n="about.intro">I am currently pursuing my MSc in Robotics &amp; Automation at the Singapore University of Technology and Design (SUTD), with prior experience in manufacturing, NPI, and product engineering for consumer electronics. My current focus is mobile robotics, ROS-based system integration, robot navigation, visual recognition, and practical automation workflows.</p>
+            <p class="about-description" data-i18n="about.introSecond">My work sits between hardware reality and software control: understanding mechanical systems, building reliable documentation, testing robots in real environments, and translating engineering ideas into demonstrable systems. This portfolio documents my course projects, robotics experiments, and transition from manufacturing engineering into robotics and automation.</p>
+          </div>
+          <div class="about-photo" role="img" aria-label="Portrait placeholder"></div>
+        </div>
+        <div class="about-skills">
+          <div class="about-skill">
+            <h3 class="about-skill-title" data-i18n="about.cards.0.title">Robotics &amp; Automation</h3>
+            <p class="about-skill-text" data-i18n="about.cards.0.text">Hands-on experience with TurtleBot3, ROS navigation workflows, SLAM testing, sensor integration, and real-robot course demos.</p>
+          </div>
+          <div class="about-skill">
+            <h3 class="about-skill-title" data-i18n="about.cards.1.title">Mechanical &amp; Manufacturing Engineering</h3>
+            <p class="about-skill-text" data-i18n="about.cards.1.text">Background in NPI, engineering drawings, BOM documentation, ECO/ECR tracking, DFM support, and cross-functional manufacturing coordination.</p>
+          </div>
+          <div class="about-skill">
+            <h3 class="about-skill-title" data-i18n="about.cards.2.title">Code, AI Vision &amp; Documentation</h3>
+            <p class="about-skill-text" data-i18n="about.cards.2.text">Exploring Python, ROS, Git/GitHub, YOLO/CLIP-based visual recognition, and portfolio-style technical documentation to communicate engineering work clearly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="projects" class="projects-section">
+      <div class="projects-frame">
+        <div class="projects-stage" aria-label="Project showcase" data-i18n-aria-label="projects.showcaseAria">
+          <div class="projects-ambient"></div>
+          <div class="projects-axis" aria-hidden="true"></div>
+          <div class="projects-axis-horizontal" aria-hidden="true">
+            <span class="axis-diamond"></span>
+          </div>
+
+          <div class="project-sphere" role="img" aria-label="Project preview sphere" data-i18n-aria-label="projects.sphereAria">
+            <div class="sphere-image-layer">
+              <video class="sphere-image sphere-video is-active" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/pic1.MP4" autoplay muted loop playsinline aria-label="Project 1 hero media video" data-i18n-aria-label="projects.videoAria.0"></video>
+              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/Hango%20V1.1.mp4" autoplay muted loop playsinline aria-label="Project 2 hero media video" data-i18n-aria-label="projects.videoAria.1"></video>
+              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%AE%9E%E7%89%A9%E6%BC%94%E7%A4%BA.mp4" autoplay muted loop playsinline aria-label="Project 3 hero media video" data-i18n-aria-label="projects.videoAria.2"></video>
+              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/human%20detector.mp4" autoplay muted loop playsinline aria-label="Project 4 hero media video" data-i18n-aria-label="projects.videoAria.3"></video>
+            </div>
+            <div class="sphere-specular"></div>
+            <div class="sphere-shadow"></div>
+          </div>
+          <button class="project-detail-hotspot" type="button" aria-label="View project detail" data-i18n-aria-label="projects.viewDetails"></button>
+
+          <div class="projects-copy">
+            <article class="project-copy is-active" data-index="0">
+              <div class="project-centerline">
+                <div class="project-left">
+                  <p class="project-eyebrow">Project 01</p>
+                  <h2 class="project-title">Robotic Arm Challenge</h2>
+                </div>
+                <div class="project-right">
+                  <p class="project-subtitle">A showcase-oriented kinetic lighting prototype.</p>
+                </div>
+              </div>
+            </article>
+            <article class="project-copy" data-index="1">
+              <div class="project-centerline">
+                <div class="project-left">
+                  <p class="project-eyebrow">Project 02</p>
+                  <h2 class="project-title">Hango</h2>
+                </div>
+                <div class="project-right">
+                  <p class="project-subtitle">A semester-long interdisciplinary innovation design project.</p>
+                </div>
+              </div>
+            </article>
+            <article class="project-copy" data-index="2">
+              <div class="project-centerline">
+                <div class="project-left">
+                  <p class="project-eyebrow">Project 03</p>
+                  <h2 class="project-title">FlexiLock</h2>
+                </div>
+                <div class="project-right">
+                  <p class="project-subtitle">A bio-inspired variable stiffness wearable for stroke rehabilitation.</p>
+                </div>
+              </div>
+            </article>
+            <article class="project-copy" data-index="3">
+              <div class="project-centerline">
+                <div class="project-left">
+                  <p class="project-eyebrow">Project 04</p>
+                  <h2 class="project-title">Autonomous Security Robot</h2>
+                </div>
+                <div class="project-right">
+                  <p class="project-subtitle">Full-stack ROS2 autonomy featuring Zero-shot vision reasoning and Frontier SLAM.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="projects-nav">
+            <div class="project-progress">
+              <span class="project-progress-current">01</span>
+              <span class="project-progress-divider">/</span>
+              <span class="project-progress-total">04</span>
+            </div>
+          </div>
+
+          <svg class="projects-filters" aria-hidden="true" width="0" height="0">
+            <filter id="sphere-distortion" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="8" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </svg>
+        </div>
+        <div class="project-detail-view" aria-hidden="true">
+          <div class="project-detail-header">
+            <div class="project-detail-panel">
+              <p class="detail-kicker" data-detail="kicker">Project 01</p>
+              <h3 class="detail-title" data-detail="title">Aurora Lens</h3>
+              <p class="detail-subtitle" data-detail="subtitle">A kinetic lighting prototype for exhibition spaces.</p>
+              <p class="detail-description" data-detail="description">This project is a one-week team-based competition combining mechanism design and control theory on a real robotic platform.<br><br>The task required a 6-DOF robotic arm to grasp objects at arbitrary positions, place them onto a mobile vehicle, and trigger the vehicle to autonomously navigate a color-coded maze.<br><br>I was primarily responsible for the robotic arm control, focusing on motion planning, calibration, and reliable execution under real-world hardware constraints.</p>
+              <div class="detail-meta">
+                <span data-detail="meta1">Role: Interaction + Visual</span>
+                <span data-detail="meta2">Timeline: 8 weeks</span>
+              </div>
+            </div>
+          </div>
+          <div class="project-detail-sections">
+          </div>
+        </div>
+      </div>
+      <button class="project-back" type="button" data-i18n="projects.backToShowroom">Back to showroom</button>
+      <div class="detail-lightbox" aria-hidden="true">
+        <div class="lightbox-frame" role="dialog" aria-label="Media preview" data-i18n-aria-label="projects.mediaPreview">
+          <button class="lightbox-close" type="button" aria-label="Close preview" data-i18n="common.close" data-i18n-aria-label="common.closePreview">Close</button>
+          <img class="lightbox-media lightbox-image" alt="">
+          <video class="lightbox-media lightbox-video" muted loop playsinline controls></video>
+        </div>
+      </div>
+
+    </section>
+    <section id="experience" class="experience-section">
+      <div class="experience-inner">
+        <header class="experience-header">
+          <h2 data-i18n="experience.title">Experience</h2>
+          <p data-i18n="experience.subtitle">Highlights over the years</p>
+        </header>
+        <div class="experience-shell">
+          <div class="experience-timeline" aria-label="Experience timeline" data-i18n-aria-label="experience.timelineAria">
+            <div class="experience-timeline-inner">
+              <div class="experience-timeline-list" role="tablist"></div>
+            </div>
+          </div>
+          <div class="experience-detail" aria-live="polite">
+            <article class="experience-card is-visible" data-experience-card>
+              <div class="experience-card-media" data-experience-media></div>
+              <div class="experience-card-content">
+                <h3 class="experience-org" data-experience-org></h3>
+                <p class="experience-role" data-experience-role></p>
+                <p class="experience-summary" data-experience-summary></p>
+                <ul class="experience-highlights" data-experience-highlights></ul>
+                <div class="experience-tags" data-experience-tags></div>
+                <div class="experience-links" data-experience-links></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="contact" class="contact-section">
+      <div class="contact-inner">
+        <header class="contact-header">
+          <h2 data-i18n="contact.title">Contact</h2>
+          <p data-i18n="contact.subtitle">Let's connect</p>
+        </header>
+        <div class="contact-list">
+          <div class="contact-item">
+            <div class="contact-row">
+              <div class="contact-label" data-i18n="contact.phone">Phone</div>
+              <div class="contact-info">+65 8737 2213</div>
+              <button class="contact-action" type="button" data-copy="+65 8737 2213" aria-label="Copy Singapore phone number" data-i18n="common.copy" data-i18n-aria-label="contact.copySingaporePhone">Copy</button>
+            </div>
+            <div class="contact-row">
+              <div class="contact-label" data-i18n="contact.phone">Phone</div>
+              <div class="contact-info">+86 185 7415 3704</div>
+              <button class="contact-action" type="button" data-copy="+86 185 7415 3704" aria-label="Copy China phone number" data-i18n="common.copy" data-i18n-aria-label="contact.copyChinaPhone">Copy</button>
+            </div>
+            <p class="contact-note" data-i18n="contact.phoneNote">Available on WhatsApp / WeChat</p>
+          </div>
+          <div class="contact-item">
+            <div class="contact-row">
+              <div class="contact-label" data-i18n="contact.email">Email</div>
+              <div class="contact-info contact-email">demonlover1379@outlook.com</div>
+              <a class="contact-action primary" href="mailto:demonlover1379@outlook.com" data-i18n="contact.sendEmail">Send an email</a>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-row">
+              <div class="contact-label" data-i18n="contact.location">Location</div>
+              <div class="contact-info" data-i18n="contact.locationValue">Singapore / Hougang</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-row">
+              <div class="contact-label">LinkedIn</div>
+              <a class="contact-info contact-link" href="https://www.linkedin.com/in/wong-ryan-9b51b6384/" target="_blank" rel="noopener">linkedin.com/in/wong-ryan-9b51b6384</a>
+              <a class="contact-action" href="https://www.linkedin.com/in/wong-ryan-9b51b6384/" target="_blank" rel="noopener" data-i18n="contact.viewLinkedIn">View LinkedIn profile</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 音乐区域确认弹窗 -->
+    <div id="music-confirm-modal" class="music-modal">
+      <div class="music-modal-content">
+        <div class="music-modal-icon">
+          <i class="fas fa-music"></i>
+        </div>
+        <h2 data-i18n="musicModal.title">Please Note</h2>
+        <h3 data-i18n="musicModal.subtitle">Music Zone</h3>
+        <p data-i18n="musicModal.body">You are about to enter the leisure zone</p>
+        <p class="english" data-i18n="musicModal.bodySecond">Continue to the music player?</p>
+        <div class="music-modal-buttons">
+          <button id="music-cancel-btn" class="music-modal-btn cancel">
+            <span data-i18n="common.no">No</span>
+          </button>
+          <button id="music-confirm-btn" class="music-modal-btn confirm">
+            <span data-i18n="common.yes">Yes</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 横屏/桌面查看提示 -->
+    <div id="view-hint-modal" class="music-modal view-hint-modal" aria-hidden="true">
+      <div class="music-modal-content">
+        <div class="music-modal-icon">
+          <i class="fas fa-desktop"></i>
+        </div>
+        <h2 data-i18n="viewHint.title">Best viewed on landscape or desktop</h2>
+        <h3 data-i18n="viewHint.subtitle">Viewing suggestion</h3>
+        <p data-i18n="viewHint.body">This site is optimized for larger screens.</p>
+        <p class="english" data-i18n="viewHint.bodySecond">Portrait mobile is supported with a simplified layout.</p>
+        <div class="music-modal-buttons">
+          <button id="view-hint-confirm" class="music-modal-btn confirm">
+            <span data-i18n="common.gotIt">Got it</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -197,6 +397,7 @@
   <!-- WebGL 背景系统 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="background_shader.js"></script>
+  <script src="i18n.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

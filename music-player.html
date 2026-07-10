@@ -1,127 +1,112 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Zone - Ryan's Station</title>
+  <meta name="description" content="Ryan Station music player and AI mood terminal.">
+  <title>Music Zone - Acid Glitch Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="music-player.css">
 </head>
-<body>
-  <!-- 返回主页按钮 -->
-  <a href="index.html" class="back-home-btn" title="返回主页 / Back to Home">
+<body data-page="music">
+  <div class="grid-warp" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <aside class="playlist-sidebar" id="playlistSidebar">
+    <button class="playlist-tab" id="playlistTab" aria-label="Toggle Playlist" data-i18n-aria-label="musicPlayer.playlistToggle">
+      <span data-i18n="musicPlayer.playlist">Playlist</span>
+      <i class="fas fa-music"></i>
+    </button>
+    <div class="playlist-shell">
+      <header>
+        <h2 data-i18n="musicPlayer.playQueue">Play Queue</h2>
+        <p id="playlistCount">(0)</p>
+      </header>
+      <div class="playlist-items" id="playlistItems"></div>
+    </div>
+  </aside>
+
+  <a href="index.html" class="back-home-btn" title="Back to Home" data-i18n-title="musicPlayer.home">
     <i class="fas fa-home"></i>
-    <span>Home</span>
+    <span data-i18n="musicPlayer.home">Home</span>
   </a>
 
-  <!-- 音乐播放器主容器 -->
-  <div class="music-player-container">
-    <div class="player-grid">
-      <!-- 左列：歌曲详情 -->
-      <section class="panel-card song-panel">
-        <div class="song-header">
-          <div class="mini-vinyl">
-            <div class="mini-vinyl-disc vinyl-disc" id="vinylDisc">
-              <div class="mini-vinyl-label vinyl-label" id="vinylLabel">
-                <span class="mini-label-title label-title" id="labelTitle">未加载音乐</span>
-                <span class="mini-label-artist label-artist" id="labelArtist">--</span>
-              </div>
-            </div>
-          </div>
-          <div class="song-meta">
-            <div class="audio-visualizer" id="audioVisualizer">
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-          <div class="visualizer-bar"></div>
-            </div>
-            <div class="panel-label">Song · 当前歌曲</div>
-            <div class="current-track-info">
-              <h1 id="currentTitle">未加载音乐</h1>
-              <h2 id="currentArtist">--</h2>
-            </div>
-          </div>
-        </div>
-        <div class="progress-section">
-          <div class="time-display">
-            <span id="currentTimeDisplay">0:00</span>
-            <span id="totalTimeDisplay">0:00</span>
-          </div>
-          <div class="progress-bar-container" id="progressBarContainer">
-            <div class="progress-bar-track">
-              <div class="progress-bar-fill" id="progressBarFill">
-                <div class="progress-thumb"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="playback-controls">
-          <button class="control-btn mode-btn" id="modeBtnPlayer" title="顺序播放">
-            <i class="fas fa-list"></i>
-          </button>
-          <button class="control-btn" id="prevBtnPlayer">
-            <i class="fas fa-step-backward"></i>
-          </button>
-          <button class="control-btn play-btn-large" id="playBtnPlayer">
-            <i class="fas fa-play" id="playIconPlayer"></i>
-          </button>
-          <button class="control-btn" id="nextBtnPlayer">
-            <i class="fas fa-step-forward"></i>
-          </button>
-          <button class="control-btn volume-btn" id="volumeBtn" title="音量控制">
-            <i class="fas fa-volume-up"></i>
-          </button>
-          <div class="volume-control" id="volumeControl">
-            <div class="volume-shell">
-              <div class="volume-rail">
-                <div class="volume-fill" id="volumeFill"></div>
-                <div class="volume-thumb" id="volumeThumb"></div>
-                <input type="range" min="0" max="100" value="100" id="volumeSlider" class="volume-slider">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="playlist-container embedded-playlist">
-          <div class="playlist-header" id="playlistToggle">
-            <div class="playlist-header-left">
-              <i class="fas fa-music"></i>
-              <span>播放列表 / Playlist</span>
-              <span class="playlist-count" id="playlistCount">(0)</span>
-            </div>
-            <i class="fas fa-chevron-down playlist-toggle-icon" id="playlistToggleIcon"></i>
-          </div>
-          <div class="playlist-items" id="playlistItems"></div>
-        </div>
-      </section>
-
-      <!-- 右列：视频占位 -->
-      <section class="panel-card media-panel">
-        <div class="panel-label">视频占位符</div>
-        <div class="media-placeholder"></div>
-      </section>
-    </div>
+  <div class="music-language-switcher language-switcher" role="group" aria-label="Switch language" data-i18n-aria-label="common.switchLanguage">
+    <button class="language-option is-active" type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button class="language-option" type="button" data-lang="zh" aria-pressed="false">中文</button>
   </div>
 
-  <!-- 音频元素 -->
-  <audio id="audioPlayer"></audio>
+  <main class="brutalist-container">
+    <section class="control-stack">
+      <header class="zone-heading">
+        <span class="heading-label" data-i18n="musicPlayer.headingLabel">Ryan Station</span>
+        <h1 data-i18n="musicPlayer.title">Music Zone</h1>
+      </header>
+      <div class="vinyl-wrapper">
+        <div class="tonearm" aria-hidden="true"></div>
+        <div class="vinyl-frame">
+          <div class="vinyl" id="vinylDisc">
+            <div class="vinyl-label" id="vinylLabel"></div>
+          </div>
+        </div>
+      </div>
+      <pre class="track-data" id="trackData">
+TITLE: <span class="track-title">No music loaded</span>
+ARTIST: <span class="track-artist">--</span>
+DURATION: <span class="track-duration">0:00</span>
+      </pre>
+      <div class="ai-terminal">
+        <div class="ai-terminal-header">
+          <label for="ai-input" data-i18n="musicPlayer.terminal">AI TERMINAL</label>
+          <button id="ai-settings-btn" class="ai-settings-btn" type="button" title="Configure Gemini API Key" data-i18n-title="musicPlayer.settings">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+        <div class="ai-input-row">
+          <input id="ai-input" type="text" placeholder="> enter mood to hack the system" data-i18n-placeholder="musicPlayer.inputPlaceholder">
+          <button id="terminal-toggle" class="terminal-toggle" type="button" aria-expanded="true" aria-controls="terminal-log" title="Collapse terminal log" data-i18n-title="musicPlayer.collapseTerminal">
+            <i class="fas fa-chevron-up"></i>
+          </button>
+        </div>
+        <div id="terminal-log" class="terminal-log" aria-live="polite">
+          <div class="terminal-line system" data-i18n="musicPlayer.systemReady">&gt; SYSTEM: Ready for commands.</div>
+        </div>
+      </div>
+    </section>
 
+    <section class="visual-stack">
+      <div class="crt-tv">
+        <video id="mv-player" class="crt-video" muted playsinline preload="metadata"></video>
+        <div class="static-noise"></div>
+        <p class="crt-status" data-i18n="musicPlayer.noSignal">NO SIGNAL</p>
+      </div>
+      <div class="glitch-controls">
+        <div class="time-display">
+          <span id="currentTimeDisplay">0:00</span>
+          <span id="totalTimeDisplay">0:00</span>
+        </div>
+        <label for="seekBar" class="seek-label" data-i18n="musicPlayer.signalTracking">SIGNAL TRACKING</label>
+        <input type="range" id="seekBar" min="0" max="100" value="0">
+        <div class="button-grid">
+          <button class="glitch-btn" id="modeBtnPlayer" title="Sequential play" aria-label="Sequential play"><i class="fas fa-list-ul"></i></button>
+          <button class="glitch-btn" id="prevBtnPlayer" title="Previous track" data-i18n-title="musicPlayer.controls.previous"><i class="fas fa-backward"></i></button>
+          <button class="glitch-btn play-btn" id="playBtnPlayer" title="Play / Pause" data-i18n-title="musicPlayer.controls.playPause"><i class="fas fa-play" id="playIconPlayer"></i></button>
+          <button class="glitch-btn" id="nextBtnPlayer" title="Next track" data-i18n-title="musicPlayer.controls.next"><i class="fas fa-forward"></i></button>
+          <button class="glitch-btn" id="volumeBtn" title="Volume" data-i18n-title="musicPlayer.controls.volume"><i class="fas fa-volume-up"></i></button>
+        </div>
+        <div class="volume-control" id="volumeControl">
+          <input type="range" min="0" max="100" value="100" id="volumeSlider">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="mascot-container">
+    <img src="assets/music zone.png" alt="Ryan Station Mascot" data-i18n-alt="musicPlayer.mascotAlt">
+  </div>
+
+  <audio id="audioPlayer"></audio>
+  <script src="i18n.js"></script>
   <script src="music-player.js"></script>
 </body>
 </html>

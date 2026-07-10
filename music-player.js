@@ -1,15 +1,15 @@
 // ========================================================================
-// ========================= 🎵 音乐播放器核心逻辑 =========================
+// ========================= 🎵 Acid Glitch Hub ============================
 // ========================================================================
 
-// 获取DOM元素
+// DOM references
 const audioPlayer = document.getElementById('audioPlayer');
 const vinylDisc = document.getElementById('vinylDisc');
+const vinylWrapper = document.querySelector('.vinyl-wrapper');
 const vinylLabel = document.getElementById('vinylLabel');
-const labelTitle = document.getElementById('labelTitle');
-const labelArtist = document.getElementById('labelArtist');
-const currentTitle = document.getElementById('currentTitle');
-const currentArtist = document.getElementById('currentArtist');
+const trackTitleEl = document.querySelector('.track-title');
+const trackArtistEl = document.querySelector('.track-artist');
+const trackDurationEl = document.querySelector('.track-duration');
 const playBtnPlayer = document.getElementById('playBtnPlayer');
 const playIconPlayer = document.getElementById('playIconPlayer');
 const prevBtnPlayer = document.getElementById('prevBtnPlayer');
@@ -18,26 +18,98 @@ const modeBtnPlayer = document.getElementById('modeBtnPlayer');
 const volumeBtn = document.getElementById('volumeBtn');
 const volumeControl = document.getElementById('volumeControl');
 const volumeSlider = document.getElementById('volumeSlider');
-const volumeFill = document.getElementById('volumeFill');
-const volumeThumb = document.getElementById('volumeThumb');
-const progressBarContainer = document.getElementById('progressBarContainer');
-const progressBarFill = document.getElementById('progressBarFill');
 const currentTimeDisplay = document.getElementById('currentTimeDisplay');
 const totalTimeDisplay = document.getElementById('totalTimeDisplay');
 const playlistItems = document.getElementById('playlistItems');
-const audioVisualizer = document.getElementById('audioVisualizer');
-const playlistToggle = document.getElementById('playlistToggle');
-const playlistToggleIcon = document.getElementById('playlistToggleIcon');
-const playlistContainer = document.querySelector('.playlist-container');
 const playlistCount = document.getElementById('playlistCount');
+const playlistSidebar = document.getElementById('playlistSidebar');
+const playlistTab = document.getElementById('playlistTab');
+const seekBar = document.getElementById('seekBar');
+const mascotContainer = document.querySelector('.mascot-container');
+const crtStatus = document.querySelector('.crt-status');
+const staticNoise = document.querySelector('.static-noise');
+const crtTv = document.querySelector('.crt-tv');
+const crtVideo = document.getElementById('mv-player');
+const aiInput = document.getElementById('ai-input');
+const aiSettingsBtn = document.getElementById('ai-settings-btn');
+const terminalLog = document.getElementById('terminal-log');
+const terminalToggle = document.getElementById('terminal-toggle');
 
-// 播放状态变量
+// State
 let playlist = [];
 let currentTrackIndex = 0;
 let isPlaying = false;
-let playMode = 'sequential'; // 'sequential' 或 'random'
-let isDraggingProgress = false;
-let isPlaylistCollapsed = false;
+let playMode = 'sequential';
+let isSeeking = false;
+let sidebarOpen = false;
+let terminalCollapsed = true;
+
+const PLAY_MODE_ICONS = {
+  sequential: 'fa-list-ul',
+  random: 'fa-shuffle',
+  single: 'fa-repeat',
+};
+
+function mpT(path, fallback = '') {
+  return (window.PortfolioI18n && window.PortfolioI18n.t(`musicPlayer.${path}`)) || fallback;
+}
+
+function formatMpT(path, replacements, fallback = '') {
+  return mpT(path, fallback).replace(/\{(\w+)\}/g, (_, key) => replacements[key] || '');
+}
+
+// ========================================================================
+// ========================= ⚙️ Gemini Helpers ============================
+// ========================================================================
+
+function getGeminiKey() {
+  return localStorage.getItem('GEMINI_API_KEY') || '';
+}
+
+function setGeminiKey(value) {
+  if (value) {
+    localStorage.setItem('GEMINI_API_KEY', value);
+  }
+}
+
+function clearGeminiKey() {
+  localStorage.removeItem('GEMINI_API_KEY');
+}
+
+function appendToTerminalLog(message, role = 'system') {
+  if (!terminalLog) return;
+  const line = document.createElement('div');
+  line.className = `terminal-line ${role}`;
+  line.textContent = message;
+  terminalLog.appendChild(line);
+  terminalLog.scrollTop = terminalLog.scrollHeight;
+}
+
+function setSignalReceived(state) {
+  if (!crtTv) return;
+  if (state && !crtTv.classList.contains('has-mv')) {
+    return;
+  }
+  crtTv.classList.toggle('signal-received', state);
+}
+
+function updateTerminalToggleUI() {
+  if (!terminalToggle) return;
+  const expanded = !terminalCollapsed;
+  const icon = expanded ? 'fa-chevron-up' : 'fa-chevron-down';
+  terminalToggle.innerHTML = `<i class="fas ${icon}"></i>`;
+  terminalToggle.setAttribute('aria-expanded', expanded.toString());
+  const label = expanded ? mpT('collapseTerminal', 'Collapse terminal log') : mpT('expandTerminal', 'Expand terminal log');
+  terminalToggle.setAttribute('aria-label', label);
+  terminalToggle.title = label;
+}
+
+function toggleTerminalLogVisibility() {
+  if (!terminalLog) return;
+  terminalCollapsed = !terminalCollapsed;
+  terminalLog.classList.toggle('collapsed', terminalCollapsed);
+  updateTerminalToggleUI();
+}
 
 // ========================================================================
 // ========================= 🎼 播放列表加载 ===============================
@@ -50,22 +122,18 @@ async function loadPlaylist() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    playlist = data.tracks;
-    console.log('播放列表加载成功:', playlist.length, '首歌曲');
+    playlist = data.tracks || [];
 
     if (playlist.length > 0) {
       renderPlaylist();
       loadTrack(0);
       updatePlaylistCount();
-    } else {
-      console.error('播放列表为空');
     }
 
     return true;
   } catch (error) {
     console.error('加载播放列表失败:', error);
-    currentTitle.textContent = '加载失败';
-    currentArtist.textContent = '无法加载播放列表';
+    writeTrackInfo({ title: '加载失败', artist: '无法加载播放列表' });
     return false;
   }
 }
@@ -75,6 +143,7 @@ async function loadPlaylist() {
 // ========================================================================
 
 function renderPlaylist() {
+  if (!playlistItems) return;
   playlistItems.innerHTML = '';
 
   playlist.forEach((track, index) => {
@@ -83,8 +152,8 @@ function renderPlaylist() {
     item.innerHTML = `
       <div class="playlist-item-number">${index + 1}</div>
       <div class="playlist-item-info">
-        <div class="playlist-item-title">${track.title}</div>
-        <div class="playlist-item-artist">${track.artist}</div>
+        <div class="playlist-item-title">${track.title || 'Untitled'}</div>
+        <div class="playlist-item-artist">${track.artist || '--'}</div>
       </div>
     `;
 
@@ -104,6 +173,7 @@ function renderPlaylist() {
 }
 
 function updatePlaylistUI() {
+  if (!playlistItems) return;
   const items = playlistItems.querySelectorAll('.playlist-item');
   items.forEach((item, index) => {
     if (index === currentTrackIndex) {
@@ -114,34 +184,43 @@ function updatePlaylistUI() {
   });
 }
 
+function updatePlaylistCount() {
+  if (playlistCount) {
+    playlistCount.textContent = `(${playlist.length})`;
+  }
+}
+
 // ========================================================================
 // ========================= 🎼 音轨加载和控制 =============================
 // ========================================================================
 
 function loadTrack(index) {
-  if (!playlist[index] || !playlist[index].src) {
+  const track = playlist[index];
+  if (!track || !track.src) {
     console.error('无效的音轨索引或音轨源');
     return;
   }
 
-  const track = playlist[index];
   currentTrackIndex = index;
-
   audioPlayer.src = track.src;
-  currentTitle.textContent = track.title;
-  currentArtist.textContent = track.artist;
-  labelTitle.textContent = track.title;
-  labelArtist.textContent = track.artist;
+  audioPlayer.load();
+  configureTrackVideo(track);
+
+  writeTrackInfo(track);
+  if (trackDurationEl) {
+    trackDurationEl.textContent = track.duration || '--:--';
+  }
+  totalTimeDisplay.textContent = '0:00';
+  if (seekBar) {
+    seekBar.value = 0;
+  }
 
   updatePlaylistUI();
 }
 
 function playTrack() {
   audioPlayer.play().then(() => {
-    isPlaying = true;
-    vinylDisc.classList.add('playing');
-    audioVisualizer.classList.add('active');
-    playIconPlayer.className = 'fas fa-pause';
+    updatePlaybackState(true);
   }).catch(error => {
     console.error('播放失败:', error);
   });
@@ -149,10 +228,7 @@ function playTrack() {
 
 function pauseTrack() {
   audioPlayer.pause();
-  isPlaying = false;
-  vinylDisc.classList.remove('playing');
-  audioVisualizer.classList.remove('active');
-  playIconPlayer.className = 'fas fa-play';
+  updatePlaybackState(false);
 }
 
 function togglePlay() {
@@ -163,34 +239,31 @@ function togglePlay() {
   }
 }
 
-function playPrevious() {
-  let newIndex;
+function playPrevious(autoPlay = isPlaying) {
+  let newIndex = currentTrackIndex;
   if (playMode === 'random') {
     newIndex = getRandomIndex();
-  } else {
+  } else if (playMode === 'sequential') {
     newIndex = currentTrackIndex - 1;
-    if (newIndex < 0) {
-      newIndex = playlist.length - 1;
-    }
+    if (newIndex < 0) newIndex = playlist.length - 1;
   }
+
   loadTrack(newIndex);
-  if (isPlaying) {
+  if (autoPlay) {
     playTrack();
   }
 }
 
-function playNext() {
-  let newIndex;
+function playNext(autoPlay = isPlaying) {
+  let newIndex = currentTrackIndex;
   if (playMode === 'random') {
     newIndex = getRandomIndex();
-  } else {
-    newIndex = currentTrackIndex + 1;
-    if (newIndex >= playlist.length) {
-      newIndex = 0;
-    }
+  } else if (playMode === 'sequential') {
+    newIndex = (currentTrackIndex + 1) % playlist.length;
   }
+
   loadTrack(newIndex);
-  if (isPlaying) {
+  if (autoPlay) {
     playTrack();
   }
 }
@@ -204,18 +277,239 @@ function getRandomIndex() {
   return randomIndex;
 }
 
+function handleTrackEnd() {
+  if (playMode === 'single') {
+    audioPlayer.currentTime = 0;
+    playTrack();
+    return;
+  }
+  playNext(true);
+}
+
+function updatePlayModeUI() {
+  if (!modeBtnPlayer) return;
+  const iconClass = PLAY_MODE_ICONS[playMode] || PLAY_MODE_ICONS.sequential;
+  const label = mpT(`playModes.${playMode}`, mpT('playModes.fallback', 'Play mode'));
+  const isSingle = playMode === 'single';
+
+  const badge = isSingle ? '<span class="mode-badge">1</span>' : '';
+  modeBtnPlayer.innerHTML = `<i class="fas ${iconClass}"></i>${badge}`;
+  modeBtnPlayer.title = label;
+  modeBtnPlayer.setAttribute('aria-label', label);
+  modeBtnPlayer.classList.toggle('random', playMode === 'random');
+  modeBtnPlayer.classList.toggle('single', isSingle);
+}
+
 function togglePlayMode() {
   if (playMode === 'sequential') {
     playMode = 'random';
-    modeBtnPlayer.innerHTML = '<i class="fas fa-random"></i>';
-    modeBtnPlayer.title = '随机播放';
-    modeBtnPlayer.classList.add('random');
+  } else if (playMode === 'random') {
+    playMode = 'single';
   } else {
     playMode = 'sequential';
-    modeBtnPlayer.innerHTML = '<i class="fas fa-list"></i>';
-    modeBtnPlayer.title = '顺序播放';
-    modeBtnPlayer.classList.remove('random');
   }
+  updatePlayModeUI();
+}
+
+function writeTrackInfo(track = {}) {
+  const title = track.title || mpT('unloaded', 'No music loaded');
+  const artist = track.artist || '--';
+
+  if (trackTitleEl) trackTitleEl.textContent = title;
+  if (trackArtistEl) trackArtistEl.textContent = artist;
+}
+
+function updatePlaybackState(playing) {
+  isPlaying = playing;
+  if (vinylWrapper) {
+    vinylWrapper.classList.toggle('playing', playing);
+  }
+  if (vinylDisc) {
+    vinylDisc.classList.toggle('playing', playing);
+  }
+  if (playIconPlayer) {
+    playIconPlayer.className = playing ? 'fas fa-pause' : 'fas fa-play';
+  }
+  updateMascotState(playing);
+  updateTvState(playing);
+  syncVideoPlayback(playing);
+}
+
+function updateMascotState(playing) {
+  if (!mascotContainer) return;
+  mascotContainer.classList.toggle('visible', playing);
+}
+
+function updateTvState(playing) {
+  if (!crtStatus || !staticNoise) return;
+  crtStatus.textContent = playing ? mpT('playing', 'PLAYING...') : mpT('noSignal', 'NO SIGNAL');
+  staticNoise.classList.toggle('is-playing', playing);
+}
+
+function configureTrackVideo(track) {
+  if (!crtVideo || !crtTv) return;
+
+  if (track && track.mv) {
+    const nextSrc = track.mv;
+    const currentSrc = crtVideo.getAttribute('src');
+    if (currentSrc !== nextSrc) {
+      crtVideo.src = nextSrc;
+    }
+    crtVideo.load();
+    try {
+      crtVideo.currentTime = 0;
+    } catch (error) {
+      // ignore
+    }
+    crtTv.classList.add('has-mv');
+    if (!isPlaying) {
+      setSignalReceived(false);
+    }
+  } else {
+    fallbackToStatic();
+  }
+}
+
+function alignVideoToCurrentAudio(time = audioPlayer.currentTime) {
+  if (!crtVideo || !crtTv || !crtTv.classList.contains('has-mv')) return;
+  try {
+    crtVideo.currentTime = time;
+  } catch (error) {
+    // ignore desync adjustments until video is ready
+  }
+}
+
+function enforceVideoSyncThreshold() {
+  if (!crtVideo || !crtTv || !crtTv.classList.contains('has-mv')) return;
+  const diff = Math.abs((crtVideo.currentTime || 0) - (audioPlayer.currentTime || 0));
+  if (diff > 0.5) {
+    alignVideoToCurrentAudio();
+  }
+}
+
+function syncVideoPlayback(playing) {
+  if (!crtVideo || !crtTv || !crtTv.classList.contains('has-mv')) return;
+  if (playing) {
+    alignVideoToCurrentAudio();
+    const playPromise = crtVideo.play();
+    const onSuccess = () => setSignalReceived(true);
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise.then(onSuccess).catch((error) => {
+        console.warn('MV playback interrupted:', error);
+        fallbackToStatic();
+      });
+    } else {
+      onSuccess();
+    }
+  } else {
+    crtVideo.pause();
+  }
+}
+
+function fallbackToStatic() {
+  if (!crtVideo || !crtTv) return;
+  try {
+    crtVideo.pause();
+  } catch (error) {
+    // ignore
+  }
+  if (crtVideo.getAttribute('src')) {
+    crtVideo.removeAttribute('src');
+  }
+  crtVideo.load();
+  try {
+    crtVideo.currentTime = 0;
+  } catch (error) {
+    // ignore
+  }
+  crtTv.classList.remove('has-mv');
+  setSignalReceived(false);
+  if (crtStatus) {
+    crtStatus.textContent = mpT('noSignal', 'NO SIGNAL');
+  }
+  if (staticNoise) {
+    staticNoise.classList.remove('is-playing');
+  }
+}
+
+// ========================================================================
+// ========================= 🤖 Gemini Integration ========================
+// ========================================================================
+
+async function callGeminiAI(userText) {
+  const apiKey = getGeminiKey();
+  if (!apiKey) {
+    return { error: 'Gemini API key missing. Click the gear icon to add it.' };
+  }
+
+  const contextList = playlist.map((track, index) => {
+    const tags = Array.isArray(track.tags) && track.tags.length ? track.tags.join(', ') : 'none';
+    return `${index + 1}. "${track.title}" [tags: ${tags}]`;
+  }).join(', ');
+
+  const payloadText = [
+    'System: You are the DJ of Ryan Station. Pick a song from the Context list that matches the user\'s input. If the request is vague, pick a random fitting song.',
+    'Output strictly JSON: { "reply": "...", "command": "PLAY_SONG", "target": "Exact Song Title" }.',
+    `Context: ${contextList}`,
+    `User: ${userText}`
+  ].join('\n\n');
+
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: payloadText }]
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { error: `Gemini API error (${response.status}): ${errorText}` };
+    }
+
+    const data = await response.json();
+    const raw = data?.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || '')
+      .join('\n')
+      .trim();
+
+    if (!raw) {
+      return { error: 'Gemini API returned no response.' };
+    }
+
+    return { raw };
+  } catch (error) {
+    return { error: `Gemini request failed: ${error.message}` };
+  }
+}
+
+function parseGeminiResponse(rawText) {
+  if (!rawText) {
+    throw new Error('Empty AI response.');
+  }
+  const trimmed = rawText.trim();
+  try {
+    return JSON.parse(trimmed);
+  } catch (error) {
+    const match = trimmed.match(/\{[\s\S]*\}/);
+    if (match) {
+      return JSON.parse(match[0]);
+    }
+    throw new Error('Unable to parse AI JSON response.');
+  }
+}
+
+function findTrackIndexByTitle(targetTitle) {
+  if (!targetTitle) return -1;
+  const normalized = targetTitle.trim().toLowerCase();
+  return playlist.findIndex(track => (track.title || '').trim().toLowerCase() === normalized);
 }
 
 // ========================================================================
@@ -223,59 +517,38 @@ function togglePlayMode() {
 // ========================================================================
 
 function formatTime(seconds) {
-  if (isNaN(seconds)) return '0:00';
+  if (isNaN(seconds) || typeof seconds !== 'number') return '0:00';
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 function updateProgress() {
-  if (isDraggingProgress || audioPlayer.seeking) return;
-
+  if (isSeeking || !seekBar) return;
   const duration = audioPlayer.duration;
   const current = audioPlayer.currentTime;
+  if (!duration || isNaN(duration)) return;
 
-  if (duration && !isNaN(duration)) {
-    const percentage = (current / duration) * 100;
-    progressBarFill.style.width = `${percentage}%`;
-    currentTimeDisplay.textContent = formatTime(current);
-    totalTimeDisplay.textContent = formatTime(duration);
+  const percentage = (current / duration) * 100;
+  seekBar.value = percentage;
+  currentTimeDisplay.textContent = formatTime(current);
+  totalTimeDisplay.textContent = formatTime(duration);
+  if (trackDurationEl) {
+    trackDurationEl.textContent = formatTime(duration);
   }
 }
 
-function setProgress(clientX) {
-  const rect = progressBarContainer.getBoundingClientRect();
-  const clickX = clientX - rect.left;
-  const width = rect.width;
-  const percentage = Math.max(0, Math.min(1, clickX / width));
-  const duration = audioPlayer.duration;
-
-  if (duration && !isNaN(duration)) {
-    progressBarFill.style.width = `${percentage * 100}%`;
-    const newTime = duration * percentage;
-    currentTimeDisplay.textContent = formatTime(newTime);
-    audioPlayer.currentTime = newTime;
-  }
+function handleSeekInput(event) {
+  if (!audioPlayer.duration || isNaN(audioPlayer.duration)) return;
+  const percentage = event.target.value / 100;
+  const newTime = audioPlayer.duration * percentage;
+  audioPlayer.currentTime = newTime;
+  currentTimeDisplay.textContent = formatTime(newTime);
+  alignVideoToCurrentAudio(newTime);
 }
 
-function handleProgressDragStart(e) {
-  e.preventDefault();
-  isDraggingProgress = true;
-  const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-  setProgress(clientX);
-  progressBarContainer.style.cursor = 'grabbing';
-}
-
-function handleProgressDragMove(e) {
-  if (!isDraggingProgress) return;
-  const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-  setProgress(clientX);
-}
-
-function handleProgressDragEnd() {
-  if (!isDraggingProgress) return;
-  isDraggingProgress = false;
-  progressBarContainer.style.cursor = 'grab';
+function setSeekingState(state) {
+  isSeeking = state;
 }
 
 // ========================================================================
@@ -283,34 +556,34 @@ function handleProgressDragEnd() {
 // ========================================================================
 
 function toggleVolumeControl() {
-  volumeControl.classList.toggle('show');
+  if (volumeControl) {
+    volumeControl.classList.toggle('show');
+  }
 }
 
 function updateVolume() {
+  if (!volumeSlider) return;
   const volume = volumeSlider.value / 100;
   audioPlayer.volume = volume;
 
-  // 更新音量图标
   let iconClass;
-  if (volume === 0) {
-    iconClass = 'fa-volume-mute';
-  } else if (volume < 0.5) {
-    iconClass = 'fa-volume-down';
-  } else {
-    iconClass = 'fa-volume-up';
-  }
+  if (volume === 0) iconClass = 'fa-volume-mute';
+  else if (volume < 0.5) iconClass = 'fa-volume-down';
+  else iconClass = 'fa-volume-up';
 
-  volumeBtn.innerHTML = `<i class="fas ${iconClass}"></i>`;
-  if (volumeControl) {
-    volumeControl.style.setProperty('--volume-percent', volumeSlider.value);
+  if (volumeBtn) {
+    volumeBtn.innerHTML = `<i class="fas ${iconClass}"></i>`;
   }
+}
 
-  if (volumeFill) {
-    volumeFill.style.height = `${volumeSlider.value}%`;
-  }
+// ========================================================================
+// ========================= 📂 侧边栏控制 ==================================
+// ========================================================================
 
-  if (volumeThumb) {
-    volumeThumb.style.bottom = `${volumeSlider.value}%`;
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  if (playlistSidebar) {
+    playlistSidebar.classList.toggle('open', sidebarOpen);
   }
 }
 
@@ -318,36 +591,49 @@ function updateVolume() {
 // ========================= 📡 事件监听器 =================================
 // ========================================================================
 
-// 播放控制按钮
-playBtnPlayer.addEventListener('click', togglePlay);
-prevBtnPlayer.addEventListener('click', playPrevious);
-nextBtnPlayer.addEventListener('click', playNext);
-modeBtnPlayer.addEventListener('click', togglePlayMode);
-volumeBtn.addEventListener('click', toggleVolumeControl);
+updatePlayModeUI();
+if (terminalLog) {
+  terminalLog.classList.toggle('collapsed', terminalCollapsed);
+}
+updateTerminalToggleUI();
 
-// 音量控制
-volumeSlider.addEventListener('input', updateVolume);
+if (playBtnPlayer) playBtnPlayer.addEventListener('click', togglePlay);
+if (prevBtnPlayer) prevBtnPlayer.addEventListener('click', playPrevious);
+if (nextBtnPlayer) nextBtnPlayer.addEventListener('click', playNext);
+if (modeBtnPlayer) modeBtnPlayer.addEventListener('click', togglePlayMode);
+if (volumeBtn) volumeBtn.addEventListener('click', toggleVolumeControl);
+if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
+if (playlistTab) playlistTab.addEventListener('click', toggleSidebar);
+if (terminalToggle) terminalToggle.addEventListener('click', toggleTerminalLogVisibility);
+if (crtVideo) {
+  crtVideo.addEventListener('error', fallbackToStatic);
+}
 
-// 音频事件
+if (seekBar) {
+  seekBar.addEventListener('input', handleSeekInput);
+  seekBar.addEventListener('mousedown', () => setSeekingState(true));
+  seekBar.addEventListener('touchstart', () => setSeekingState(true));
+  ['mouseup', 'touchend', 'mouseleave'].forEach(evt => {
+    seekBar.addEventListener(evt, () => setSeekingState(false));
+  });
+}
+
 audioPlayer.addEventListener('timeupdate', updateProgress);
-audioPlayer.addEventListener('loadedmetadata', updateProgress);
-audioPlayer.addEventListener('ended', () => {
-  playNext();
+audioPlayer.addEventListener('timeupdate', enforceVideoSyncThreshold);
+audioPlayer.addEventListener('play', () => updatePlaybackState(true));
+audioPlayer.addEventListener('pause', () => updatePlaybackState(false));
+audioPlayer.addEventListener('loadedmetadata', () => {
+  currentTimeDisplay.textContent = '0:00';
+  totalTimeDisplay.textContent = formatTime(audioPlayer.duration);
+  if (trackDurationEl) {
+    trackDurationEl.textContent = formatTime(audioPlayer.duration);
+  }
+  updateProgress();
 });
+audioPlayer.addEventListener('ended', handleTrackEnd);
 
-// 进度条拖拽 - 鼠标事件
-progressBarContainer.addEventListener('mousedown', handleProgressDragStart);
-document.addEventListener('mousemove', handleProgressDragMove);
-document.addEventListener('mouseup', handleProgressDragEnd);
-
-// 进度条拖拽 - 触摸事件
-progressBarContainer.addEventListener('touchstart', handleProgressDragStart, { passive: false });
-document.addEventListener('touchmove', handleProgressDragMove, { passive: false });
-document.addEventListener('touchend', handleProgressDragEnd);
-
-// 键盘快捷键
 document.addEventListener('keydown', (e) => {
-  switch(e.code) {
+  switch (e.code) {
     case 'Space':
       e.preventDefault();
       togglePlay();
@@ -361,58 +647,93 @@ document.addEventListener('keydown', (e) => {
       playNext();
       break;
     case 'ArrowUp':
-      e.preventDefault();
-      volumeSlider.value = Math.min(100, parseInt(volumeSlider.value) + 10);
-      updateVolume();
+      if (volumeSlider) {
+        e.preventDefault();
+        volumeSlider.value = Math.min(100, parseInt(volumeSlider.value, 10) + 10);
+        updateVolume();
+      }
       break;
     case 'ArrowDown':
-      e.preventDefault();
-      volumeSlider.value = Math.max(0, parseInt(volumeSlider.value) - 10);
-      updateVolume();
+      if (volumeSlider) {
+        e.preventDefault();
+        volumeSlider.value = Math.max(0, parseInt(volumeSlider.value, 10) - 10);
+        updateVolume();
+      }
+      break;
+    case 'KeyP':
+      if (playlistTab) {
+        e.preventDefault();
+        toggleSidebar();
+      }
       break;
   }
 });
 
-// 初始化音量显示
-updateVolume();
+if (aiInput) {
+  aiInput.addEventListener('keydown', async (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const mood = aiInput.value.trim();
+      if (!mood) return;
+      aiInput.value = '';
+      await hackTheSystem(mood);
+    }
+  });
+}
+
+if (aiSettingsBtn) {
+  aiSettingsBtn.addEventListener('click', () => {
+    const existing = getGeminiKey();
+    const input = window.prompt(mpT('geminiPrompt', 'Enter Gemini API Key (leave blank to clear):'), existing);
+    if (input === null) return;
+    const trimmed = input.trim();
+    if (trimmed) {
+      setGeminiKey(trimmed);
+      appendToTerminalLog(mpT('geminiSaved', '> SYSTEM: Gemini API key saved.'), 'system');
+    } else {
+      clearGeminiKey();
+      appendToTerminalLog(mpT('geminiCleared', '> SYSTEM: Gemini API key cleared.'), 'system');
+    }
+  });
+}
 
 // ========================================================================
-// ========================= 📋 播放列表折叠控制 ===========================
+// ========================= 🛰️ AI Terminal Stub ==========================
 // ========================================================================
 
-// 切换播放列表折叠状态
-function togglePlaylist() {
-  isPlaylistCollapsed = !isPlaylistCollapsed;
+async function hackTheSystem(mood) {
+  appendToTerminalLog(`> USER: ${mood}`, 'user');
 
-  if (isPlaylistCollapsed) {
-    playlistContainer.classList.add('collapsed');
-  } else {
-    playlistContainer.classList.remove('collapsed');
+  const result = await callGeminiAI(mood);
+  if (result.error) {
+    appendToTerminalLog(`> SYSTEM: ${result.error}`, 'system');
+    return;
   }
 
-  // 保存折叠状态到localStorage
-  localStorage.setItem('playlistCollapsed', isPlaylistCollapsed);
-}
-
-// 更新播放列表歌曲数量显示
-function updatePlaylistCount() {
-  if (playlistCount) {
-    playlistCount.textContent = `(${playlist.length})`;
+  let parsed;
+  try {
+    parsed = parseGeminiResponse(result.raw);
+  } catch (error) {
+    appendToTerminalLog(`> SYSTEM: ${error.message}`, 'system');
+    return;
   }
-}
 
-// 从localStorage加载折叠状态
-function loadPlaylistCollapseState() {
-  const savedState = localStorage.getItem('playlistCollapsed');
-  if (savedState === 'true') {
-    isPlaylistCollapsed = true;
-    playlistContainer.classList.add('collapsed');
+  const reply = parsed.reply || 'Command acknowledged.';
+  appendToTerminalLog(`> AI: ${reply}`, 'ai');
+
+  if (parsed.command && parsed.command.toUpperCase() === 'PLAY_SONG') {
+    const target = parsed.target || '';
+    const index = findTrackIndexByTitle(target);
+    if (index >= 0) {
+      loadTrack(index);
+      playTrack();
+      appendToTerminalLog(formatMpT('playingTrack', { title: playlist[index].title }, `> SYSTEM: Playing "${playlist[index].title}"`), 'system');
+    } else {
+      appendToTerminalLog(formatMpT('notFound', { target }, `> SYSTEM: Could not find "${target}".`), 'system');
+    }
+  } else if (parsed.command) {
+    appendToTerminalLog(formatMpT('unknownCommand', { command: parsed.command }, `> SYSTEM: Unknown command "${parsed.command}".`), 'system');
   }
-}
-
-// 播放列表标题点击事件
-if (playlistToggle) {
-  playlistToggle.addEventListener('click', togglePlaylist);
 }
 
 // ========================================================================
@@ -422,12 +743,24 @@ if (playlistToggle) {
 async function init() {
   const loaded = await loadPlaylist();
   if (loaded && playlist.length > 0) {
-    console.log('音乐播放器初始化成功');
-    loadPlaylistCollapseState(); // 加载折叠状态
-  } else {
-    console.error('音乐播放器初始化失败');
+    updateVolume();
+  } else if (trackTitleEl) {
+    trackTitleEl.textContent = mpT('unloaded', 'No music loaded');
+  }
+  updatePlayModeUI();
+  updateTerminalToggleUI();
+  updateTvState(isPlaying);
+
+  if (window.PortfolioI18n) {
+    window.PortfolioI18n.onChange(() => {
+      updatePlayModeUI();
+      updateTerminalToggleUI();
+      updateTvState(isPlaying);
+      if (!playlist.length && trackTitleEl) {
+        trackTitleEl.textContent = mpT('unloaded', 'No music loaded');
+      }
+    });
   }
 }
 
-// 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', init);
