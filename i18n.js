@@ -257,6 +257,8 @@
         viewLinkedIn: 'View LinkedIn profile',
         copySingaporePhone: 'Copy Singapore phone number',
         copyChinaPhone: 'Copy China phone number',
+        copy163: 'Copy 163 email address',
+        viewGitHub: 'View GitHub profile',
       },
       musicModal: {
         title: 'Please Note',
@@ -580,6 +582,8 @@
         viewLinkedIn: '查看 LinkedIn 主页',
         copySingaporePhone: '复制新加坡手机号',
         copyChinaPhone: '复制中国手机号',
+        copy163: '复制 163 邮箱',
+        viewGitHub: '查看 GitHub 主页',
       },
       musicModal: {
         title: '请注意',
