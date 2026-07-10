@@ -3393,6 +3393,23 @@ body.light-mode #contact .contact-action.primary {
     gap: 12px;
   }
 
+  /* T103: arrow decoration collides with the stacked (single-column) copy
+     above; it is purely ornamental, so hide it on small screens. */
+  .projects-axis-horizontal {
+    display: none;
+  }
+
+  /* T103: the hotspot button used to sit absolutely centered at the exact
+     midpoint of the stage, which is the same point the stacked copy text
+     occupies once .project-centerline collapses to one column above — that
+     is what caused the subtitle/button overlap. Move it into normal flow,
+     below the stage's centered content, instead. */
+  .project-detail-hotspot {
+    position: static;
+    margin: 340px auto 0;
+    transform: none;
+  }
+
 }
 
 @media (max-width: 900px) {
@@ -3669,7 +3686,15 @@ body.light-mode #contact .contact-action.primary {
   }
 
   #contact .contact-info {
+    /* T103 root cause: contact-row already wraps (flex-wrap:wrap) and the
+       label already gets its own line; but the email/LinkedIn strings have
+       no (or too few) natural break points, so the shrunk flex-basis:0%
+       box can't wrap them — the text paints past its own box and visually
+       collides with the .contact-action button sitting to its right. Force
+       a break so the text stays inside its assigned column. */
     white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   #contact .contact-action {
@@ -3692,6 +3717,25 @@ body.light-mode #contact .contact-action.primary {
   section {
     min-height: 100svh;
     padding: 0 16px;
+  }
+
+  /* T103: .project-copy siblings for prev/next slides are translated by
+     var(--projects-text-shift) off the visible stage; on narrow viewports
+     that push their (invisible, opacity:0) box past the edge and inflates
+     document.body.scrollWidth beyond the viewport. Clip them at the stage
+     boundary — the visible .is-active copy already fits inset:0, so this
+     is purely removing dead offscreen overflow, not a visual change. */
+  .projects-copy {
+    overflow: hidden;
+  }
+
+  /* T103: same class of bug as .projects-copy above — #about's scroll
+     exit transition slides .about-text/.about-photo sideways by
+     var(--about-exit-shift) while invisible (opacity:0), which briefly
+     pushes them past the viewport edge and inflates scrollWidth. Clip at
+     the content box; the visible/entered state already fits inside it. */
+  #about .about-content {
+    overflow: hidden;
   }
 
   .glass-capsule-nav {
