@@ -19,11 +19,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (heroCta) {
     heroCta.addEventListener('click', () => {
-      const aboutSection = document.querySelector('#about');
-      if (aboutSection) {
+      const targetHash = heroCta.getAttribute('href') || '#projects';
+      const targetSection = document.querySelector(targetHash);
+      if (targetSection) {
         requestAnimationFrame(() => {
-          aboutSection.scrollIntoView({ behavior: 'smooth' });
-          history.replaceState(null, '', '#about');
+          targetSection.scrollIntoView({ behavior: 'smooth' });
+          history.replaceState(null, '', targetHash);
         });
       }
     });
@@ -1134,14 +1135,24 @@ const experienceItems = [
   },
 ];
 
+// 出发信息板：目的地短名（拉丁品牌名，不参与翻译）与在站状态
+const EXPERIENCE_ORG_SHORT = {
+  'sutd-grad': 'SUTD',
+  'luxshare-work': 'Luxshare-ICT',
+  'foxconn-work': 'Foxconn',
+  'tust-undergrad': 'TUST',
+};
+const EXPERIENCE_ONGOING_ID = 'sutd-grad';
+
 const getExperienceItems = () => {
   const translatedItems = (window.PortfolioI18n && window.PortfolioI18n.get('experience.items')) || [];
-  if (!translatedItems.length) return experienceItems;
+  // 倒序展示：最新一站（SUTD）置顶
+  if (!translatedItems.length) return [...experienceItems].reverse();
   return experienceItems.map((item, index) => ({
     ...item,
     ...(translatedItems[index] || {}),
     media: item.media,
-  }));
+  })).reverse();
 };
 
 const experienceSection = document.getElementById('experience');
@@ -1283,16 +1294,34 @@ if (experienceSection) {
       period.className = 'experience-period';
       period.textContent = item.periodLabel;
 
+      const dest = document.createElement('span');
+      dest.className = 'experience-dest';
+
+      const org = document.createElement('span');
+      org.className = 'experience-dest-org';
+      org.textContent = EXPERIENCE_ORG_SHORT[item.id] || item.orgName;
+
       const stage = document.createElement('span');
       stage.className = 'experience-stage-tag';
       stage.textContent = item.stageTag;
+
+      dest.appendChild(org);
+      dest.appendChild(stage);
+
+      const isBoarding = item.id === EXPERIENCE_ONGOING_ID;
+      const status = document.createElement('span');
+      status.className = 'experience-status' + (isBoarding ? ' is-boarding' : '');
+      const statusKey = isBoarding ? 'experience.statusBoarding' : 'experience.statusDeparted';
+      const statusFallback = isBoarding ? 'Boarding' : 'Departed';
+      status.textContent = (window.PortfolioI18n && window.PortfolioI18n.t(statusKey)) || statusFallback;
 
       if (index === 0) {
         button.classList.add('is-active');
       }
 
       button.appendChild(period);
-      button.appendChild(stage);
+      button.appendChild(dest);
+      button.appendChild(status);
       button.addEventListener('click', () => setActive(index, { focus: true }));
       timelineList.appendChild(button);
     });

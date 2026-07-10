@@ -15,10 +15,11 @@
         theme: 'Theme',
       },
       home: {
-        eyebrow: 'Welcome',
-        heroTitle: 'Engineering in Motion',
-        heroSubtitle: 'Selected robotics, automation, and engineering work by Ryan Wong.',
-        cta: 'View Work',
+        eyebrow: 'Robotics & Automation · MSc @ SUTD',
+        heroTitle: 'Ryan Wong',
+        heroSubtitle: 'I build robots that navigate, see, and act — ROS navigation, AI vision, and the manufacturing discipline to ship them into the real world.',
+        cta: 'View Selected Work',
+        ctaGithub: 'GitHub',
       },
       about: {
         title: 'Engineering in Motion',
@@ -168,10 +169,16 @@
       },
       experience: {
         title: 'Experience',
-        subtitle: 'Highlights over the years',
+        subtitle: 'Departure board — every stop since 2018',
         timelineAria: 'Experience timeline',
         mediaAlt: 'Experience media',
         mediaCollageAlt: 'Experience media collage',
+        boardTitle: 'Departures',
+        colTime: 'Time',
+        colDest: 'Destination',
+        colStatus: 'Status',
+        statusBoarding: 'Boarding',
+        statusDeparted: 'Departed',
         items: [
           {
             id: 'tust-undergrad',
@@ -327,10 +334,11 @@
         theme: '主题',
       },
       home: {
-        eyebrow: '欢迎',
-        heroTitle: '让工程动起来',
-        heroSubtitle: 'Ryan Wong 的机器人、自动化与工程项目作品集。',
-        cta: '查看作品',
+        eyebrow: '机器人与自动化 · SUTD 硕士在读',
+        heroTitle: 'Ryan Wong',
+        heroSubtitle: '我做能自主导航、能看懂环境、能真正落地的机器人——ROS 导航、AI 视觉，以及把它们送进真实世界的制造工程功底。',
+        cta: '查看精选作品',
+        ctaGithub: 'GitHub',
       },
       about: {
         title: '让工程动起来',
@@ -480,10 +488,16 @@
       },
       experience: {
         title: '经历',
-        subtitle: '阶段性经历概览',
+        subtitle: '出发信息板 · 2018 年以来的每一站',
         timelineAria: '经历时间线',
         mediaAlt: '经历图片',
         mediaCollageAlt: '经历图片组合',
+        boardTitle: '出发 Departures',
+        colTime: '时刻',
+        colDest: '目的地',
+        colStatus: '状态',
+        statusBoarding: '检票中',
+        statusDeparted: '已出发',
         items: [
           {
             id: 'tust-undergrad',

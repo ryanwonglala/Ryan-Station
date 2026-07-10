@@ -83,11 +83,29 @@
   --splash-fade-in: 550ms;
   --splash-hold: 450ms;
   --splash-fade-out: 1050ms;
-  --hero-delay: 420ms;
-  --hero-duration: 700ms;
-  --hero-title-color: #e2e8f0;
-  --hero-subtitle-color: rgba(203, 213, 225, 0.72);
-  --hero-eyebrow-color: rgba(203, 213, 225, 0.6);
+
+  /* ==== 「夜行车站」tokens v0.9（原型引入，T201 全量迁移） ==== */
+  --night: #0c0e15;
+  --surface: #151a29;
+  --surface-2: #10131f;
+  --line: rgba(234, 229, 214, 0.12);
+  --paper: #eae5d6;
+  --muted: #9b97a9;
+  --amber: #d9a554;
+  --cyan: #74d7e8;
+  --signal: #e85940;
+  --ease-station: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --dur-fast: 250ms;
+  --dur-slow: 700ms;
+  --font-display: "Cormorant Garamond", "Georgia", "Noto Serif SC", "Songti SC", serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", "Menlo", "Consolas", monospace;
+
+  --hero-delay: 120ms;
+  --hero-duration: 550ms;
+  --hero-title-color: var(--paper);
+  --hero-subtitle-color: rgba(234, 229, 214, 0.78);
+  --hero-eyebrow-color: var(--amber);
+  --hero-scrim: linear-gradient(90deg, rgba(12, 14, 21, 0.86) 0%, rgba(12, 14, 21, 0.52) 46%, rgba(12, 14, 21, 0.1) 76%, rgba(12, 14, 21, 0) 100%);
   --about-photo-delay: 120ms;
   --about-text-delay: 280ms;
   --about-enter-duration: 700ms;
@@ -139,9 +157,10 @@ body.light-mode {
   --active-bg-end: rgba(230, 230, 255, 0.6);
   --active-shadow-color: rgba(255, 255, 255, 0.85);
   --body-bg-pulse-color: rgba(255, 255, 255, 0.05);
-  --hero-title-color: #0f172a;
-  --hero-subtitle-color: rgba(71, 85, 105, 0.75);
-  --hero-eyebrow-color: rgba(71, 85, 105, 0.6);
+  --hero-title-color: #211c14;
+  --hero-subtitle-color: rgba(33, 28, 20, 0.78);
+  --hero-eyebrow-color: #8a6320;
+  --hero-scrim: linear-gradient(90deg, rgba(244, 241, 234, 0.88) 0%, rgba(244, 241, 234, 0.5) 46%, rgba(244, 241, 234, 0.08) 76%, rgba(244, 241, 234, 0) 100%);
   --about-bg: transparent;
   --about-text-primary: #0f172a;
   --about-text-secondary: rgba(15, 23, 42, 0.72);
@@ -547,15 +566,28 @@ section {
   align-items: center;
 }
 
+/* 幕布层：左锚点夜幕渐变，保证文案对比度，同时保留右侧插画细节 */
+#home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hero-scrim);
+  pointer-events: none;
+  transition: background var(--transition-speed) ease;
+}
+
 #home .hero {
+  position: relative;
+  z-index: 1;
   max-width: 720px;
+  padding-left: clamp(0px, 4vw, 72px);
   display: flex;
   flex-direction: column;
   gap: 18px;
-  font: 400 16px 'Arial', "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
+  font: 400 16px "Manrope", 'Arial', "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
   opacity: 0;
-  transform: translateY(10px);
-  transition: opacity var(--hero-duration) ease, transform var(--hero-duration) ease;
+  transform: translateY(14px);
+  transition: opacity var(--hero-duration) var(--ease-station), transform var(--hero-duration) var(--ease-station);
   transition-delay: var(--hero-delay);
 }
 
@@ -565,46 +597,103 @@ body.hero-reveal #home .hero {
 }
 
 .hero-eyebrow {
-  font-size: 1.05rem;
-  letter-spacing: 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--hero-eyebrow-color);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-eyebrow::before {
+  content: "";
+  width: 30px;
+  height: 2px;
+  background: var(--hero-eyebrow-color);
+  flex: 0 0 auto;
 }
 
 .hero-title {
-  font-size: clamp(2.8rem, 6vw, 5rem);
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6.4vw, 5.4rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--hero-title-color);
-  line-height: 1.05;
+  line-height: 1.02;
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  line-height: 1.75;
   color: var(--hero-subtitle-color);
-  max-width: 32rem;
+  max-width: 34rem;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 8px;
 }
 
 .hero-cta {
-  align-self: flex-start;
-  padding: 12px 26px;
+  padding: 13px 28px;
   border-radius: 999px;
-  color: #0f172a;
-  background: linear-gradient(120deg, #f8fafc, #e2e8f0);
+  color: #10131f;
+  background: var(--amber);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform var(--dur-fast) var(--ease-station), box-shadow var(--dur-fast) var(--ease-station);
 }
 
 .hero-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.3);
+  box-shadow: 0 12px 30px rgba(217, 165, 84, 0.28);
 }
 
-body.light-mode .hero-cta {
-  color: #ffffff;
-  background: linear-gradient(120deg, #0f172a, #1e293b);
+.hero-cta:focus-visible,
+.hero-cta-secondary:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.hero-cta-secondary {
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--paper);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color var(--dur-fast) var(--ease-station), border-color var(--dur-fast) var(--ease-station);
+}
+
+.hero-cta-secondary::after {
+  content: "↗";
+  margin-left: 7px;
+  font-family: var(--font-mono);
+}
+
+.hero-cta-secondary:hover {
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+body.light-mode .hero-cta-secondary {
+  color: #2b2416;
+  border-color: rgba(33, 28, 20, 0.35);
+}
+
+body.light-mode .hero-cta-secondary:hover {
+  color: #0d7285;
+  border-color: #0d7285;
 }
 
 #about {
@@ -2924,11 +3013,11 @@ body.light-mode .detail-title {
 }
 
 #experience .experience-shell {
-  max-width: 1100px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 0 40px;
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 350px minmax(0, 1fr);
   gap: 32px;
   align-items: start;
 }
@@ -2937,112 +3026,201 @@ body.light-mode .detail-title {
   min-width: 0;
 }
 
+/* ===== 出发信息板（departure board） ===== */
 #experience .experience-timeline-inner {
   position: sticky;
   top: 130px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 12px 6px;
+  box-shadow: 0 20px 45px rgba(5, 8, 20, 0.45);
+}
+
+#experience .experience-board-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 2px 10px 10px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+#experience .experience-board-code {
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+#experience .experience-board-cols {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 10px 10px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+#experience .experience-board-cols span:last-child {
+  justify-self: end;
 }
 
 #experience .experience-timeline-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
 }
 
 #experience .experience-timeline-item {
   position: relative;
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
   border: none;
   background: transparent;
-  color: rgba(248, 250, 252, 0.7);
+  color: var(--muted);
   text-align: left;
-  padding: 10px 12px 10px 26px;
+  padding: 13px 10px;
+  border-top: 1px dashed rgba(234, 229, 214, 0.1);
   cursor: pointer;
   font-family: inherit;
-  transition: color 220ms ease, transform 220ms ease;
+  transition: background var(--dur-fast) var(--ease-station), color var(--dur-fast) var(--ease-station);
 }
 
+#experience .experience-timeline-item:first-child {
+  border-top: none;
+}
+
+/* 站台指示条：激活行左侧琥珀竖条 */
 #experience .experience-timeline-item::before {
   content: "";
   position: absolute;
-  left: 4px;
-  top: 18px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(248, 250, 252, 0.3);
-  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.5);
-  transition: background 220ms ease, box-shadow 220ms ease;
-}
-
-#experience .experience-timeline-item::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: -6px;
-  bottom: -6px;
-  width: 2px;
-  background: linear-gradient(to bottom, transparent, rgba(248, 250, 252, 0.25), transparent);
-}
-
-#experience .experience-timeline-item:first-child::after {
-  top: 18px;
-}
-
-#experience .experience-timeline-item:last-child::after {
-  bottom: 18px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  border-radius: 2px;
+  background: var(--amber);
+  transition: height var(--dur-fast) var(--ease-station);
 }
 
 #experience .experience-timeline-item:hover {
-  color: rgba(248, 250, 252, 0.9);
-  transform: translateX(2px);
+  background: rgba(116, 215, 232, 0.05);
+  color: rgba(234, 229, 214, 0.85);
 }
 
 #experience .experience-timeline-item.is-active {
-  color: rgba(248, 250, 252, 0.98);
+  background: rgba(217, 165, 84, 0.07);
+  color: var(--paper);
 }
 
 #experience .experience-timeline-item.is-active::before {
-  background: #f8fafc;
-  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.35);
-}
-
-#experience .experience-timeline-item.is-active::after {
-  background: linear-gradient(to bottom, transparent, rgba(248, 250, 252, 0.65), transparent);
+  height: 24px;
 }
 
 #experience .experience-timeline-item:focus-visible {
-  outline: 2px solid rgba(248, 250, 252, 0.9);
-  outline-offset: 3px;
-  border-radius: 8px;
+  outline: 2px solid var(--cyan);
+  outline-offset: -2px;
+  border-radius: 6px;
 }
 
 #experience .experience-period {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 500;
-  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+#experience .experience-timeline-item.is-active .experience-period {
+  color: var(--amber);
+}
+
+#experience .experience-dest {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+#experience .experience-dest-org {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #experience .experience-stage-tag {
   display: inline-block;
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(248, 250, 252, 0.55);
+  color: var(--muted);
 }
 
-#experience .experience-timeline-item.is-active .experience-period {
-  font-weight: 700;
-  color: rgba(248, 250, 252, 0.98);
+#experience .experience-status {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+#experience .experience-status.is-boarding {
+  color: var(--amber);
+  border-color: rgba(217, 165, 84, 0.45);
+}
+
+#experience .experience-status.is-boarding::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: boardPulse 1.6s var(--ease-station) infinite;
+}
+
+@keyframes boardPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #experience .experience-status.is-boarding::before {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 #experience .experience-card {
   display: flex;
   gap: 24px;
   padding: 26px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(15, 23, 42, 0.65);
-  box-shadow: 0 20px 45px rgba(5, 8, 20, 0.35);
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(21, 26, 41, 0.78);
+  box-shadow: 0 20px 45px rgba(5, 8, 20, 0.45);
   backdrop-filter: blur(6px);
   opacity: 0;
   transform: translateY(10px);
@@ -3101,15 +3279,21 @@ body.light-mode .detail-title {
 }
 
 #experience .experience-org {
-  margin: 0 0 4px;
-  font-size: 1.5rem;
-  color: rgba(248, 250, 252, 0.98);
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.65rem;
+  line-height: 1.15;
+  color: var(--paper);
 }
 
 #experience .experience-role {
   margin: 0 0 14px;
-  font-size: 0.95rem;
-  color: rgba(248, 250, 252, 0.72);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--amber);
 }
 
 #experience .experience-summary {
@@ -3137,14 +3321,15 @@ body.light-mode .detail-title {
 }
 
 #experience .experience-tag {
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.7rem;
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: rgba(248, 250, 252, 0.12);
-  border: 1px solid rgba(248, 250, 252, 0.2);
-  color: rgba(248, 250, 252, 0.8);
+  background: transparent;
+  border: 1px solid var(--line);
+  color: rgba(234, 229, 214, 0.75);
 }
 
 #experience .experience-links {
@@ -3171,10 +3356,17 @@ body.light-mode #experience .experience-header h2 {
 }
 
 body.light-mode #experience .experience-header p,
-body.light-mode #experience .experience-role,
 body.light-mode #experience .experience-summary,
 body.light-mode #experience .experience-highlights {
   color: rgba(15, 23, 42, 0.7);
+}
+
+body.light-mode #experience .experience-org {
+  color: rgba(15, 23, 42, 0.92);
+}
+
+body.light-mode #experience .experience-role {
+  color: #8a6320;
 }
 
 body.light-mode #experience .experience-card {
@@ -3205,34 +3397,7 @@ body.light-mode #experience .experience-links a {
   border-bottom-color: rgba(15, 23, 42, 0.35);
 }
 
-body.light-mode #experience .experience-timeline-item {
-  color: rgba(15, 23, 42, 0.7);
-}
-
-body.light-mode #experience .experience-stage-tag {
-  color: rgba(15, 23, 42, 0.55);
-}
-
-body.light-mode #experience .experience-timeline-item::before {
-  box-shadow: 0 0 0 4px rgba(226, 232, 240, 0.8);
-}
-
-body.light-mode #experience .experience-timeline-item::after {
-  background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.25), transparent);
-}
-
-body.light-mode #experience .experience-timeline-item.is-active {
-  color: rgba(15, 23, 42, 0.95);
-}
-
-body.light-mode #experience .experience-timeline-item.is-active::before {
-  background: rgba(15, 23, 42, 0.95);
-  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25);
-}
-
-body.light-mode #experience .experience-timeline-item.is-active .experience-period {
-  color: rgba(15, 23, 42, 0.95);
-}
+/* 出发信息板为实体signboard：昼夜模式下均保持夜色面板，不做亮色翻转 */
 
 /* ============ Contact ============ */
 #contact.contact-section {
@@ -3526,6 +3691,16 @@ body.light-mode #contact .contact-action.primary {
 
   #experience .experience-timeline-inner {
     position: static;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  #experience .experience-board-head,
+  #experience .experience-board-cols {
+    display: none;
   }
 
   #experience .experience-timeline-list {
@@ -3538,27 +3713,53 @@ body.light-mode #contact .contact-action.primary {
   }
 
   #experience .experience-timeline-item {
-    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
     border-radius: 999px;
-    background: rgba(248, 250, 252, 0.08);
+    border-top: none;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
     white-space: nowrap;
     flex: 0 0 auto;
   }
 
   #experience .experience-timeline-item.is-active {
-    background: rgba(248, 250, 252, 0.18);
+    background: rgba(217, 165, 84, 0.12);
+    border-color: rgba(217, 165, 84, 0.45);
   }
 
   body.light-mode #experience .experience-timeline-item.is-active {
-    background: rgba(15, 23, 42, 0.08);
+    background: rgba(217, 165, 84, 0.16);
   }
 
-  #experience .experience-timeline-item::before,
-  #experience .experience-timeline-item::after {
+  #experience .experience-timeline-item::before {
     content: none;
   }
 
+  #experience .experience-period {
+    font-size: 0.78rem;
+  }
+
+  #experience .experience-dest-org {
+    font-size: 0.85rem;
+  }
+
   #experience .experience-stage-tag {
+    display: none;
+  }
+
+  /* 手机端状态牌只保留“检票中”的呼吸点 */
+  #experience .experience-status {
+    padding: 0;
+    border: none;
+    font-size: 0;
+    letter-spacing: 0;
+    gap: 0;
+  }
+
+  #experience .experience-status:not(.is-boarding) {
     display: none;
   }
 
@@ -3654,6 +3855,11 @@ body.light-mode #contact .contact-action.primary {
 
   #home {
     padding-top: 104px;
+    --hero-scrim: linear-gradient(180deg, rgba(12, 14, 21, 0.8) 0%, rgba(12, 14, 21, 0.55) 55%, rgba(12, 14, 21, 0.15) 100%);
+  }
+
+  body.light-mode #home {
+    --hero-scrim: linear-gradient(180deg, rgba(244, 241, 234, 0.85) 0%, rgba(244, 241, 234, 0.5) 55%, rgba(244, 241, 234, 0.12) 100%);
   }
 
   #about {
@@ -3873,22 +4079,23 @@ body.light-mode #contact .contact-action.primary {
   }
 
   .hero-eyebrow {
-    letter-spacing: 0.3em;
-    font-size: 0.9rem;
+    letter-spacing: 0.18em;
+    font-size: 0.7rem;
   }
 
   .hero-title {
-    font-size: clamp(2.1rem, 10vw, 3.2rem);
-    letter-spacing: 0.06em;
+    font-size: clamp(2.4rem, 11vw, 3.4rem);
+    letter-spacing: 0.01em;
   }
 
   .hero-subtitle {
     font-size: 1rem;
   }
 
-  .hero-cta {
-    padding: 10px 20px;
-    font-size: 0.85rem;
+  .hero-cta,
+  .hero-cta-secondary {
+    padding: 11px 22px;
+    font-size: 0.76rem;
   }
 
   #about .about-inner {
@@ -3996,13 +4203,23 @@ body.light-mode #contact .contact-action.primary {
 
   #experience .experience-timeline-item {
     width: 100%;
-    white-space: normal;
+    white-space: nowrap;
     padding: 9px 10px;
-    text-align: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #experience .experience-dest {
+    min-width: 0;
+    flex: 0 1 auto;
   }
 
   #experience .experience-period {
-    font-size: 0.88rem;
+    font-size: 0.75rem;
+  }
+
+  #experience .experience-dest-org {
+    font-size: 0.8rem;
   }
 
   #experience .experience-card {
