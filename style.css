@@ -142,16 +142,11 @@
 }
 
 body.light-mode {
-  /* 明亮模式颜色 - 蓝紫渐变配色方案 */
-  --bg-gradient-start: #6c92e9; /* 天蓝色 */
-  --bg-gradient-mid: #7a6fbe; /* 紫蓝色 */
-  --bg-gradient-end: #a76799; /* 玫瑰紫 */
   --sidebar-bg: rgba(255, 255, 255, 0.85);
   --sidebar-border: rgba(255, 255, 255, 0.3);
   --text-color: #475569;
   --icon-color: #334155;
   --hover-color: #ea580c;
-  --section-text-color: rgba(0, 0, 0, 0.06);
   --active-bg-start: rgba(255, 255, 255, 0.6);
   --active-bg-mid: rgba(240, 240, 255, 0.6);
   --active-bg-end: rgba(230, 230, 255, 0.6);
@@ -162,21 +157,6 @@ body.light-mode {
   --hero-eyebrow-color: #8a6320;
   /* 日间幕布：极轻的暖雾，只提字不盖图（0.88 白雾实测刺眼，已降） */
   --hero-scrim: linear-gradient(90deg, rgba(244, 241, 234, 0.38) 0%, rgba(244, 241, 234, 0.16) 45%, rgba(244, 241, 234, 0) 70%);
-  --about-bg: transparent;
-  --about-text-primary: #0f172a;
-  --about-text-secondary: rgba(15, 23, 42, 0.72);
-  --about-accent: #c97a1a;
-  --project-text-panel: rgba(255, 255, 255, 0.72);
-
-  /* 白色背景 + 点状网格 + 橙色径向渐变 */
-  background-color: #f8fafc;
-  background-image:
-    radial-gradient(125% 125% at 50% 10%, rgba(249, 115, 22, 0.3) 40%, rgba(248, 250, 252, 1) 100%),
-    radial-gradient(rgba(255, 255, 255, 0.2) 1px, #f8fafc 1px);
-  background-size:
-    100% 100%,
-    20px 20px;
-  background-attachment: fixed;
 }
 
 * {
@@ -208,17 +188,11 @@ svg {
 body {
   font-family: 'Arial', "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
 
-  /* [!!] 更新为新的黑暗模式背景 */
-  background-color: #0f172a;
+  background-color: var(--night);
   background-image:
-    /* Dotted grid (top layer) */
-    radial-gradient(#ffffff33 1px, transparent 1px),
-    /* Radial gradient (middle layer) */
-    radial-gradient(150% 80% at 25% 75%, rgba(244, 63, 94, 0.5) 40%, rgba(15, 23, 42, 1) 100%);
-  background-size:
-    16px 16px, /* For the dotted grid */
-    auto;       /* For the radial gradient */
-  /* [!!] 结束新的背景 */
+    radial-gradient(rgba(234, 229, 214, 0.05) 1px, transparent 1px),
+    radial-gradient(120% 70% at 20% 80%, rgba(217, 165, 84, 0.05) 0%, rgba(12, 14, 21, 0) 60%);
+  background-size: 16px 16px, auto;
 
   background-attachment: fixed;
   min-height: 100vh;
@@ -709,6 +683,7 @@ body.light-mode .hero-cta-secondary:hover {
   background-color: var(--about-bg);
   color: var(--about-text-primary);
   font: 400 16px 'Inter', 'Arial', "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
+  border-top: 1px solid var(--line);
 }
 
 #about .about-inner {
@@ -2556,17 +2531,6 @@ body.detail-mode {
   pointer-events: none;
 }
 
-body.light-mode .project-detail-hotspot {
-  border-color: rgba(15, 23, 42, 0.25);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(226, 232, 240, 0.5) 50%, rgba(148, 163, 184, 0.25) 75%),
-    rgba(248, 250, 252, 0.85);
-  color: rgba(15, 23, 42, 0.8);
-  box-shadow:
-    0 0 0 0 rgba(56, 189, 248, 0.25),
-    0 18px 35px rgba(15, 23, 42, 0.18);
-}
-
 @keyframes hotspot-pulse {
   0% {
     box-shadow:
@@ -2796,18 +2760,6 @@ body.light-mode .project-detail-hotspot {
   color: var(--detail-text-strong);
 }
 
-body.light-mode .detail-paper-link {
-  border-color: rgba(15, 23, 42, 0.22);
-  background: rgba(15, 23, 42, 0.04);
-  color: rgba(15, 23, 42, 0.7);
-}
-
-body.light-mode .detail-paper-link:hover {
-  background: rgba(15, 23, 42, 0.1);
-  border-color: rgba(15, 23, 42, 0.4);
-  color: rgba(15, 23, 42, 0.9);
-}
-
 .detail-media--pair {
   display: flex;
   gap: 0;
@@ -2942,45 +2894,6 @@ body.light-mode .detail-paper-link:hover {
 }
 
 
-
-body.light-mode .projects-section {
-  color: #0f172a;
-}
-
-body.light-mode {
-  --detail-text-strong: rgba(15, 23, 42, 0.96);
-  --detail-text-soft: rgba(15, 23, 42, 0.8);
-}
-
-body.light-mode .projects-ambient {
-  background:
-    radial-gradient(circle at 30% 30%, rgba(15, 23, 42, 0.08), transparent 60%),
-    radial-gradient(circle at 70% 70%, rgba(234, 88, 12, 0.2), transparent 55%),
-    linear-gradient(140deg, rgba(255, 255, 255, 0.6), transparent 50%);
-}
-
-
-body.light-mode .project-eyebrow,
-body.light-mode .project-title,
-body.light-mode .project-subtitle,
-body.light-mode .project-detail-trigger {
-  color: #0f172a;
-}
-
-body.light-mode .project-back {
-  border-color: rgba(15, 23, 42, 0.35);
-  color: rgba(15, 23, 42, 0.8);
-}
-
-body.light-mode .detail-kicker,
-body.light-mode .detail-subtitle,
-body.light-mode .detail-description,
-body.light-mode .detail-meta,
-body.light-mode .detail-split-text p,
-body.light-mode .detail-split-text h4,
-body.light-mode .detail-title {
-  color: inherit;
-}
 
 /* ============ Experience ============ */
 #experience.experience-section {
@@ -3371,56 +3284,6 @@ body.light-mode .detail-title {
   padding-bottom: 2px;
 }
 
-body.light-mode #experience.experience-section {
-  color: #0f172a;
-}
-
-body.light-mode #experience .experience-header h2 {
-  color: rgba(15, 23, 42, 0.95);
-}
-
-body.light-mode #experience .experience-header p,
-body.light-mode #experience .experience-summary,
-body.light-mode #experience .experience-highlights {
-  color: rgba(15, 23, 42, 0.7);
-}
-
-body.light-mode #experience .experience-org {
-  color: rgba(15, 23, 42, 0.92);
-}
-
-body.light-mode #experience .experience-role {
-  color: #8a6320;
-}
-
-body.light-mode #experience .experience-card {
-  background: rgba(248, 250, 252, 0.9);
-  border-color: rgba(148, 163, 184, 0.4);
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
-}
-
-body.light-mode #experience .experience-card-media {
-  background: rgba(226, 232, 240, 0.9);
-  border-color: rgba(148, 163, 184, 0.4);
-}
-
-body.light-mode #experience .experience-media-placeholder {
-  background:
-    linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(37, 99, 235, 0.18)),
-    repeating-linear-gradient(45deg, rgba(15, 23, 42, 0.1) 0 6px, transparent 6px 12px);
-}
-
-body.light-mode #experience .experience-tag {
-  background: rgba(15, 23, 42, 0.08);
-  border-color: rgba(15, 23, 42, 0.18);
-  color: rgba(15, 23, 42, 0.7);
-}
-
-body.light-mode #experience .experience-links a {
-  color: rgba(15, 23, 42, 0.85);
-  border-bottom-color: rgba(15, 23, 42, 0.35);
-}
-
 /* 出发信息板为实体signboard：昼夜模式下均保持夜色面板，不做亮色翻转 */
 
 /* ============ Contact ============ */
@@ -3562,52 +3425,6 @@ body.light-mode #experience .experience-links a {
   border-color: rgba(248, 250, 252, 0.6);
   color: #ffffff;
 }
-
-body.light-mode #contact.contact-section {
-  color: #0f172a;
-}
-
-body.light-mode #contact.contact-section::before {
-  background: linear-gradient(120deg, rgba(248, 250, 252, 0.92), rgba(226, 232, 240, 0.75));
-  border-top-color: rgba(15, 23, 42, 0.12);
-  border-bottom-color: rgba(15, 23, 42, 0.12);
-}
-
-body.light-mode #contact .contact-header h2 {
-  color: rgba(15, 23, 42, 0.95);
-}
-
-body.light-mode #contact .contact-header p,
-body.light-mode #contact .contact-note {
-  color: rgba(15, 23, 42, 0.6);
-}
-
-body.light-mode #contact .contact-list {
-  background: rgba(248, 250, 252, 0.9);
-  border-color: rgba(148, 163, 184, 0.4);
-}
-
-body.light-mode #contact .contact-label {
-  color: rgba(15, 23, 42, 0.6);
-}
-
-body.light-mode #contact .contact-info,
-body.light-mode #contact .contact-link {
-  color: rgba(15, 23, 42, 0.85);
-  border-bottom-color: rgba(15, 23, 42, 0.25);
-}
-
-body.light-mode #contact .contact-action {
-  border-color: rgba(15, 23, 42, 0.35);
-  color: rgba(15, 23, 42, 0.85);
-}
-
-body.light-mode #contact .contact-action.primary {
-  border-color: rgba(15, 23, 42, 0.35);
-  background: rgba(15, 23, 42, 0.08);
-  color: rgba(15, 23, 42, 0.95);
-}
-
 
 @media (max-width: 720px) {
   .projects-frame {
@@ -3752,10 +3569,6 @@ body.light-mode #contact .contact-action.primary {
   #experience .experience-timeline-item.is-active {
     background: rgba(217, 165, 84, 0.12);
     border-color: rgba(217, 165, 84, 0.45);
-  }
-
-  body.light-mode #experience .experience-timeline-item.is-active {
-    background: rgba(217, 165, 84, 0.16);
   }
 
   #experience .experience-timeline-item::before {
