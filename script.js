@@ -1006,7 +1006,7 @@ const experienceItems = [
     tags: ['Mechatronics', 'Control Fundamentals', 'Engineering Mathematics', 'Mechanical Systems'],
     media: {
       mode: 'single',
-      images: ['../Experience/1.jpeg'],
+      images: ['assets/experience/1.jpeg'],
     },
   },
   {
@@ -1025,7 +1025,7 @@ const experienceItems = [
     tags: ['Project Management', 'Automation', 'NPI', 'DFM', 'Manufacturing Coordination'],
     media: {
       mode: 'single',
-      images: ['../Experience/2.jpeg'],
+      images: ['assets/experience/2.jpeg'],
     },
   },
   {
@@ -1044,7 +1044,7 @@ const experienceItems = [
     tags: ['Product Design', 'NPI', 'Engineering Documentation', 'ECO/ECR', 'Siemens NX', 'AutoCAD'],
     media: {
       mode: 'single',
-      images: ['../Experience/3.jpg'],
+      images: ['assets/experience/3.jpg'],
     },
   },
   {
@@ -1063,7 +1063,7 @@ const experienceItems = [
     tags: ['ROS', 'TurtleBot3', 'Robot Navigation', 'YOLO', 'CLIP', 'SLAM Testing', 'Robotic Arm', 'System Integration'],
     media: {
       mode: 'single',
-      images: ['../Experience/4.jpg'],
+      images: ['assets/experience/4.jpg'],
     },
   },
 ];
