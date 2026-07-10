@@ -275,6 +275,20 @@ document.addEventListener('DOMContentLoaded', () => {
     progressTotal.textContent = String(copyItems.length).padStart(2, '0');
   }
 
+  // T107: 球体视频按需播放——仅当 Projects 区块在视口内时才播放当前 active 视频，
+  // 其余（含离屏时）一律暂停，避免多路 R2 视频同时解码。
+  const applyVideoPlayback = () => {
+    const inView = projectsSection.classList.contains('is-active');
+    sphereImages.forEach((image, index) => {
+      if (image.tagName !== 'VIDEO') return;
+      if (inView && index === activeIndex) {
+        image.play().catch(() => {});
+      } else {
+        image.pause();
+      }
+    });
+  };
+
   const updateClasses = () => {
     const total = copyItems.length;
     copyItems.forEach((item, index) => {
@@ -286,6 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
     sphereImages.forEach((image, index) => {
       image.classList.toggle('is-active', index === activeIndex);
     });
+
+    applyVideoPlayback();
 
     if (progressCurrent) {
       progressCurrent.textContent = String(activeIndex + 1).padStart(2, '0');
@@ -770,6 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
         projectsSection.classList.remove('is-active');
       }
     });
+    applyVideoPlayback();
   }, { threshold: 0.5 });
 
   projectsObserver.observe(projectsSection);

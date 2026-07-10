@@ -6,8 +6,8 @@
 // 对外 API（window.shaderBackground）与旧实现保持一致，script.js 无需改动。
 
 // 图片路径集中在此，T107 转 webp 后只需改这两行。
-const BG_IMAGE_PATH_DARK = 'assets/Dark-BG.png';
-const BG_IMAGE_PATH_LIGHT = 'assets/Light-BG.png';
+const BG_IMAGE_PATH_DARK = 'assets/Dark-BG.webp';
+const BG_IMAGE_PATH_LIGHT = 'assets/Light-BG.webp';
 
 const BG_TRANSITION_MS_DEFAULT = 1500;
 
