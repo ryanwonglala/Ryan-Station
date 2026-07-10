@@ -683,7 +683,6 @@ body.light-mode .hero-cta-secondary:hover {
   background-color: var(--about-bg);
   color: var(--about-text-primary);
   font: 400 16px 'Inter', 'Arial', "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
-  border-top: 1px solid var(--line);
 }
 
 #about .about-inner {
@@ -2127,6 +2126,7 @@ body.light-mode .music-modal-btn.cancel:hover {
   color: #f8fafc;
   font-family: "Manrope", "Segoe UI", "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
   touch-action: pan-y;
+  border-top: 1px solid var(--line);
 }
 
 .projects-section.is-detail {

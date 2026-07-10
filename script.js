@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const sectionIds = ['home', 'about', 'projects', 'experience', 'contact'];
+  const sectionIds = ['home', 'projects', 'about', 'experience', 'contact'];
   const sections = sectionIds
     .map((id) => document.getElementById(id))
     .filter(Boolean);
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const aboutSection = document.getElementById('about');
-  const nextSection = document.getElementById('projects');
+  const nextSection = document.getElementById('experience');
   if (!aboutSection) {
     return;
   }
