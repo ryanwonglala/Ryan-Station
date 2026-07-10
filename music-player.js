@@ -46,8 +46,8 @@ let terminalCollapsed = true;
 
 const PLAY_MODE_ICONS = {
   sequential: 'icon-list-ul',
-  random: 'icon-list-ul',
-  single: 'icon-list-ul',
+  random: 'icon-shuffle',
+  single: 'icon-repeat-1',
 };
 
 function mpT(path, fallback = '') {
@@ -96,8 +96,8 @@ function setSignalReceived(state) {
 function updateTerminalToggleUI() {
   if (!terminalToggle) return;
   const expanded = !terminalCollapsed;
-  const rotation = expanded ? 0 : 180;
-  terminalToggle.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true" style="transform: rotate(${rotation}deg);"><use href="assets/icons.svg#icon-chevron-up"></use></svg>`;
+  const iconId = expanded ? 'icon-chevron-up' : 'icon-chevron-down';
+  terminalToggle.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>`;
   terminalToggle.setAttribute('aria-expanded', expanded.toString());
   const label = expanded ? mpT('collapseTerminal', 'Collapse terminal log') : mpT('expandTerminal', 'Expand terminal log');
   terminalToggle.setAttribute('aria-label', label);
@@ -567,7 +567,8 @@ function updateVolume() {
   audioPlayer.volume = volume;
 
   if (volumeBtn) {
-    volumeBtn.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-volume-up"></use></svg>`;
+    const iconId = volume <= 0 ? 'icon-volume-mute' : volume < 0.5 ? 'icon-volume-down' : 'icon-volume-up';
+    volumeBtn.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>`;
   }
 }
 

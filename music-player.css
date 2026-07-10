@@ -438,10 +438,6 @@ main.brutalist-container {
   gap: 0.3rem;
 }
 
-#modeBtnPlayer .fa-shuffle {
-  transform: translateY(-1px);
-}
-
 .mode-badge {
   position: absolute;
   top: 6px;
