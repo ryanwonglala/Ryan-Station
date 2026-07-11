@@ -76,13 +76,32 @@ function clearGeminiKey() {
   localStorage.removeItem('GEMINI_API_KEY');
 }
 
+const b1ReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function appendToTerminalLog(message, role = 'system') {
   if (!terminalLog) return;
   const line = document.createElement('div');
   line.className = `terminal-line ${role}`;
-  line.textContent = message;
   terminalLog.appendChild(line);
-  terminalLog.scrollTop = terminalLog.scrollHeight;
+  if (b1ReducedMotion || role === 'user') {
+    line.textContent = message;
+    terminalLog.scrollTop = terminalLog.scrollHeight;
+    return;
+  }
+  // CRT 打字机：系统/AI 行逐字输出
+  line.classList.add('typing');
+  let i = 0;
+  const step = () => {
+    i += 1 + Math.floor(Math.random() * 2);
+    line.textContent = message.slice(0, i);
+    terminalLog.scrollTop = terminalLog.scrollHeight;
+    if (i < message.length) {
+      window.setTimeout(step, 14);
+    } else {
+      line.classList.remove('typing');
+    }
+  };
+  step();
 }
 
 function setSignalReceived(state) {
@@ -205,6 +224,7 @@ function loadTrack(index) {
   audioPlayer.src = track.src;
   audioPlayer.load();
   configureTrackVideo(track);
+  flickChannel();
 
   writeTrackInfo(track);
   if (trackDurationEl) {
@@ -342,8 +362,13 @@ function updateMascotState(playing) {
 
 function updateTvState(playing) {
   if (!crtStatus || !staticNoise) return;
-  crtStatus.textContent = playing ? mpT('playing', 'PLAYING...') : mpT('noSignal', 'NO SIGNAL');
-  staticNoise.classList.toggle('is-playing', playing);
+  const hasMv = crtTv && crtTv.classList.contains('has-mv');
+  const scope = Boolean(playing && !hasMv);
+  if (crtTv) crtTv.classList.toggle('scope-mode', scope);
+  crtStatus.textContent = playing
+    ? (hasMv ? mpT('playing', 'PLAYING...') : mpT('liveSignal', 'LIVE SIGNAL'))
+    : mpT('noSignal', 'NO SIGNAL');
+  staticNoise.classList.toggle('is-playing', playing && !scope);
 }
 
 function configureTrackVideo(track) {
@@ -724,6 +749,7 @@ async function hackTheSystem(mood) {
       loadTrack(index);
       playTrack();
       appendToTerminalLog(formatMpT('playingTrack', { title: playlist[index].title }, `> SYSTEM: Playing "${playlist[index].title}"`), 'system');
+      appendTrackChip(index);
     } else {
       appendToTerminalLog(formatMpT('notFound', { target }, `> SYSTEM: Could not find "${target}".`), 'system');
     }
@@ -760,3 +786,239 @@ async function init() {
 }
 
 window.addEventListener('DOMContentLoaded', init);
+
+// ========================================================================
+// ==================== 🏗 B1 内装修：入场/频谱/示波器 ====================
+// ========================================================================
+
+// ---------- 入场衔接：从俱乐部之门推门进来 → 灯光渐亮 ----------
+(() => {
+  if (b1ReducedMotion) return;
+  let fromDoor = false;
+  try {
+    fromDoor = sessionStorage.getItem('b1-door') === '1';
+    sessionStorage.removeItem('b1-door');
+  } catch (err) { /* ignore */ }
+  document.body.classList.add(fromDoor ? 'b1-arrival' : 'b1-arrival-short');
+  window.setTimeout(() => {
+    document.body.classList.remove('b1-arrival', 'b1-arrival-short');
+  }, fromDoor ? 4200 : 1600);
+})();
+
+// ---------- 换台抖动：换曲时 CRT 电流一跳 ----------
+function flickChannel() {
+  if (!crtTv || b1ReducedMotion) return;
+  crtTv.classList.remove('channel-flick');
+  void crtTv.offsetWidth;
+  crtTv.classList.add('channel-flick');
+  window.setTimeout(() => crtTv.classList.remove('channel-flick'), 420);
+}
+
+// ---------- AI 歌卡：命中曲目变成可点击的票签 ----------
+function appendTrackChip(index) {
+  if (!terminalLog || !playlist[index]) return;
+  const track = playlist[index];
+  const wrap = document.createElement('div');
+  wrap.className = 'terminal-line chip-line';
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'terminal-chip';
+  chip.innerHTML = `<span class="chip-play" aria-hidden="true">▶</span><span class="chip-title">${track.title}</span><span class="chip-artist">${track.artist || ''}</span>`;
+  chip.addEventListener('click', () => {
+    loadTrack(index);
+    playTrack();
+  });
+  wrap.appendChild(chip);
+  terminalLog.appendChild(wrap);
+  terminalLog.scrollTop = terminalLog.scrollHeight;
+}
+
+// ---------- 频谱引擎：真频谱（R2 开 CORS 后自动启用）/ 节拍合成兜底 ----------
+const spectrumBar = document.getElementById('spectrumBar');
+const crtScope = document.getElementById('crtScope');
+let specMode = null;            // 'real' | 'synthetic'
+let audioCtx = null;
+let analyserNode = null;
+let freqData = null;
+let waveData = null;
+let specRaf = null;
+let synthBars = null;
+
+function sizeCanvas(canvas) {
+  if (!canvas) return null;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width === 0) return null;
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  return canvas.getContext('2d');
+}
+
+async function detectAudioCors() {
+  const probe = playlist[0] && playlist[0].src;
+  if (!probe) return false;
+  try {
+    const res = await fetch(probe, { method: 'GET', headers: { Range: 'bytes=0-0' }, mode: 'cors' });
+    return res.ok || res.status === 206;
+  } catch (err) {
+    return false;
+  }
+}
+
+function ensureAudioGraph() {
+  if (analyserNode || specMode !== 'real') return;
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new Ctx();
+    const source = audioCtx.createMediaElementSource(audioPlayer);
+    analyserNode = audioCtx.createAnalyser();
+    analyserNode.fftSize = 256;
+    analyserNode.smoothingTimeConstant = 0.78;
+    source.connect(analyserNode);
+    analyserNode.connect(audioCtx.destination);
+    freqData = new Uint8Array(analyserNode.frequencyBinCount);
+    waveData = new Uint8Array(analyserNode.fftSize);
+  } catch (err) {
+    specMode = 'synthetic'; // 图谱失败不影响出声
+  }
+}
+
+// 节拍合成：无 CORS 时的兜底——随机游走 + 节拍脉冲，视觉成立但非真实频率
+function synthFrame(bars, t) {
+  if (!synthBars) synthBars = new Float32Array(bars).fill(0.15);
+  const beat = Math.pow(Math.max(0, Math.sin(t * 4.4)), 6);
+  for (let i = 0; i < bars; i++) {
+    const bias = 1 - i / bars;                       // 低频端更活跃
+    const target = isPlaying
+      ? Math.min(1, 0.12 + bias * 0.45 * (0.55 + 0.45 * Math.sin(t * 2.1 + i * 1.7)) + beat * bias * 0.5 + Math.random() * 0.12)
+      : 0;
+    synthBars[i] += (target - synthBars[i]) * (target > synthBars[i] ? 0.4 : 0.12);
+  }
+  return synthBars;
+}
+
+function drawSpectrum() {
+  specRaf = null;
+  const barsCtx = spectrumBar && spectrumBar._ctx;
+  const t = performance.now() / 1000;
+  const BARS = 40;
+  let levels;
+
+  if (specMode === 'real' && analyserNode) {
+    analyserNode.getByteFrequencyData(freqData);
+    levels = [];
+    const usable = Math.floor(freqData.length * 0.72); // 掐掉极高频空段
+    for (let i = 0; i < BARS; i++) {
+      const start = Math.floor((i / BARS) * usable);
+      const end = Math.max(start + 1, Math.floor(((i + 1) / BARS) * usable));
+      let sum = 0;
+      for (let j = start; j < end; j++) sum += freqData[j];
+      levels.push(sum / (end - start) / 255);
+    }
+  } else {
+    levels = synthFrame(BARS, t);
+  }
+
+  let alive = false;
+
+  if (barsCtx) {
+    const w = spectrumBar.width;
+    const h = spectrumBar.height;
+    barsCtx.clearRect(0, 0, w, h);
+    const gap = Math.max(1, w / BARS * 0.28);
+    const bw = (w - gap * (BARS - 1)) / BARS;
+    for (let i = 0; i < BARS; i++) {
+      const v = Math.max(0, Math.min(1, levels[i]));
+      if (v > 0.015) alive = true;
+      const bh = Math.max(2, v * (h - 4));
+      const x = i * (bw + gap);
+      const grad = barsCtx.createLinearGradient(0, h, 0, h - bh);
+      grad.addColorStop(0, 'rgba(204, 255, 0, 0.95)');
+      grad.addColorStop(1, v > 0.72 ? 'rgba(255, 42, 0, 0.95)' : 'rgba(204, 255, 0, 0.45)');
+      barsCtx.fillStyle = grad;
+      barsCtx.fillRect(x, h - bh, bw, bh);
+    }
+  }
+
+  // CRT 示波器（无 MV 曲目）——画布显形后才能量到尺寸，这里懒初始化
+  if (crtTv && crtTv.classList.contains('scope-mode') && crtScope && !crtScope._ctx) {
+    crtScope._ctx = sizeCanvas(crtScope);
+  }
+  if (crtTv && crtTv.classList.contains('scope-mode') && crtScope && crtScope._ctx) {
+    const c = crtScope._ctx;
+    const w = crtScope.width;
+    const h = crtScope.height;
+    c.fillStyle = 'rgba(4, 8, 2, 0.32)'; // 荧光余晖
+    c.fillRect(0, 0, w, h);
+    c.beginPath();
+    c.lineWidth = Math.max(2, h / 160);
+    c.strokeStyle = 'rgba(204, 255, 0, 0.92)';
+    c.shadowColor = 'rgba(204, 255, 0, 0.8)';
+    c.shadowBlur = 12;
+    const N = 160;
+    for (let i = 0; i <= N; i++) {
+      const x = (i / N) * w;
+      let y;
+      if (specMode === 'real' && analyserNode) {
+        analyserNode.getByteTimeDomainData(waveData);
+        y = (waveData[Math.floor((i / N) * (waveData.length - 1))] / 255) * h;
+      } else {
+        const amp = isPlaying ? 0.22 + 0.16 * Math.sin(t * 4.4) : 0.02;
+        y = h / 2 + Math.sin(i * 0.19 + t * 7) * h * amp * Math.sin(i * 0.031 + t * 1.3);
+      }
+      if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+    }
+    c.stroke();
+    c.shadowBlur = 0;
+    alive = true;
+  }
+
+  if (isPlaying || alive) {
+    specRaf = requestAnimationFrame(drawSpectrum);
+  }
+}
+
+function startSpectrum() {
+  if (b1ReducedMotion) return;
+  if (spectrumBar && !spectrumBar._ctx) spectrumBar._ctx = sizeCanvas(spectrumBar);
+  if (crtScope && !crtScope._ctx) crtScope._ctx = sizeCanvas(crtScope);
+  ensureAudioGraph();
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  if (!specRaf) specRaf = requestAnimationFrame(drawSpectrum);
+}
+
+window.addEventListener('resize', () => {
+  if (spectrumBar && spectrumBar._ctx) spectrumBar._ctx = sizeCanvas(spectrumBar);
+  if (crtScope && crtScope._ctx) crtScope._ctx = sizeCanvas(crtScope);
+});
+
+// 播放状态钩子：不改原函数签名，包一层
+const b1BaseUpdatePlaybackState = updatePlaybackState;
+updatePlaybackState = function (playing) {
+  b1BaseUpdatePlaybackState(playing);
+  if (playing) startSpectrum();
+};
+
+// CORS 探测：真频谱可用时给 audio 挂 crossOrigin（必须在设 src 前定型）
+(async () => {
+  const waitPlaylist = () => new Promise((resolve) => {
+    const check = () => (playlist.length ? resolve() : window.setTimeout(check, 200));
+    check();
+  });
+  await waitPlaylist();
+  const corsOk = await detectAudioCors();
+  specMode = corsOk ? 'real' : 'synthetic';
+  if (!corsOk) {
+    console.info('[B1] Spectrum running in synthetic mode — enable CORS on the R2 bucket to unlock real frequency data (the CORS error above is this probe, playback is unaffected).');
+  }
+  if (corsOk) {
+    audioPlayer.crossOrigin = 'anonymous';
+    // 已加载的曲目重挂一次让 crossOrigin 生效
+    const src = audioPlayer.src;
+    if (src && !isPlaying) {
+      audioPlayer.src = src;
+      audioPlayer.load();
+    }
+  }
+  window.__b1 = { specMode, startSpectrum, flickChannel, appendTrackChip };
+})();

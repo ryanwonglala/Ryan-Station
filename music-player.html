@@ -77,6 +77,7 @@ DURATION: <span class="track-duration">0:00</span>
     <section class="visual-stack">
       <div class="crt-tv">
         <video id="mv-player" class="crt-video" muted playsinline preload="metadata"></video>
+        <canvas id="crtScope" class="crt-scope" aria-hidden="true"></canvas>
         <div class="static-noise"></div>
         <p class="crt-status" data-i18n="musicPlayer.noSignal">NO SIGNAL</p>
       </div>
@@ -85,6 +86,7 @@ DURATION: <span class="track-duration">0:00</span>
           <span id="currentTimeDisplay">0:00</span>
           <span id="totalTimeDisplay">0:00</span>
         </div>
+        <canvas id="spectrumBar" class="spectrum-bar" aria-hidden="true"></canvas>
         <label for="seekBar" class="seek-label" data-i18n="musicPlayer.signalTracking">SIGNAL TRACKING</label>
         <input type="range" id="seekBar" min="0" max="100" value="0">
         <div class="button-grid">

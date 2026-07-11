@@ -1567,6 +1567,7 @@ const closeClubDoor = () => {
 
 const enterClub = () => {
   if (clubDoorEntering) return;
+  try { sessionStorage.setItem('b1-door', '1'); } catch (err) { /* 隐私模式忽略 */ }
   if (!clubDoor || clubReducedMotion) {
     window.location.href = 'music-player.html';
     return;

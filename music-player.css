@@ -995,3 +995,304 @@ main.brutalist-container {
   fill: currentColor;
   vertical-align: -0.125em;
 }
+
+/* ==========================================================================
+   🏗 B1 内装修 —— 工艺重制层
+   保留 Acid Glitch 灵魂（酸黄/信号红/offset 阴影），升级到霓虹质感：
+   入场灯光渐亮 / 霓虹管标题 / CRT 玻璃与换台抖动 / 频谱与示波器 / 终端打磨
+   ========================================================================== */
+
+/* --- 霓虹管标题：多层辉光 + 偶发电流抖动 --- */
+.zone-heading h1 {
+  color: #efffcc;
+  text-shadow:
+    0 0 6px rgba(204, 255, 0, 0.9),
+    0 0 18px rgba(204, 255, 0, 0.55),
+    0 0 42px rgba(204, 255, 0, 0.3),
+    4px 4px 0 var(--alert-red);
+  animation: b1NeonBuzz 9s linear 6s infinite;
+}
+
+@keyframes b1NeonBuzz {
+  0%, 93.5%, 95.2%, 100% { opacity: 1; }
+  94% { opacity: 0.68; }
+  94.6% { opacity: 0.9; }
+}
+
+/* --- 按钮：通电辉光 --- */
+.glitch-btn {
+  transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.glitch-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--alert-red), 0 0 18px rgba(204, 255, 0, 0.55);
+}
+
+.glitch-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--alert-red);
+}
+
+/* --- CRT：玻璃曲率高光 + 换台抖动 --- */
+.crt-tv::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 30% 12%, rgba(255, 255, 255, 0.13), transparent 46%),
+    radial-gradient(150% 120% at 50% 50%, transparent 62%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+@keyframes b1ChannelFlick {
+  0% { filter: brightness(1); transform: none; }
+  18% { filter: brightness(2.1) saturate(0.2); transform: translateY(-2px) skewX(0.6deg); }
+  36% { filter: brightness(0.55); transform: translateY(1px); }
+  55% { filter: brightness(1.5); transform: none; }
+  100% { filter: brightness(1); }
+}
+
+.crt-tv.channel-flick {
+  animation: b1ChannelFlick 380ms steps(6, end);
+}
+
+/* --- 示波器模式：无 MV 曲目，信号活了 --- */
+.crt-scope {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 1;
+  background: #040802;
+}
+
+.crt-tv.scope-mode .crt-scope {
+  display: block;
+}
+
+.crt-tv.scope-mode .static-noise {
+  opacity: 0;
+}
+
+.crt-tv.scope-mode .crt-status {
+  inset: auto auto 10px 14px;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  opacity: 0.85;
+  animation: b1StatusBlink 2.4s steps(1, end) infinite;
+}
+
+@keyframes b1StatusBlink {
+  0%, 70%, 100% { opacity: 0.85; }
+  78%, 92% { opacity: 0.3; }
+}
+
+/* --- 频谱条：SIGNAL TRACKING 上方 --- */
+.spectrum-bar {
+  display: block;
+  width: 100%;
+  height: 46px;
+  margin: 4px 0 10px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(204, 255, 0, 0.28);
+  box-shadow: inset 0 0 14px rgba(204, 255, 0, 0.08);
+}
+
+/* --- 黑胶：固定光斑（唱片转、光不转，物理正确） --- */
+.vinyl-frame {
+  position: relative;
+}
+
+.vinyl-frame::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 80%;
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(from 24deg,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.14) 22deg,
+    transparent 58deg,
+    transparent 180deg,
+    rgba(255, 255, 255, 0.07) 206deg,
+    transparent 238deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- 终端：CRT 字形光 + 打字光标 + 歌卡 --- */
+.terminal-log .terminal-line {
+  text-shadow: 0 0 6px rgba(204, 255, 0, 0.35);
+}
+
+.terminal-line.typing::after {
+  content: '█';
+  margin-left: 2px;
+  animation: b1Caret 640ms steps(1, end) infinite;
+}
+
+@keyframes b1Caret {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+
+.terminal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
+  padding: 7px 14px;
+  background: rgba(204, 255, 0, 0.08);
+  border: 1px solid var(--acid-lime);
+  color: var(--acid-lime);
+  font: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--alert-red);
+  transition: transform 140ms ease, background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.terminal-chip:hover {
+  background: var(--acid-lime);
+  color: #050505;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--alert-red), 0 0 18px rgba(204, 255, 0, 0.5);
+}
+
+.terminal-chip .chip-play {
+  font-size: 0.7em;
+}
+
+.terminal-chip .chip-artist {
+  opacity: 0.65;
+  font-size: 0.85em;
+}
+
+/* --- 入场「灯光渐亮」：从俱乐部之门推门进来 --- */
+@keyframes b1Blackout {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes b1RiseIn {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes b1NeonIgnite {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  13% { opacity: 0.15; }
+  21% { opacity: 1; }
+  27% { opacity: 0.3; }
+  36%, 100% { opacity: 1; }
+}
+
+@keyframes b1CrtPowerOn {
+  0% { transform: scaleY(0.006) scaleX(0.6); filter: brightness(4); }
+  42% { transform: scaleY(0.006) scaleX(1); filter: brightness(4); }
+  70% { transform: scaleY(1.04) scaleX(1); filter: brightness(1.6); }
+  100% { transform: none; filter: brightness(1); }
+}
+
+@keyframes b1GridUp {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 黑场幕布 */
+body.b1-arrival::before,
+body.b1-arrival-short::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: #030303;
+  z-index: 60;
+  pointer-events: none;
+  animation: b1Blackout 700ms ease forwards;
+}
+
+body.b1-arrival::before {
+  animation-delay: 900ms;
+  animation-duration: 900ms;
+}
+
+/* 完整版（推门进来）：低音一震 → 各设备依次通电 */
+body.b1-arrival .grid-warp {
+  animation: grid-scroll 10s linear infinite, b1GridUp 1200ms ease 1100ms backwards;
+}
+
+body.b1-arrival main.brutalist-container {
+  animation: b1RiseIn 800ms cubic-bezier(0.2, 0.7, 0.3, 1) 1000ms backwards;
+}
+
+body.b1-arrival .zone-heading h1 {
+  animation: b1NeonIgnite 1400ms steps(1, end) 1500ms backwards, b1NeonBuzz 9s linear 6s infinite;
+}
+
+body.b1-arrival .crt-tv {
+  animation: b1CrtPowerOn 900ms cubic-bezier(0.2, 0.7, 0.3, 1) 2100ms backwards;
+}
+
+body.b1-arrival .vinyl-wrapper {
+  animation: b1RiseIn 700ms ease 1900ms backwards;
+}
+
+body.b1-arrival .glitch-controls {
+  animation: b1RiseIn 700ms ease 2400ms backwards;
+}
+
+body.b1-arrival .ai-terminal {
+  animation: b1RiseIn 700ms ease 2700ms backwards;
+}
+
+body.b1-arrival .playlist-sidebar,
+body.b1-arrival .back-home-btn,
+body.b1-arrival .music-language-switcher {
+  animation: b1RiseIn 600ms ease 3100ms backwards;
+}
+
+/* 精简版（直接访问）：整体一次亮起 */
+body.b1-arrival-short main.brutalist-container,
+body.b1-arrival-short .playlist-sidebar,
+body.b1-arrival-short .back-home-btn,
+body.b1-arrival-short .music-language-switcher {
+  animation: b1RiseIn 700ms cubic-bezier(0.2, 0.7, 0.3, 1) 350ms backwards;
+}
+
+/* --- 无动画偏好：全部退场 --- */
+@media (prefers-reduced-motion: reduce) {
+  .zone-heading h1,
+  .crt-tv.channel-flick,
+  .crt-tv.scope-mode .crt-status,
+  .terminal-line.typing::after {
+    animation: none;
+  }
+
+  .spectrum-bar,
+  .crt-scope {
+    display: none;
+  }
+
+  .crt-tv.scope-mode .static-noise {
+    opacity: 1;
+  }
+
+  body.b1-arrival::before,
+  body.b1-arrival-short::before {
+    display: none;
+  }
+}
+
+/* --- 移动端 --- */
+@media (max-width: 720px) {
+  .spectrum-bar {
+    height: 34px;
+  }
+}
