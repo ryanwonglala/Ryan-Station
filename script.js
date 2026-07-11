@@ -1482,45 +1482,58 @@ loadSavedTheme();
 // ========================================================================
 
 const musicTrigger = document.getElementById('music-trigger');
-const musicModal = document.getElementById('music-confirm-modal');
-const musicCancelBtn = document.getElementById('music-cancel-btn');
-const musicConfirmBtn = document.getElementById('music-confirm-btn');
+const clubDoor = document.getElementById('club-door');
+const clubEnterBtn = document.getElementById('club-door-enter');
+const clubStayBtn = document.getElementById('club-door-stay');
+const clubReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let clubDoorActive = false;
+let clubDoorEntering = false;
+let clubDoorLastFocus = null;
 
-// 点击Music Zone按钮显示弹窗
+const openClubDoor = () => {
+  if (!clubDoor || clubDoorActive) return;
+  clubDoorActive = true;
+  clubDoorLastFocus = document.activeElement;
+  clubDoor.classList.add('is-active');
+  clubDoor.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('club-door-lock');
+  if (clubEnterBtn) clubEnterBtn.focus();
+};
+
+const closeClubDoor = () => {
+  if (!clubDoor || !clubDoorActive || clubDoorEntering) return;
+  clubDoorActive = false;
+  clubDoor.classList.remove('is-active');
+  clubDoor.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('club-door-lock');
+  if (clubDoorLastFocus && clubDoorLastFocus.focus) clubDoorLastFocus.focus();
+};
+
+const enterClub = () => {
+  if (clubDoorEntering) return;
+  if (!clubDoor || clubReducedMotion) {
+    window.location.href = 'music-player.html';
+    return;
+  }
+  clubDoorEntering = true;
+  clubDoor.classList.add('is-entering');
+  window.setTimeout(() => {
+    window.location.href = 'music-player.html';
+  }, 980);
+};
+
 if (musicTrigger) {
   musicTrigger.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (musicModal) {
-      musicModal.classList.add('show');
-    }
+    openClubDoor();
   });
 }
-
-// 点击取消按钮关闭弹窗
-if (musicCancelBtn) {
-  musicCancelBtn.addEventListener('click', () => {
-    if (musicModal) {
-      musicModal.classList.remove('show');
-    }
-  });
-}
-
-// 点击确认按钮跳转到音乐页面
-if (musicConfirmBtn) {
-  musicConfirmBtn.addEventListener('click', () => {
-    window.location.href = 'music-player.html';
-  });
-}
-
-// 点击弹窗外部区域关闭弹窗
-if (musicModal) {
-  musicModal.addEventListener('click', (e) => {
-    if (e.target === musicModal) {
-      musicModal.classList.remove('show');
-    }
-  });
-}
+if (clubStayBtn) clubStayBtn.addEventListener('click', closeClubDoor);
+if (clubEnterBtn) clubEnterBtn.addEventListener('click', enterClub);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && clubDoorActive) closeClubDoor();
+});
 
 // ========================================================================
 // ====================== 📋 Contact Copy Buttons ==========================

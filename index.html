@@ -533,23 +533,23 @@
 
 
     <!-- 音乐区域确认弹窗 -->
-    <div id="music-confirm-modal" class="music-modal">
-      <div class="music-modal-content">
-        <div class="music-modal-icon">
-          <svg class="icon" width="36" height="36" aria-hidden="true"><use href="assets/icons.svg#icon-music"></use></svg>
-        </div>
-        <h2 data-i18n="musicModal.title">Please Note</h2>
-        <h3 data-i18n="musicModal.subtitle">Music Zone</h3>
-        <p data-i18n="musicModal.body">You are about to enter the leisure zone</p>
-        <p class="english" data-i18n="musicModal.bodySecond">Continue to the music player?</p>
-        <div class="music-modal-buttons">
-          <button id="music-cancel-btn" class="music-modal-btn cancel">
-            <span data-i18n="common.no">No</span>
-          </button>
-          <button id="music-confirm-btn" class="music-modal-btn confirm">
-            <span data-i18n="common.yes">Yes</span>
-          </button>
-        </div>
+    <div id="club-door" class="club-door" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Music Zone" data-i18n-aria-label="musicModal.subtitle">
+      <div class="club-door-glow" aria-hidden="true"></div>
+      <div class="club-door-panel club-door-left" aria-hidden="true">
+        <span class="club-porthole"></span>
+        <span class="club-plate">B1 · MUSIC ZONE</span>
+      </div>
+      <div class="club-door-panel club-door-right" aria-hidden="true">
+        <span class="club-porthole"></span>
+      </div>
+      <div class="club-sign">
+        <p class="club-neon" aria-hidden="true">AFTER HOURS</p>
+        <p class="club-sub" data-i18n="musicModal.body">You are about to enter the leisure zone</p>
+        <p class="club-sub2" data-i18n="musicModal.bodySecond">Continue to the music player?</p>
+      </div>
+      <div class="club-actions">
+        <button id="club-door-stay" class="club-btn club-btn-stay" type="button"><span data-i18n="musicModal.stay">Not now</span></button>
+        <button id="club-door-enter" class="club-btn club-btn-enter" type="button"><span data-i18n="musicModal.enter">Step in</span><span class="club-btn-arrow" aria-hidden="true">→</span></button>
       </div>
     </div>
 

@@ -5572,3 +5572,296 @@ body.hero-reveal #shader-background {
     gap: 36px;
   }
 }
+
+/* ==========================================================================
+   灯光工程C · 俱乐部之门 Club Door —— Music Zone 开门过场
+   点 MUSIC ZONE：两扇站内金属门合在眼前，AFTER HOURS 霓虹点亮，
+   门缝与舷窗漏出酸性青粉光；推门进入 → 双门滑开、光涌出、落进音乐页
+   ========================================================================== */
+
+.club-door {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+.club-door.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.club-door-lock {
+  overflow: hidden;
+}
+
+/* --- 门后光场：酸性青粉（全站唯一允许霓虹撒野的地方） --- */
+.club-door-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 50% 46%, rgba(232, 87, 160, 0.5), transparent 60%),
+    radial-gradient(ellipse 46% 64% at 50% 54%, rgba(116, 215, 232, 0.55), transparent 58%),
+    #06070c;
+  opacity: 0.5;
+  transform: scale(0.98);
+  transition: opacity 800ms var(--ease-station), transform 1100ms var(--ease-station);
+}
+
+.club-door.is-entering .club-door-glow {
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+/* --- 双门板：站内金属 + 内嵌框线 + 朝缝一侧霓虹沿边 --- */
+.club-door-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  background: linear-gradient(102deg, #12151f 0%, #0c0f17 55%, #0e111a 100%);
+  box-shadow: inset 0 0 0 1px rgba(234, 229, 214, 0.06), inset 0 0 80px rgba(0, 0, 0, 0.55);
+  transition: transform 980ms var(--ease-station) 120ms;
+}
+
+.club-door-left { left: 0; }
+.club-door-right { right: 0; }
+
+/* 内嵌门框线 */
+.club-door-panel::before {
+  content: '';
+  position: absolute;
+  inset: 22px;
+  border: 1px solid rgba(234, 229, 214, 0.08);
+  pointer-events: none;
+}
+
+/* 门缝霓虹沿边（左右门朝中缝那条边） */
+.club-door-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(116, 215, 232, 0.9), rgba(232, 87, 160, 0.9));
+  box-shadow: 0 0 18px rgba(116, 215, 232, 0.55), 0 0 34px rgba(232, 87, 160, 0.35);
+  animation: clubSeamPulse 3.6s ease-in-out infinite;
+}
+
+.club-door-left::after { right: 0; }
+.club-door-right::after { left: 0; }
+
+@keyframes clubSeamPulse {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+.club-door.is-entering .club-door-left { transform: translateX(-104%); }
+.club-door.is-entering .club-door-right { transform: translateX(104%); }
+
+/* --- 舷窗：门后光从圆窗里漏出来 --- */
+.club-porthole {
+  position: absolute;
+  top: 44%;
+  width: clamp(64px, 8vw, 104px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(234, 229, 214, 0.14);
+  box-shadow: inset 0 0 0 5px #0a0d14, 0 0 26px rgba(116, 215, 232, 0.2);
+  background:
+    linear-gradient(to bottom, transparent 48.5%, rgba(234, 229, 214, 0.14) 50%, transparent 51.5%),
+    radial-gradient(circle at 42% 46%, rgba(116, 215, 232, 0.5), transparent 62%),
+    radial-gradient(circle at 60% 58%, rgba(232, 87, 160, 0.42), transparent 66%),
+    #0a0c13;
+  filter: saturate(1.1);
+}
+
+.club-door-left .club-porthole { right: clamp(36px, 6vw, 96px); }
+.club-door-right .club-porthole { left: clamp(36px, 6vw, 96px); }
+
+/* --- 门牌 --- */
+.club-plate {
+  position: absolute;
+  top: 38px;
+  left: 40px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.32em;
+  color: rgba(234, 229, 214, 0.5);
+  border: 1px solid rgba(234, 229, 214, 0.16);
+  padding: 7px 14px 6px 16px;
+  white-space: nowrap;
+}
+
+/* --- 霓虹招牌 --- */
+.club-sign {
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 340ms ease;
+  width: min(92vw, 900px);
+}
+
+.club-neon {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(2.6rem, 6.5vw, 5rem);
+  letter-spacing: 0.06em;
+  color: #eafcff;
+  text-shadow:
+    0 0 8px rgba(116, 215, 232, 0.9),
+    0 0 24px rgba(116, 215, 232, 0.6),
+    0 0 64px rgba(116, 215, 232, 0.35),
+    0 0 110px rgba(232, 87, 160, 0.3);
+  margin-bottom: 18px;
+}
+
+.club-door.is-active .club-neon {
+  animation: clubNeonIn 1100ms steps(1, end) both, clubNeonBuzz 7s linear 4s infinite;
+}
+
+@keyframes clubNeonIn {
+  0% { opacity: 0; }
+  9% { opacity: 1; }
+  14% { opacity: 0.2; }
+  22% { opacity: 1; }
+  28% { opacity: 0.35; }
+  36% { opacity: 1; }
+  52% { opacity: 0.85; }
+  60% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes clubNeonBuzz {
+  0%, 91%, 96%, 100% { opacity: 1; }
+  93% { opacity: 0.72; }
+  94.5% { opacity: 0.95; }
+}
+
+.club-sub {
+  font-size: 0.95rem;
+  color: rgba(234, 229, 214, 0.85);
+  margin-bottom: 6px;
+}
+
+.club-sub2 {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(234, 229, 214, 0.5);
+}
+
+/* --- 行动按钮 --- */
+.club-actions {
+  position: absolute;
+  left: 50%;
+  bottom: 20%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 2;
+  transition: opacity 300ms ease;
+}
+
+.club-door.is-entering .club-sign,
+.club-door.is-entering .club-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.club-btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 240ms ease, color 240ms ease, border-color 240ms ease, box-shadow 240ms ease, transform 240ms ease;
+}
+
+.club-btn-enter {
+  color: #eafcff;
+  background: rgba(116, 215, 232, 0.08);
+  border: 1px solid rgba(116, 215, 232, 0.65);
+  box-shadow: 0 0 16px rgba(116, 215, 232, 0.25), inset 0 0 12px rgba(116, 215, 232, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.club-btn-enter:hover,
+.club-btn-enter:focus-visible {
+  background: rgba(116, 215, 232, 0.92);
+  color: #06121a;
+  box-shadow: 0 0 30px rgba(116, 215, 232, 0.55);
+  transform: translateY(-2px);
+}
+
+.club-btn-arrow {
+  transition: transform 240ms ease;
+}
+
+.club-btn-enter:hover .club-btn-arrow {
+  transform: translateX(4px);
+}
+
+.club-btn-stay {
+  color: rgba(234, 229, 214, 0.66);
+  background: transparent;
+  border: 1px solid rgba(234, 229, 214, 0.22);
+}
+
+.club-btn-stay:hover,
+.club-btn-stay:focus-visible {
+  color: rgba(234, 229, 214, 0.95);
+  border-color: rgba(234, 229, 214, 0.5);
+}
+
+/* --- 进门瞬间的低频一震 --- */
+@keyframes clubThump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.012); }
+  100% { transform: scale(1); }
+}
+
+.club-door.is-entering {
+  animation: clubThump 320ms ease-out;
+}
+
+/* --- 移动端 --- */
+@media (max-width: 640px) {
+  .club-sign { top: 16%; }
+  .club-plate { display: none; }
+  .club-porthole { top: 40%; }
+  .club-actions {
+    bottom: 14%;
+    width: 88vw;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* --- 无动画偏好：静态门 + 直接跳转（JS 已短路） --- */
+@media (prefers-reduced-motion: reduce) {
+  .club-door-panel::after,
+  .club-door.is-active .club-neon,
+  .club-door.is-entering {
+    animation: none;
+  }
+
+  .club-door,
+  .club-door-panel,
+  .club-door-glow {
+    transition: none;
+  }
+}

@@ -271,6 +271,8 @@
         subtitle: 'Music Zone',
         body: 'You are about to enter the leisure zone',
         bodySecond: 'Continue to the music player?',
+        enter: 'Step in',
+        stay: 'Not now',
       },
       musicPlayer: {
         meta: {
@@ -602,6 +604,8 @@
         subtitle: '音乐区',
         body: '即将进入休闲区域',
         bodySecond: '是否继续前往音乐播放器？',
+        enter: '推门进入',
+        stay: '先不去',
       },
       musicPlayer: {
         meta: {
