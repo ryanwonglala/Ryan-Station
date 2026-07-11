@@ -2117,3 +2117,30 @@ document.addEventListener('DOMContentLoaded', () => {
     classWatch.observe(section, { attributes: true, attributeFilter: ['class'] });
   });
 })();
+
+// ========================================================================
+// ============ 🛠 灯光工程B：站长档案卡 · 蓝图机械臂自绘触发 ==============
+// 滚到 About 档案卡时触发一次 is-drawn，工程图按阶段自己画出来
+// ========================================================================
+
+(() => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const blueprint = document.querySelector('.guild-blueprint');
+    if (!blueprint) return;
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      blueprint.classList.add('is-drawn');
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          blueprint.classList.add('is-drawn');
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.35 });
+    io.observe(blueprint);
+  });
+})();

@@ -25,6 +25,11 @@
         title: 'Engineering in Motion',
         intro: 'Robotics & Automation engineer with an MSc from SUTD. Before robotics I worked in consumer-electronics manufacturing — NPI, DFM, and engineering documentation at Foxconn and Luxshare-ICT. Current focus: mobile robotics, ROS-based system integration, navigation, visual recognition, and practical automation workflows.',
         capabilitiesLabel: 'Capabilities',
+        fileLabel: 'Station Master · Personnel File',
+        name: 'Ryan Wong',
+        class: 'Robotics & Automation Engineer',
+        affil: 'MSc, SUTD · Class of 2026',
+        blueprintAria: 'Self-drawing blueprint of a 6-DOF robotic arm',
         cards: [
           {
             title: 'Robotics & Automation',
@@ -351,6 +356,11 @@
         title: '让工程动起来',
         intro: '机器人与自动化工程师，SUTD 硕士。进入机器人领域前在消费电子制造业工作——在富士康与立讯精密负责 NPI、DFM 与工程文档。当前方向：移动机器人、基于 ROS 的系统集成、导航、视觉识别与可落地的自动化流程。',
         capabilitiesLabel: '能力',
+        fileLabel: '站长档案 · Personnel File',
+        name: 'Ryan Wong',
+        class: '机器人与自动化工程师',
+        affil: '新加坡科技设计大学（SUTD）硕士 · 2026 届',
+        blueprintAria: '一张自动绘制的六自由度机械臂蓝图',
         cards: [
           {
             title: '机器人与自动化',
