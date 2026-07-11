@@ -821,8 +821,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const goNext = () => goToIndex(activeIndex + 1);
   const goPrev = () => goToIndex(activeIndex - 1);
 
+  // 灯光工程A：横向站台展廊经此驱动轮播状态与 detail（gallery 模块在文件尾）
+  window.__stationGallery = {
+    openDetail: (i) => openDetail(i),
+    syncIndex: (i) => {
+      const total = copyItems.length;
+      const bounded = ((i % total) + total) % total;
+      if (bounded === activeIndex) return;
+      activeIndex = bounded;
+      updateClasses();
+    },
+  };
+
   document.addEventListener('keydown', (event) => {
     if (detailOpen) return;
+    if (projectsSection.classList.contains('gallery-mode')) return;
     if (!projectsSection.matches(':hover') && !projectsSection.contains(document.activeElement)) {
       return;
     }
@@ -836,19 +849,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const projectsObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
+      // gallery 模式下区块高达 480vh，最大相交比 ~0.2，用低阈值判定"在站台上"
+      const enough = projectsSection.classList.contains('gallery-mode')
+        ? entry.intersectionRatio > 0.04
+        : entry.intersectionRatio >= 0.5;
+      if (entry.isIntersecting && enough) {
         projectsSection.classList.add('is-active');
       } else {
         projectsSection.classList.remove('is-active');
       }
     });
     applyVideoPlayback();
-  }, { threshold: 0.5 });
+  }, { threshold: [0.05, 0.5] });
 
   projectsObserver.observe(projectsSection);
 
   projectsSection.addEventListener('wheel', (event) => {
     if (detailOpen) return;
+    if (projectsSection.classList.contains('gallery-mode')) return;
     const useHorizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
     if (!useHorizontal && !event.shiftKey) {
       return;
@@ -877,6 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   projectsSection.addEventListener('pointerdown', (event) => {
     if (detailOpen) return;
+    if (projectsSection.classList.contains('gallery-mode')) return;
     if (event.button !== 0) return;
     if (event.target.closest('button, a, input, textarea, select')) {
       return;
@@ -1936,5 +1955,117 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
+  });
+})();
+
+// ========================================================================
+// ============ 🚉 灯光工程A：Projects 横向站台展廊（桌面 ≥1024） ==========
+// 滚动驱动整屏横移：四座灯箱月台（巨型编号 + 车窗视频 + 文案 + 检票 CTA）
+// 移动端保持 T209 纵向面板；is-detail 期间展廊隐藏、由既有 detail 系统接管
+// ========================================================================
+
+(() => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth < 1024) return;
+    const section = document.getElementById('projects');
+    const frame = section?.querySelector('.projects-frame');
+    const copies = section ? [...section.querySelectorAll('.project-copy')] : [];
+    const videos = section ? [...section.querySelectorAll('.sphere-video')] : [];
+    if (!section || !frame || copies.length !== 4 || videos.length !== 4) return;
+
+    section.classList.add('gallery-mode');
+
+    const track = document.createElement('div');
+    track.className = 'gallery-track';
+
+    const t = (key, fallback) =>
+      (window.PortfolioI18n && window.PortfolioI18n.t(key)) || fallback;
+
+    copies.forEach((copy, i) => {
+      const panel = document.createElement('article');
+      panel.className = 'gallery-panel';
+
+      const num = document.createElement('span');
+      num.className = 'gallery-panel-num';
+      num.setAttribute('aria-hidden', 'true');
+      num.textContent = String(i + 1).padStart(2, '0');
+      panel.appendChild(num);
+
+      const left = document.createElement('div');
+      left.className = 'gallery-panel-copy';
+      left.appendChild(copy); // 移动既有文案节点：i18n 刷新机制照常工作
+
+      const cta = document.createElement('button');
+      cta.type = 'button';
+      cta.className = 'gallery-panel-cta';
+      cta.innerHTML = `<span data-i18n="projects.viewCase">${t('projects.viewCase', 'View case file')}</span><span class="cta-arrow" aria-hidden="true">→</span>`;
+      cta.addEventListener('click', () => {
+        const api = window.__stationGallery;
+        if (!api) return;
+        // 先把纵向滚动停在展廊区起点，避免 is-detail 收缩 100vh 时跳位
+        window.scrollTo({ top: section.offsetTop, behavior: 'auto' });
+        api.openDetail(i);
+      });
+      left.appendChild(cta);
+      panel.appendChild(left);
+
+      const windowEl = document.createElement('div');
+      windowEl.className = 'gallery-window';
+      windowEl.appendChild(videos[i]); // 移动视频节点：class 保留，播放调度照常
+      panel.appendChild(windowEl);
+
+      track.appendChild(panel);
+    });
+
+    frame.appendChild(track);
+
+    // 进度指示挪进 sticky 视口底部（若存在）
+    const progressNav = section.querySelector('.projects-nav');
+    if (progressNav) frame.appendChild(progressNav);
+    const progressCurrent = section.querySelector('.project-progress-current');
+
+    const N = copies.length;
+    let target = 0;
+    let current = 0;
+    let lastIdx = -1;
+    let raf = null;
+
+    const apply = () => {
+      raf = null;
+      // 惯性趋近：滚动映射的横移带一点重量感
+      current = prefersReducedMotion ? target : current + (target - current) * 0.14;
+      if (Math.abs(target - current) < 0.1) current = target;
+      track.style.transform = `translate3d(${-current}px, 0, 0)`;
+      if (Math.abs(target - current) >= 0.1) raf = requestAnimationFrame(apply);
+    };
+
+    const onScroll = () => {
+      if (section.classList.contains('is-detail')) {
+        frame.style.transform = '';
+        return;
+      }
+      const vw = window.innerWidth;
+      const total = section.offsetHeight - window.innerHeight;
+      // 手动钉扎：把画框钉在视口内（sticky 在本页环境不生效）
+      const pinY = Math.min(Math.max(window.scrollY - section.offsetTop, 0), total);
+      frame.style.transform = `translate3d(0, ${pinY}px, 0)`;
+      const p = total > 0
+        ? Math.min(Math.max((window.scrollY - section.offsetTop) / total, 0), 1)
+        : 0;
+      target = p * (N - 1) * vw;
+      const idx = Math.min(N - 1, Math.max(0, Math.round(p * (N - 1))));
+      if (idx !== lastIdx) {
+        lastIdx = idx;
+        window.__stationGallery?.syncIndex(idx);
+        if (progressCurrent) progressCurrent.textContent = String(idx + 1).padStart(2, '0');
+      }
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
   });
 })();

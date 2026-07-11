@@ -2178,6 +2178,7 @@ body.detail-mode {
 
 .projects-frame {
   position: relative;
+  z-index: 1;
   width: min(1180px, 92vw);
   height: min(780px, 88vh);
   display: flex;
@@ -4529,7 +4530,6 @@ body.hero-reveal .hero-actions {
 }
 
 /* 区块内容需浮在幽灵字之上 */
-#projects .projects-frame,
 #about .about-inner,
 #experience .experience-inner,
 #contact .contact-inner {
@@ -4666,4 +4666,215 @@ body.hero-reveal #shader-background {
   .ghost-word {
     transform: none !important;
   }
+}
+
+/* ========================================================================
+   ============ 🚉 灯光工程A：Projects 横向站台展廊（gallery-mode） ========
+   JS 在桌面 ≥1024 激活；移动端与 no-JS 保持原布局；is-detail 期间隐藏
+   ======================================================================== */
+
+.projects-section.gallery-mode:not(.is-detail) {
+  display: block;
+  height: 480vh;
+  padding: 0;
+  min-height: 0;
+}
+
+.gallery-mode:not(.is-detail) .projects-frame {
+  /* 手动钉扎：本页环境下 position:sticky 不吸附（祖先链已排查），改由 JS translateY 钉在视口 */
+  position: relative;
+  will-change: transform;
+  height: 100vh;
+  width: 100%;
+  max-width: none;
+  overflow: hidden;
+  display: block;
+  border-top: 1px solid var(--line);
+}
+
+/* 旧展台整体退场（球体/轴线/氛围/hotspot），文案与视频节点已被移入展廊 */
+.gallery-mode .projects-stage,
+.gallery-mode .project-detail-hotspot {
+  display: none;
+}
+
+.gallery-track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+
+.gallery-panel {
+  position: relative;
+  flex: 0 0 100vw;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 40%) minmax(0, 50%);
+  justify-content: space-between;
+  align-items: center;
+  padding: 10vh 5vw 8vh 8vw;
+  gap: 4vw;
+}
+
+/* 巨型月台编号 */
+.gallery-panel-num {
+  position: absolute;
+  top: 7vh;
+  left: 6vw;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(8rem, 15vw, 15rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(217, 165, 84, 0.22);
+  text-stroke: 1.5px rgba(217, 165, 84, 0.22);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.gallery-panel-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-top: 10vh;
+}
+
+/* 中和轮播的绝对定位/位移体系：展廊内文案静态陈列 */
+.gallery-mode .gallery-panel .project-copy {
+  position: static;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto;
+  transition: none;
+}
+
+.gallery-mode .gallery-panel .project-centerline {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.gallery-mode .gallery-panel .project-left,
+.gallery-mode .gallery-panel .project-right {
+  position: static;
+  transform: none;
+  width: 100%;
+  max-width: 40rem;
+  text-align: left;
+  opacity: 1 !important;
+}
+
+.gallery-mode .gallery-panel .project-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.gallery-mode .gallery-panel .project-title {
+  font-size: clamp(2.8rem, 4.6vw, 4.6rem);
+  line-height: 1.02;
+  color: var(--paper);
+  text-shadow: none;
+}
+
+.gallery-mode .gallery-panel .project-subtitle {
+  font-size: 1.02rem;
+  line-height: 1.75;
+  color: rgba(234, 229, 214, 0.78);
+  max-width: 46ch;
+  text-shadow: none;
+}
+
+/* 检票 CTA */
+.gallery-panel-cta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 24px;
+  border: 1px solid rgba(217, 165, 84, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-station), color var(--dur-fast) var(--ease-station), transform var(--dur-fast) var(--ease-station);
+}
+
+.gallery-panel-cta:hover {
+  background: var(--amber);
+  color: #10131f;
+  transform: translateY(-2px);
+}
+
+.gallery-panel-cta:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.gallery-panel-cta .cta-arrow {
+  transition: transform var(--dur-fast) var(--ease-station);
+}
+
+.gallery-panel-cta:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+/* 车窗：拱顶月台窗，满高视频 */
+.gallery-window {
+  position: relative;
+  z-index: 1;
+  height: min(74vh, 820px);
+  border-radius: 220px 220px 18px 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow:
+    0 34px 90px rgba(5, 8, 20, 0.6),
+    inset 0 0 0 1px rgba(234, 229, 214, 0.04);
+  background: var(--surface-2);
+}
+
+.gallery-window .sphere-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* 进度指示钉在 sticky 视口底部居中 */
+.gallery-mode:not(.is-detail) .projects-nav {
+  position: absolute;
+  left: 50%;
+  bottom: 4vh;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* detail 打开时展廊退场，交还给既有 detail 系统 */
+.projects-section.is-detail .gallery-track,
+.projects-section.is-detail .gallery-mode .projects-nav {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .gallery-track { display: none; }
 }
