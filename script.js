@@ -288,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressTotal = projectsSection.querySelector('.project-progress-total');
   const displacementMap = projectsSection.querySelector('#sphere-distortion feDisplacementMap');
   const detailView = projectsSection.querySelector('.project-detail-view');
+  let detailSplitObserver = null;
   const detailHotspot = projectsSection.querySelector('.project-detail-hotspot');
   const backButton = projectsSection.querySelector('.project-back');
   const lightbox = projectsSection.querySelector('.detail-lightbox');
@@ -512,6 +513,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderDetail = (index) => {
     if (!detailView) return;
     const data = getProjectDetail(index);
+    const caseNum = detailView.querySelector('.detail-case-num');
+    if (caseNum) caseNum.textContent = String(index + 1).padStart(2, '0');
     const setText = (selector, value) => {
       const el = detailView.querySelector(selector);
       if (el) el.textContent = value;
@@ -547,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setAll('[data-detail="meta1"], [data-detail="meta2"]', data.meta);
     const metaBlock = detailView.querySelector('.detail-meta');
     if (metaBlock) {
-      metaBlock.style.display = data.meta.length ? 'grid' : 'none';
+      metaBlock.style.display = data.meta.length ? 'flex' : 'none';
     }
 
     const panel = detailView.querySelector('.project-detail-panel');
@@ -633,10 +636,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const textDiv = document.createElement('div');
         textDiv.className = 'detail-split-text';
+        const figLabel = document.createElement('p');
+        figLabel.className = 'detail-split-index';
+        figLabel.textContent = `FIG. ${String(idx + 1).padStart(2, '0')}`;
         const h4 = document.createElement('h4');
         h4.textContent = split.title;
         const p = document.createElement('p');
         p.textContent = split.body;
+        textDiv.appendChild(figLabel);
         textDiv.appendChild(h4);
         textDiv.appendChild(p);
 
@@ -646,6 +653,27 @@ document.addEventListener('DOMContentLoaded', () => {
         article.appendChild(textDiv);
         sectionsContainer.appendChild(article);
       });
+
+      // 案例档案：案卷段落逐段进场
+      if (detailSplitObserver) {
+        detailSplitObserver.disconnect();
+        detailSplitObserver = null;
+      }
+      const splitEls = Array.from(sectionsContainer.querySelectorAll('.detail-split'));
+      splitEls.forEach((el, i) => el.style.setProperty('--split-i', String(i % 3)));
+      if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+        splitEls.forEach((el) => el.classList.add('split-in'));
+      } else {
+        detailSplitObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('split-in');
+              detailSplitObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+        splitEls.forEach((el) => detailSplitObserver.observe(el));
+      }
     }
 
     detailView.querySelectorAll('.detail-media').forEach((media) => {
@@ -2067,5 +2095,25 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
     onScroll();
+
+    // 案例档案：is-detail 时把当期视频移回拱窗媒体区，关闭时归还站台车窗
+    const sphereLayer = section.querySelector('.sphere-image-layer');
+    const windowEls = [...track.querySelectorAll('.gallery-window')];
+    let detailVid = -1;
+    const classWatch = new MutationObserver(() => {
+      const inDetail = section.classList.contains('is-detail');
+      if (inDetail && detailVid === -1 && sphereLayer) {
+        const numEl = section.querySelector('.detail-case-num');
+        const idx = Math.min(N - 1, Math.max(0, (parseInt(numEl && numEl.textContent, 10) || 1) - 1));
+        detailVid = idx;
+        sphereLayer.appendChild(videos[idx]);
+        const playAttempt = videos[idx].play();
+        if (playAttempt && playAttempt.catch) playAttempt.catch(() => {});
+      } else if (!inDetail && detailVid !== -1) {
+        if (windowEls[detailVid]) windowEls[detailVid].appendChild(videos[detailVid]);
+        detailVid = -1;
+      }
+    });
+    classWatch.observe(section, { attributes: true, attributeFilter: ['class'] });
   });
 })();

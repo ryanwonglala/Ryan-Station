@@ -4692,9 +4692,10 @@ body.hero-reveal #shader-background {
   border-top: 1px solid var(--line);
 }
 
-/* 旧展台整体退场（球体/轴线/氛围/hotspot），文案与视频节点已被移入展廊 */
-.gallery-mode .projects-stage,
-.gallery-mode .project-detail-hotspot {
+/* 旧展台整体退场（球体/轴线/氛围/hotspot），文案与视频节点已被移入展廊；
+   is-detail 时舞台要回来当案卷媒体窗，视频节点由 JS 临时移回 */
+.gallery-mode:not(.is-detail) .projects-stage,
+.gallery-mode:not(.is-detail) .project-detail-hotspot {
   display: none;
 }
 
@@ -4877,4 +4878,348 @@ body.hero-reveal #shader-background {
 
 @media (max-width: 1023px) {
   .gallery-track { display: none; }
+}
+
+/* ==========================================================================
+   案例档案 Case File —— 项目详情页重制（灯光工程 A 配套）
+   打开项目 = 从站务档案柜抽出一份案卷：
+   巨型编号水印、档案戳、拱窗媒体、左侧案卷脊线、逐段进场
+   ========================================================================== */
+
+/* --- 档案头：巨型编号水印 + 层级 --- */
+.project-detail-header {
+  position: relative;
+}
+
+.project-detail-panel {
+  position: relative;
+  z-index: 1;
+}
+
+.detail-case-num {
+  position: absolute;
+  top: clamp(-40px, -4vh, -16px);
+  right: clamp(-16px, -1vw, 0px);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(140px, 16vw, 280px);
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(217, 165, 84, 0.26);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 900ms var(--ease-station) 320ms, transform 900ms var(--ease-station) 320ms;
+}
+
+.projects-section.is-detail .detail-case-num {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* --- 档案戳（kicker）--- */
+.detail-kicker {
+  width: max-content;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--amber);
+  border: 1px solid rgba(217, 165, 84, 0.55);
+  border-radius: 3px;
+  padding: 7px 14px 6px 16px;
+  transform: rotate(-1.6deg);
+  box-shadow: 0 0 0 3px rgba(217, 165, 84, 0.07);
+  margin-bottom: 26px;
+}
+
+/* --- 标题组 --- */
+.detail-title {
+  font-size: clamp(2.6rem, 4.6vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: 0.01em;
+  margin-bottom: 16px;
+}
+
+.detail-subtitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  line-height: 1.5;
+  color: rgba(248, 250, 252, 0.88);
+  margin-bottom: 18px;
+}
+
+.detail-description {
+  font-size: 0.92rem;
+  line-height: 1.85;
+  border-left: 1px solid var(--line);
+  padding-left: 18px;
+}
+
+/* --- 元信息 → 车票签 --- */
+.detail-meta {
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.detail-meta span {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.75);
+  border: 1px dashed rgba(217, 165, 84, 0.42);
+  border-radius: 999px;
+  padding: 7px 14px;
+  width: max-content;
+}
+
+/* --- 媒体窗：拱顶车窗，呼应展廊 --- */
+.projects-section.is-detail .project-sphere {
+  border-radius: clamp(90px, 10vw, 140px) clamp(90px, 10vw, 140px) 14px 14px;
+  border: 1px solid rgba(217, 165, 84, 0.32);
+  background: rgba(8, 10, 16, 0.85);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* --- 案卷主体：单列纵排 + 左侧脊线 --- */
+.projects-section.is-detail .project-detail-sections {
+  position: relative;
+  grid-template-columns: 1fr;
+  gap: clamp(56px, 10vh, 110px);
+  margin-top: clamp(90px, 14vh, 200px);
+  padding-left: clamp(30px, 4.5vw, 60px);
+  transform: none;
+}
+
+.projects-section.is-detail .project-detail-sections::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: clamp(-60px, -8vh, -30px);
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--line) 10%, var(--line) 90%, transparent);
+}
+
+.projects-section.is-detail .detail-split {
+  position: relative;
+  grid-template-columns: minmax(240px, 380px) 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.projects-section.is-detail .detail-split:nth-child(even) {
+  grid-template-columns: 1fr minmax(240px, 380px);
+}
+
+.projects-section.is-detail .detail-split:nth-child(even) .detail-media {
+  order: 2;
+}
+
+/* 脊线站点标记 */
+.projects-section.is-detail .detail-split::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * clamp(30px, 4.5vw, 60px));
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--amber);
+  background: var(--night);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(217, 165, 84, 0.35);
+}
+
+/* --- 媒体板：档案图版 --- */
+.projects-section.is-detail .detail-media {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  height: clamp(200px, 24vw, 300px);
+  transform: none;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
+  cursor: zoom-in;
+  transition: border-color 320ms var(--ease-station), transform 320ms var(--ease-station);
+}
+
+.projects-section.is-detail .detail-media:hover {
+  border-color: rgba(217, 165, 84, 0.5);
+  transform: translateY(-4px);
+}
+
+/* --- 图注 + 段落 --- */
+.detail-split-index {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+  margin-bottom: 12px;
+}
+
+.detail-split-index::after {
+  content: '';
+  display: inline-block;
+  width: 34px;
+  height: 1px;
+  background: rgba(217, 165, 84, 0.45);
+  vertical-align: middle;
+  margin-left: 12px;
+}
+
+.projects-section.is-detail .detail-split-text h4 {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: var(--detail-text-strong);
+}
+
+.projects-section.is-detail .detail-split-text p {
+  font-size: 0.9rem;
+  line-height: 1.8;
+  max-width: 62ch;
+}
+
+/* --- 逐段进场 --- */
+.projects-section.is-detail .detail-split {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 700ms var(--ease-station), transform 700ms var(--ease-station);
+  transition-delay: calc(var(--split-i, 0) * 90ms);
+}
+
+.projects-section.is-detail .detail-split.split-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- 返回站台：车票按钮 --- */
+.project-back {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  color: var(--amber);
+  border: 1px solid rgba(217, 165, 84, 0.5);
+  background: rgba(12, 14, 21, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 9px 18px;
+}
+
+.project-back::before {
+  content: '\2190\00a0\00a0';
+}
+
+.project-back:hover {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #0c0e15;
+  transform: translateY(-2px);
+}
+
+/* --- 论文链接：琥珀签 --- */
+.detail-paper-link {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+  border-color: rgba(217, 165, 84, 0.45);
+  background: rgba(217, 165, 84, 0.06);
+}
+
+.detail-paper-link:hover {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #0c0e15;
+}
+
+/* --- 灯箱调成夜色 --- */
+.lightbox-frame {
+  background: rgba(12, 14, 21, 0.96);
+  border: 1px solid rgba(217, 165, 84, 0.3);
+  border-radius: 18px;
+}
+
+/* --- 移动端 --- */
+@media (max-width: 640px) {
+  .detail-case-num {
+    font-size: clamp(90px, 26vw, 140px);
+    top: -12px;
+    right: 0;
+  }
+
+  .detail-title {
+    font-size: clamp(1.9rem, 8vw, 2.6rem);
+  }
+
+  .projects-section.is-detail .project-detail-sections {
+    padding-left: 20px;
+    gap: 48px;
+    margin-top: 64px;
+  }
+
+  .projects-section.is-detail .detail-split,
+  .projects-section.is-detail .detail-split:nth-child(even) {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .projects-section.is-detail .detail-split:nth-child(even) .detail-media {
+    order: 0;
+  }
+
+  .projects-section.is-detail .detail-split::before {
+    left: -20px;
+    top: 16px;
+  }
+
+  .projects-section.is-detail .detail-media {
+    height: clamp(170px, 54vw, 250px);
+  }
+}
+
+/* --- 无动画偏好 --- */
+@media (prefers-reduced-motion: reduce) {
+  .detail-case-num,
+  .projects-section.is-detail .detail-split {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* 拱窗里不要球体时代的玻璃高光（发灰起雾） */
+.projects-section.is-detail .sphere-specular {
+  opacity: 0;
+}
+
+/* 窄屏单列时，拱窗与案卷正文要分行（既有规则漏了 grid-row，二者叠在第 1 行） */
+@media (max-width: 720px) {
+  .projects-section.is-detail .projects-stage,
+  .projects-section.is-detail .projects-frame {
+    min-height: 0;
+  }
+
+  .projects-section.is-detail .projects-stage {
+    grid-row: 1;
+    height: var(--detail-media-height);
+  }
+
+  .projects-section.is-detail .project-detail-view {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .project-detail-header {
+    min-height: 0;
+    margin-top: 12px;
+  }
 }
