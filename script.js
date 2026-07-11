@@ -1517,3 +1517,275 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+// ========================================================================
+// ==================== 🌃 灯光工程 P0（proto/living-station） =============
+// 活的夜幕（尘埃粒子 + 远处列车灯）· 进站线 · 滚动进场编排 · Hero 视差
+// 设计约束：常驻动画预算=canvas 一项；reduced-motion 全部关闭；play-once reveal
+// ========================================================================
+
+(() => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- 1. 活的夜幕：尘埃粒子 + 偶发列车灯掠过 ----------
+  const initAtmosphere = () => {
+    if (prefersReducedMotion) return;
+    const canvas = document.createElement('canvas');
+    canvas.id = 'atmosphere-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const COUNT = window.innerWidth <= 720 ? 26 : 64;
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const dust = Array.from({ length: COUNT }, () => ({
+      x: rand(0, 1),
+      y: rand(0, 1),
+      r: rand(0.6, 1.7),
+      vx: rand(-0.012, -0.003),
+      vy: rand(-0.008, -0.002),
+      phase: rand(0, Math.PI * 2),
+      speed: rand(0.15, 0.5),
+      amber: Math.random() < 0.12,
+    }));
+
+    // 远处列车灯：每 14–26s 一道光线横掠
+    let train = null;
+    let nextTrainAt = performance.now() + rand(6000, 14000);
+    const spawnTrain = (now) => {
+      train = {
+        start: now,
+        dur: rand(1100, 1600),
+        y: rand(0.12, 0.6),
+        dir: Math.random() < 0.5 ? 1 : -1,
+        len: rand(0.22, 0.38),
+      };
+      nextTrainAt = now + rand(14000, 26000);
+    };
+
+    let running = true;
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running) requestAnimationFrame(tick);
+    });
+
+    let last = performance.now();
+    const tick = (now) => {
+      if (!running) return;
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      ctx.clearRect(0, 0, w, h);
+
+      for (const p of dust) {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        if (p.x < -0.02) p.x = 1.02;
+        if (p.y < -0.02) p.y = 1.02;
+        const tw = 0.5 + 0.5 * Math.sin(p.phase + now / 1000 * p.speed);
+        const alpha = 0.06 + tw * 0.2;
+        ctx.beginPath();
+        ctx.arc(p.x * w, p.y * h, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.amber
+          ? `rgba(217, 165, 84, ${alpha})`
+          : `rgba(234, 229, 214, ${alpha * 0.8})`;
+        ctx.fill();
+      }
+
+      if (!train && now >= nextTrainAt) spawnTrain(now);
+      if (train) {
+        const t = (now - train.start) / train.dur;
+        if (t >= 1) {
+          train = null;
+        } else {
+          const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+          const headX = train.dir === 1
+            ? (eased * (1 + train.len) - train.len) * w
+            : (1 - eased * (1 + train.len)) * w;
+          const y = train.y * h;
+          const lenPx = train.len * w;
+          const grad = train.dir === 1
+            ? ctx.createLinearGradient(headX - lenPx, y, headX, y)
+            : ctx.createLinearGradient(headX + lenPx, y, headX, y);
+          const fade = Math.sin(t * Math.PI);
+          grad.addColorStop(0, 'rgba(217, 165, 84, 0)');
+          grad.addColorStop(0.85, `rgba(217, 165, 84, ${0.16 * fade})`);
+          grad.addColorStop(1, `rgba(234, 229, 214, ${0.32 * fade})`);
+          ctx.fillStyle = grad;
+          const x0 = train.dir === 1 ? headX - lenPx : headX;
+          ctx.fillRect(x0, y - 1, lenPx, 2);
+          ctx.fillStyle = `rgba(234, 229, 214, ${0.4 * fade})`;
+          ctx.fillRect(headX - 2, y - 1.5, 4, 3);
+        }
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  // ---------- 2. 进站线：滚动路线图（桌面） ----------
+  const initRouteLine = () => {
+    const ids = ['home', 'projects', 'about', 'experience', 'contact'];
+    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
+    if (sections.length !== ids.length) return;
+
+    const nav = document.createElement('div');
+    nav.className = 'route-line';
+    nav.setAttribute('aria-hidden', 'true');
+
+    const track = document.createElement('div');
+    track.className = 'route-track';
+    const progress = document.createElement('div');
+    progress.className = 'route-progress';
+    track.appendChild(progress);
+    nav.appendChild(track);
+
+    const marker = document.createElement('div');
+    marker.className = 'route-marker';
+    nav.appendChild(marker);
+
+    const getLabel = (id) => {
+      const link = document.querySelector(`.nav-links a[href="#${id}"]`);
+      return link ? link.textContent.trim() : id;
+    };
+
+    const stops = ids.map((id, i) => {
+      const stop = document.createElement('button');
+      stop.type = 'button';
+      stop.className = 'route-stop';
+      stop.tabIndex = -1;
+      stop.style.top = `${(i / (ids.length - 1)) * 100}%`;
+      const label = document.createElement('span');
+      label.className = 'route-stop-label';
+      label.textContent = getLabel(id);
+      stop.appendChild(label);
+      stop.addEventListener('click', () => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      });
+      nav.appendChild(stop);
+      return { el: stop, id, label };
+    });
+
+    document.body.appendChild(nav);
+
+    // 语言切换时刷新站名
+    if (window.PortfolioI18n) {
+      window.PortfolioI18n.onChange(() => {
+        stops.forEach((s) => { s.label.textContent = getLabel(s.id); });
+      });
+    }
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - window.innerHeight;
+      const frac = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+      progress.style.height = `${frac * 100}%`;
+      marker.style.top = `${frac * 100}%`;
+
+      const mid = window.scrollY + window.innerHeight * 0.45;
+      let activeIndex = 0;
+      sections.forEach((sec, i) => {
+        if (sec.offsetTop <= mid) activeIndex = i;
+      });
+      stops.forEach((s, i) => s.el.classList.toggle('is-active', i === activeIndex));
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }, { passive: true });
+    update();
+  };
+
+  // ---------- 3. 滚动进场编排：统一 reveal（play-once） ----------
+  const initReveals = () => {
+    if (prefersReducedMotion) return;
+    const groups = [
+      '#projects .project-stats span',
+      '#about .about-description',
+      '#about .about-skills-label',
+      '#about .about-skill',
+      '#experience .experience-header h2',
+      '#experience .experience-header p',
+      '#experience .experience-timeline-inner',
+      '#experience .experience-next-stop',
+      '#experience .experience-timeline-item',
+      '#experience .experience-detail',
+      '#contact .contact-header h2',
+      '#contact .contact-header p',
+      '#contact .contact-item',
+    ];
+    const seen = new Set();
+    const targets = [];
+    groups.forEach((sel) => {
+      document.querySelectorAll(sel).forEach((el, i) => {
+        if (seen.has(el)) return;
+        seen.add(el);
+        el.classList.add('reveal');
+        el.style.setProperty('--reveal-i', String(Math.min(i, 6)));
+        targets.push(el);
+      });
+    });
+    if (!targets.length) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.01, rootMargin: '0px 0px -8% 0px' });
+    targets.forEach((el) => io.observe(el));
+  };
+
+  // ---------- 4. Hero 插画视差（桌面指针设备） ----------
+  const initHeroParallax = () => {
+    if (prefersReducedMotion) return;
+    if (window.innerWidth < 1024 || !window.matchMedia('(pointer: fine)').matches) return;
+    const home = document.getElementById('home');
+    const bg = () => document.getElementById('shader-background');
+    if (!home) return;
+    let ticking = false;
+    let px = 0;
+    let py = 0;
+    home.addEventListener('pointermove', (e) => {
+      px = (e.clientX / window.innerWidth - 0.5) * -14;
+      py = (e.clientY / window.innerHeight - 0.5) * -8;
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          const el = bg();
+          if (el) {
+            el.style.setProperty('--parallax-x', `${px.toFixed(1)}px`);
+            el.style.setProperty('--parallax-y', `${py.toFixed(1)}px`);
+          }
+        });
+      }
+    }, { passive: true });
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initAtmosphere();
+    initRouteLine();
+    initReveals();
+    initHeroParallax();
+  });
+})();

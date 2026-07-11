@@ -196,11 +196,15 @@ svg {
 body {
   font-family: 'Arial', "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Heiti SC", sans-serif;
 
+  /* 宝石夜空：拒绝纯黑——午夜蓝冠光 + 琥珀站台光池 + 深紫远景（awwwards 暗色共识） */
   background-color: var(--night);
   background-image:
     radial-gradient(rgba(234, 229, 214, 0.05) 1px, transparent 1px),
-    radial-gradient(120% 70% at 20% 80%, rgba(217, 165, 84, 0.05) 0%, rgba(12, 14, 21, 0) 60%);
-  background-size: 16px 16px, auto;
+    radial-gradient(120% 90% at 78% -10%, rgba(76, 94, 170, 0.17) 0%, rgba(12, 14, 21, 0) 55%),
+    radial-gradient(90% 70% at 10% 105%, rgba(217, 165, 84, 0.11) 0%, rgba(12, 14, 21, 0) 55%),
+    radial-gradient(70% 60% at 94% 86%, rgba(118, 80, 150, 0.13) 0%, rgba(12, 14, 21, 0) 60%),
+    linear-gradient(180deg, #11141f 0%, #0c0e15 45%, #0b0d13 100%);
+  background-size: 16px 16px, auto, auto, auto, auto;
 
   background-attachment: fixed;
   min-height: 100vh;
@@ -4265,5 +4269,219 @@ body.detail-mode {
 
   .projects-section.is-detail .project-sphere {
     animation: none;
+  }
+}
+
+/* ========================================================================
+   ==================== 🌃 灯光工程 P0（proto/living-station） ============
+   活的夜幕（canvas 尘埃/列车灯 + 胶片颗粒）· 进站线 · 滚动进场编排
+   ======================================================================== */
+
+/* ---- 大气 canvas：垫在内容之下、body 渐变之上 ---- */
+#atmosphere-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ---- 胶片颗粒：全站极低透明度噪点（静态，零运行成本） ---- */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* ---- 进站线：左侧列车路线滚动指示器（桌面 ≥1024） ---- */
+.route-line {
+  position: fixed;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 44vh;
+  z-index: 90;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .route-line { display: block; }
+}
+
+.route-track {
+  position: absolute;
+  left: 4px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(234, 229, 214, 0.14);
+  border-radius: 2px;
+}
+
+.route-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(180deg, rgba(217, 165, 84, 0.25), var(--amber));
+  border-radius: 2px;
+  transition: height 120ms linear;
+}
+
+.route-marker {
+  position: absolute;
+  left: 5px;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--amber);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px 2px rgba(217, 165, 84, 0.55);
+  transition: top 120ms linear;
+}
+
+.route-stop {
+  position: absolute;
+  left: 5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(234, 229, 214, 0.35);
+  background: var(--night);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color var(--dur-fast) var(--ease-station), background var(--dur-fast) var(--ease-station);
+}
+
+.route-stop:hover {
+  border-color: var(--cyan);
+}
+
+.route-stop:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.route-stop.is-active {
+  background: var(--amber);
+  border-color: var(--amber);
+}
+
+.route-stop .route-stop-label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-station), color var(--dur-fast) var(--ease-station);
+  pointer-events: none;
+}
+
+.route-stop.is-active .route-stop-label,
+.route-stop:hover .route-stop-label {
+  opacity: 1;
+}
+
+.route-stop.is-active .route-stop-label {
+  color: var(--amber);
+}
+
+/* ---- 滚动进场编排：统一 reveal 系统（JS 渐进增强，无 JS 全可见） ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity var(--dur-slow) var(--ease-station),
+    transform var(--dur-slow) var(--ease-station);
+  transition-delay: calc(var(--reveal-i, 0) * 90ms);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 区块大标题：揭幕式（自下而上出布） */
+h2.reveal {
+  /* 保留 1px 缝隙：Chromium 的 IntersectionObserver 会把 clip-path 计入相交面积，全裁=永不触发 */
+  clip-path: inset(0 0 calc(100% - 1px) 0);
+  transform: translateY(30px);
+  transition:
+    clip-path 800ms var(--ease-station),
+    opacity var(--dur-slow) var(--ease-station),
+    transform 800ms var(--ease-station);
+}
+
+h2.reveal.is-in {
+  clip-path: inset(-10% 0 -10% 0);
+}
+
+/* ---- Hero 入场编排：眉标→名字→副标→按钮 依次进站 ---- */
+.hero-eyebrow,
+.hero-title,
+.hero-subtitle,
+.hero-actions {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms var(--ease-station),
+    transform 600ms var(--ease-station);
+}
+
+body.hero-reveal .hero-eyebrow { transition-delay: 60ms; }
+body.hero-reveal .hero-title { transition-delay: 170ms; }
+body.hero-reveal .hero-subtitle { transition-delay: 300ms; }
+body.hero-reveal .hero-actions { transition-delay: 430ms; }
+
+body.hero-reveal .hero-eyebrow,
+body.hero-reveal .hero-title,
+body.hero-reveal .hero-subtitle,
+body.hero-reveal .hero-actions {
+  opacity: 1;
+  transform: none;
+}
+
+/* hero 插画容器允许视差位移（JS 控制），预留变换性能 */
+#shader-background img {
+  will-change: transform;
+  transform: translate3d(var(--parallax-x, 0px), var(--parallax-y, 0px), 0) scale(1.04);
+  transition: transform 600ms var(--ease-station);
+}
+
+/* ---- 降级：reduced-motion 一律直接可见、无常驻动画 ---- */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  h2.reveal,
+  .hero-eyebrow,
+  .hero-title,
+  .hero-subtitle,
+  .hero-actions {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+
+  #atmosphere-canvas {
+    display: none;
+  }
+
+  .route-progress,
+  .route-marker {
+    transition: none;
   }
 }
