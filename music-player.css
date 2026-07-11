@@ -1296,3 +1296,57 @@ body.b1-arrival-short .music-language-switcher {
     height: 34px;
   }
 }
+
+/* --- AI DJ：心情快捷键 + 思考动画 --- */
+.mood-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mood-chip {
+  padding: 5px 12px;
+  font: inherit;
+  font-size: 0.72em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acid-lime);
+  background: transparent;
+  border: 1px dashed rgba(204, 255, 0, 0.45);
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.mood-chip:hover:not(:disabled) {
+  background: var(--acid-lime);
+  color: #050505;
+  border-style: solid;
+  box-shadow: 0 0 14px rgba(204, 255, 0, 0.5);
+}
+
+.mood-chip:disabled {
+  opacity: 0.35;
+  cursor: wait;
+}
+
+.dj-thinking::after {
+  content: '▌';
+  animation: b1Thinking 900ms steps(3, end) infinite;
+}
+
+@keyframes b1Thinking {
+  0% { content: '▌'; }
+  33% { content: '▌▌'; }
+  66% { content: '▌▌▌'; }
+}
+
+.ai-terminal input:disabled {
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dj-thinking::after {
+    animation: none;
+  }
+}

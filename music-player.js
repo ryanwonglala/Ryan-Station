@@ -62,18 +62,18 @@ function formatMpT(path, replacements, fallback = '') {
 // ========================= ⚙️ Gemini Helpers ============================
 // ========================================================================
 
-function getGeminiKey() {
-  return localStorage.getItem('GEMINI_API_KEY') || '';
+function getDeepSeekKey() {
+  return localStorage.getItem('DEEPSEEK_API_KEY') || '';
 }
 
-function setGeminiKey(value) {
+function setDeepSeekKey(value) {
   if (value) {
-    localStorage.setItem('GEMINI_API_KEY', value);
+    localStorage.setItem('DEEPSEEK_API_KEY', value);
   }
 }
 
-function clearGeminiKey() {
-  localStorage.removeItem('GEMINI_API_KEY');
+function clearDeepSeekKey() {
+  localStorage.removeItem('DEEPSEEK_API_KEY');
 }
 
 const b1ReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -458,83 +458,107 @@ function fallbackToStatic() {
 }
 
 // ========================================================================
-// ========================= 🤖 Gemini Integration ========================
+// ==================== 🤖 AI DJ（DeepSeek 双路引擎） =====================
+// 主路：/api/dj 无服务函数（站长 key 在 Vercel 环境变量，访客零配置）
+// 备路：浏览器直连 DeepSeek（本地开发 / 未配环境变量时，key 在 localStorage）
 // ========================================================================
 
-async function callGeminiAI(userText) {
-  const apiKey = getGeminiKey();
-  if (!apiKey) {
-    return { error: 'Gemini API key missing. Click the gear icon to add it.' };
-  }
+const DJ_HISTORY_LIMIT = 10;
+const djHistory = [];
+let djPending = false;
 
+function buildDjSystemPrompt() {
+  const lang = (window.PortfolioI18n && window.PortfolioI18n.getLanguage && window.PortfolioI18n.getLanguage()) || 'en';
   const contextList = playlist.map((track, index) => {
     const tags = Array.isArray(track.tags) && track.tags.length ? track.tags.join(', ') : 'none';
-    return `${index + 1}. "${track.title}" [tags: ${tags}]`;
-  }).join(', ');
+    return `${index + 1}. "${track.title}" — ${track.artist || 'unknown'} [${tags}]`;
+  }).join('\n');
+  return [
+    'You are the resident DJ of "Ryan\'s Station — After Hours" (underground floor B1).',
+    'Personality: warm, playful, a little radio-host flair. Keep replies to 1-2 short sentences.',
+    `Reply in ${lang === 'zh' ? 'Chinese' : 'the same language as the user (default English)'}.`,
+    'You can ONLY pick tracks from this list:',
+    contextList,
+    'Always answer with strict JSON: {"reply": "...", "picks": ["Exact Title", "..."]}.',
+    'picks = 1 to 3 titles copied EXACTLY from the list, best match first. If the user is only chatting, picks may be [].',
+  ].join('\n');
+}
 
-  const payloadText = [
-    'System: You are the DJ of Ryan Station. Pick a song from the Context list that matches the user\'s input. If the request is vague, pick a random fitting song.',
-    'Output strictly JSON: { "reply": "...", "command": "PLAY_SONG", "target": "Exact Song Title" }.',
-    `Context: ${contextList}`,
-    `User: ${userText}`
-  ].join('\n\n');
-
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-
+async function callDj(messages) {
+  const body = JSON.stringify({ messages });
+  // 主路：站内无服务函数
   try {
-    const response = await fetch(endpoint, {
+    const res = await fetch('api/dj', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: payloadText }]
-          }
-        ]
-      })
+      body,
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      return { error: `Gemini API error (${response.status}): ${errorText}` };
+    const type = res.headers.get('content-type') || '';
+    if (res.ok && type.includes('application/json')) {
+      const data = await res.json();
+      if (data && data.content) return { content: data.content };
+      if (data && data.error === 'no-server-key') { /* 落备路 */ }
+      else if (data && data.error) return { error: data.error };
     }
+  } catch (err) { /* 本地静态服务器无函数，落备路 */ }
 
-    const data = await response.json();
-    const raw = data?.candidates?.[0]?.content?.parts
-      ?.map(part => part.text || '')
-      .join('\n')
-      .trim();
-
-    if (!raw) {
-      return { error: 'Gemini API returned no response.' };
+  // 备路：浏览器直连 DeepSeek
+  const key = getDeepSeekKey();
+  if (!key) return { noKey: true };
+  try {
+    const res = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages,
+        temperature: 0.8,
+        max_tokens: 400,
+        response_format: { type: 'json_object' },
+      }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      return { error: `DeepSeek ${res.status}: ${text.slice(0, 140)}` };
     }
-
-    return { raw };
-  } catch (error) {
-    return { error: `Gemini request failed: ${error.message}` };
+    const data = await res.json();
+    const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!content) return { error: 'Empty response' };
+    return { content };
+  } catch (err) {
+    return { error: err.message };
   }
 }
 
-function parseGeminiResponse(rawText) {
-  if (!rawText) {
-    throw new Error('Empty AI response.');
-  }
-  const trimmed = rawText.trim();
+function parseDjJson(raw) {
+  const trimmed = String(raw).trim();
   try {
     return JSON.parse(trimmed);
-  } catch (error) {
+  } catch (err) {
     const match = trimmed.match(/\{[\s\S]*\}/);
-    if (match) {
-      return JSON.parse(match[0]);
-    }
-    throw new Error('Unable to parse AI JSON response.');
+    if (match) return JSON.parse(match[0]);
+    throw new Error('Unparseable DJ response');
   }
+}
+
+// 模糊匹配：全等 → 归一化全等 → 包含（双向）
+function normalizeTitle(s) {
+  return String(s || '').toLowerCase().replace(/[\s\u3000·\-—_,，。.!！?？'"「」『』()（）\[\]]/g, '');
 }
 
 function findTrackIndexByTitle(targetTitle) {
   if (!targetTitle) return -1;
-  const normalized = targetTitle.trim().toLowerCase();
-  return playlist.findIndex(track => (track.title || '').trim().toLowerCase() === normalized);
+  const raw = targetTitle.trim().toLowerCase();
+  let idx = playlist.findIndex((t) => (t.title || '').trim().toLowerCase() === raw);
+  if (idx !== -1) return idx;
+  const norm = normalizeTitle(targetTitle);
+  if (!norm) return -1;
+  idx = playlist.findIndex((t) => normalizeTitle(t.title) === norm);
+  if (idx !== -1) return idx;
+  return playlist.findIndex((t) => {
+    const n = normalizeTitle(t.title);
+    return n && (n.includes(norm) || norm.includes(n));
+  });
 }
 
 // ========================================================================
@@ -704,16 +728,16 @@ if (aiInput) {
 
 if (aiSettingsBtn) {
   aiSettingsBtn.addEventListener('click', () => {
-    const existing = getGeminiKey();
-    const input = window.prompt(mpT('geminiPrompt', 'Enter Gemini API Key (leave blank to clear):'), existing);
+    const existing = getDeepSeekKey();
+    const input = window.prompt(mpT('djKeyPrompt', 'Enter DeepSeek API Key — only needed if the station key is not configured (leave blank to clear):'), existing);
     if (input === null) return;
     const trimmed = input.trim();
     if (trimmed) {
-      setGeminiKey(trimmed);
-      appendToTerminalLog(mpT('geminiSaved', '> SYSTEM: Gemini API key saved.'), 'system');
+      setDeepSeekKey(trimmed);
+      appendToTerminalLog(mpT('djKeySaved', '> SYSTEM: DeepSeek API key saved.'), 'system');
     } else {
-      clearGeminiKey();
-      appendToTerminalLog(mpT('geminiCleared', '> SYSTEM: Gemini API key cleared.'), 'system');
+      clearDeepSeekKey();
+      appendToTerminalLog(mpT('djKeyCleared', '> SYSTEM: DeepSeek API key cleared.'), 'system');
     }
   });
 }
@@ -723,40 +747,117 @@ if (aiSettingsBtn) {
 // ========================================================================
 
 async function hackTheSystem(mood) {
+  if (djPending) return;
+  djPending = true;
+  setDjBusy(true);
   appendToTerminalLog(`> USER: ${mood}`, 'user');
 
-  const result = await callGeminiAI(mood);
+  const thinking = document.createElement('div');
+  thinking.className = 'terminal-line ai dj-thinking';
+  thinking.textContent = '> AI: ';
+  terminalLog.appendChild(thinking);
+  terminalLog.scrollTop = terminalLog.scrollHeight;
+
+  const messages = [
+    { role: 'system', content: buildDjSystemPrompt() },
+    ...djHistory,
+    { role: 'user', content: mood },
+  ];
+
+  const result = await callDj(messages);
+  thinking.remove();
+
+  if (result.noKey) {
+    appendToTerminalLog(mpT('djNoKey', '> SYSTEM: DJ booth is offline — no station key configured. Click the gear to plug in your own DeepSeek key (platform.deepseek.com).'), 'system');
+    djPending = false;
+    setDjBusy(false);
+    return;
+  }
   if (result.error) {
-    appendToTerminalLog(`> SYSTEM: ${result.error}`, 'system');
+    appendToTerminalLog(formatMpT('djError', { error: result.error }, `> SYSTEM: Signal lost — ${result.error}`), 'system');
+    djPending = false;
+    setDjBusy(false);
     return;
   }
 
   let parsed;
   try {
-    parsed = parseGeminiResponse(result.raw);
-  } catch (error) {
-    appendToTerminalLog(`> SYSTEM: ${error.message}`, 'system');
+    parsed = parseDjJson(result.content);
+  } catch (err) {
+    appendToTerminalLog(formatMpT('djError', { error: err.message }, `> SYSTEM: Signal lost — ${err.message}`), 'system');
+    djPending = false;
+    setDjBusy(false);
     return;
   }
 
-  const reply = parsed.reply || 'Command acknowledged.';
-  appendToTerminalLog(`> AI: ${reply}`, 'ai');
+  djHistory.push({ role: 'user', content: mood });
+  djHistory.push({ role: 'assistant', content: String(result.content).slice(0, 600) });
+  while (djHistory.length > DJ_HISTORY_LIMIT) djHistory.shift();
 
-  if (parsed.command && parsed.command.toUpperCase() === 'PLAY_SONG') {
-    const target = parsed.target || '';
-    const index = findTrackIndexByTitle(target);
-    if (index >= 0) {
-      loadTrack(index);
-      playTrack();
-      appendToTerminalLog(formatMpT('playingTrack', { title: playlist[index].title }, `> SYSTEM: Playing "${playlist[index].title}"`), 'system');
-      appendTrackChip(index);
-    } else {
-      appendToTerminalLog(formatMpT('notFound', { target }, `> SYSTEM: Could not find "${target}".`), 'system');
-    }
-  } else if (parsed.command) {
-    appendToTerminalLog(formatMpT('unknownCommand', { command: parsed.command }, `> SYSTEM: Unknown command "${parsed.command}".`), 'system');
+  appendToTerminalLog(`> AI: ${parsed.reply || 'Copy that.'}`, 'ai');
+
+  const picks = Array.isArray(parsed.picks) ? parsed.picks : (parsed.target ? [parsed.target] : []);
+  const indexes = [];
+  picks.forEach((title) => {
+    const idx = findTrackIndexByTitle(title);
+    if (idx !== -1 && !indexes.includes(idx)) indexes.push(idx);
+  });
+
+  if (picks.length && !indexes.length) {
+    appendToTerminalLog(formatMpT('notFound', { target: picks[0] }, `> SYSTEM: Could not find "${picks[0]}".`), 'system');
   }
+  if (indexes.length) {
+    loadTrack(indexes[0]);
+    playTrack();
+    appendToTerminalLog(formatMpT('playingTrack', { title: playlist[indexes[0]].title }, `> SYSTEM: Playing "${playlist[indexes[0]].title}"`), 'system');
+    indexes.forEach((idx) => appendTrackChip(idx));
+  }
+  djPending = false;
+  setDjBusy(false);
 }
+
+function setDjBusy(busy) {
+  if (aiInput) aiInput.disabled = busy;
+  document.querySelectorAll('.mood-chip').forEach((chip) => { chip.disabled = busy; });
+}
+
+// 心情快捷键：从曲库真实标签生成，点一下就点歌
+function buildMoodPresets() {
+  const box = document.getElementById('moodPresets');
+  if (!box || !playlist.length) return;
+  const lang = () => (window.PortfolioI18n && window.PortfolioI18n.getLanguage && window.PortfolioI18n.getLanguage()) || 'en';
+  const PRESETS = [
+    { tag: 'happy', en: 'HAPPY', zh: '开心', promptEn: 'play something happy', promptZh: '来点开心的' },
+    { tag: 'energy', en: 'ENERGY', zh: '燃', promptEn: 'something high energy', promptZh: '来首燃的' },
+    { tag: 'party', en: 'PARTY', zh: '蹦迪', promptEn: 'party time, drop something danceable', promptZh: '蹦迪时间，来首能跳的' },
+    { tag: 'vibe', en: 'VIBE', zh: '松弛', promptEn: 'chill vibes please', promptZh: '来点松弛的氛围' },
+    { tag: 'sad', en: 'SAD', zh: 'emo', promptEn: 'in my feelings, something sad', promptZh: '有点 emo，来首伤感的' },
+    { tag: 'weird', en: 'WEIRD', zh: '整活', promptEn: 'surprise me with something weird', promptZh: '给我整个活' },
+  ];
+  const available = new Set();
+  playlist.forEach((t) => (t.tags || []).forEach((tag) => available.add(tag)));
+  const render = () => {
+    box.innerHTML = '';
+    PRESETS.filter((p) => available.has(p.tag)).forEach((p) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'mood-chip';
+      chip.textContent = lang() === 'zh' ? p.zh : p.en;
+      chip.addEventListener('click', () => {
+        if (djPending) return;
+        hackTheSystem(lang() === 'zh' ? p.promptZh : p.promptEn);
+      });
+      box.appendChild(chip);
+    });
+  };
+  render();
+  if (window.PortfolioI18n) window.PortfolioI18n.onChange(render);
+}
+
+(function initMoodPresets() {
+  const check = () => (playlist.length ? buildMoodPresets() : window.setTimeout(check, 250));
+  check();
+})();
 
 // ========================================================================
 // ========================= 🚀 初始化 =====================================
