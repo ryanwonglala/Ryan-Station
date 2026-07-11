@@ -1789,3 +1789,152 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroParallax();
   });
 })();
+
+// ========================================================================
+// ==================== 🎆 视觉冲击包 v1（proto/living-station） ===========
+// 巨型幽灵字 · Hero 逐字母 + 打字机 · 磁吸按钮
+// ========================================================================
+
+(() => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- 1. 巨型幽灵字：区块背景的空心衬线大字，随滚动漂移 ----------
+  const initGhostWords = () => {
+    const WORDS = { projects: 'WORK', about: 'PROFILE', experience: 'JOURNEY', contact: 'SIGNAL' };
+    const ghosts = [];
+    Object.entries(WORDS).forEach(([id, word]) => {
+      const sec = document.getElementById(id);
+      if (!sec) return;
+      const clip = document.createElement('div');
+      clip.className = 'ghost-word-clip';
+      clip.setAttribute('aria-hidden', 'true');
+      const el = document.createElement('span');
+      el.className = 'ghost-word';
+      el.textContent = word;
+      clip.appendChild(el);
+      sec.insertBefore(clip, sec.firstChild);
+      ghosts.push({ el, sec });
+    });
+    if (prefersReducedMotion || !ghosts.length) return;
+
+    let ticking = false;
+    const drift = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      ghosts.forEach(({ el, sec }) => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > vh) return;
+        const p = (rect.top + rect.height / 2 - vh / 2) / vh; // -~1 .. ~1
+        el.style.transform = `translate3d(${(-p * 6).toFixed(2)}vw, ${(p * 30).toFixed(1)}px, 0)`;
+      });
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(drift); }
+    }, { passive: true });
+    drift();
+  };
+
+  // ---------- 2. Hero 名字逐字母进场（i18n 重渲染后重切） ----------
+  const splitTitle = () => {
+    const title = document.querySelector('.hero-title');
+    if (!title || prefersReducedMotion) return;
+    const text = title.textContent;
+    title.textContent = '';
+    title.classList.add('is-split');
+    [...text].forEach((ch, i) => {
+      if (ch === ' ') {
+        title.appendChild(document.createTextNode(' '));
+        return;
+      }
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.style.setProperty('--char-i', String(i));
+      span.textContent = ch;
+      title.appendChild(span);
+    });
+  };
+
+  // ---------- 3. Hero 眉标打字机（车站广播式） ----------
+  const typeEyebrow = () => {
+    const eyebrow = document.querySelector('.hero-eyebrow');
+    if (!eyebrow || prefersReducedMotion) return;
+    const full = eyebrow.textContent.trim();
+    const textNode = document.createTextNode('');
+    const caret = document.createElement('span');
+    caret.className = 'type-caret';
+    eyebrow.textContent = '';
+    eyebrow.appendChild(textNode);
+    eyebrow.appendChild(caret);
+
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      let i = 0;
+      const step = () => {
+        i += 1;
+        textNode.textContent = full.slice(0, i);
+        if (i < full.length) {
+          setTimeout(step, 14 + Math.random() * 26);
+        } else {
+          caret.classList.add('is-done');
+        }
+      };
+      setTimeout(step, 260);
+    };
+
+    if (document.body.classList.contains('hero-reveal')) {
+      start();
+    } else {
+      const mo = new MutationObserver(() => {
+        if (document.body.classList.contains('hero-reveal')) {
+          mo.disconnect();
+          start();
+        }
+      });
+      mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
+  };
+
+  // ---------- 4. 磁吸按钮 ----------
+  const initMagnetic = () => {
+    if (prefersReducedMotion || !window.matchMedia('(pointer: fine)').matches) return;
+    document.querySelectorAll('.hero-cta, .hero-cta-secondary, .contact-action').forEach((btn) => {
+      const strength = 7;
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+        const dy = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+        btn.style.setProperty('--mag-x', `${(dx * strength).toFixed(1)}px`);
+        btn.style.setProperty('--mag-y', `${(dy * strength).toFixed(1)}px`);
+      });
+      btn.addEventListener('pointerleave', () => {
+        btn.style.setProperty('--mag-x', '0px');
+        btn.style.setProperty('--mag-y', '0px');
+      });
+    });
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initGhostWords();
+    splitTitle();
+    typeEyebrow();
+    initMagnetic();
+
+    // 语言切换会重写 hero 文本 → 重新逐字母切分（打字机只演一次，切换后直接满文本）
+    if (window.PortfolioI18n) {
+      window.PortfolioI18n.onChange(() => {
+        const title = document.querySelector('.hero-title');
+        if (title && !prefersReducedMotion) {
+          title.classList.remove('is-split');
+          requestAnimationFrame(() => {
+            splitTitle();
+            title.querySelectorAll('.char').forEach((c) => {
+              c.style.transitionDelay = '0ms';
+            });
+          });
+        }
+      });
+    }
+  });
+})();

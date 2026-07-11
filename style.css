@@ -605,11 +605,11 @@ body.hero-reveal #home .hero {
 
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 6.4vw, 5.4rem);
+  font-size: clamp(3.4rem, 9.5vw, 8.6rem);
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
   color: var(--hero-title-color);
-  line-height: 1.02;
+  line-height: 0.98;
 }
 
 .hero-subtitle {
@@ -727,8 +727,8 @@ body.light-mode .hero-cta-secondary:hover {
 }
 
 #about .about-title {
-  font-size: clamp(2.4rem, 4vw, 3.6rem);
-  font-weight: 500;
+  font-size: clamp(2.7rem, 5.2vw, 4.4rem);
+  font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--about-text-primary);
   line-height: 1.05;
@@ -2959,7 +2959,7 @@ body.detail-mode {
 
 #experience .experience-header h2 {
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 3.6vw, 3.2rem);
+  font-size: clamp(2.7rem, 5.2vw, 4.4rem);
   margin: 0 0 8px;
   color: rgba(248, 250, 252, 0.98);
 }
@@ -3358,7 +3358,7 @@ body.detail-mode {
 
 #contact .contact-header h2 {
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 3.5vw, 3.1rem);
+  font-size: clamp(2.7rem, 5.2vw, 4.4rem);
   margin: 0 0 8px;
   color: rgba(248, 250, 252, 0.98);
 }
@@ -4483,5 +4483,187 @@ body.hero-reveal .hero-actions {
   .route-progress,
   .route-marker {
     transition: none;
+  }
+}
+
+/* ========================================================================
+   ==================== 🎆 视觉冲击包 v1（proto/living-station） ==========
+   巨型幽灵字 · Hero 逐字母/打字机/霓虹通电 · 出发板翻牌 · 磁吸按钮
+   ======================================================================== */
+
+/* ---- 巨型幽灵字：每区块背后的空心衬线大字，随滚动漂移 ---- */
+.ghost-word-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ghost-word {
+  position: absolute;
+  top: 4%;
+  left: -1vw;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(6rem, 17vw, 15.5rem);
+  line-height: 1;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(234, 229, 214, 0.09);
+  text-stroke: 1px rgba(234, 229, 214, 0.09);
+  user-select: none;
+  will-change: transform;
+}
+
+#contact .ghost-word {
+  top: auto;
+  bottom: 3%;
+  left: auto;
+  right: -1vw;
+}
+
+@media (max-width: 720px) {
+  .ghost-word-clip { display: none; }
+}
+
+/* 区块内容需浮在幽灵字之上 */
+#projects .projects-frame,
+#about .about-inner,
+#experience .experience-inner,
+#contact .contact-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Hero 名字逐字母进场 ---- */
+.hero-title .char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em) rotate(5deg);
+  transform-origin: bottom left;
+  transition: opacity 500ms var(--ease-station), transform 620ms var(--ease-station);
+  transition-delay: calc(200ms + var(--char-i, 0) * 42ms);
+}
+
+body.hero-reveal .hero-title .char {
+  opacity: 1;
+  transform: none;
+}
+
+/* 逐字母接管后，标题容器自身不再位移（避免双重动画） */
+body.hero-reveal .hero-title.is-split {
+  transition-delay: 0ms;
+}
+
+.hero-title.is-split {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Hero 眉标打字机光标 ---- */
+.hero-eyebrow .type-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 3px;
+  background: var(--amber);
+  vertical-align: -0.12em;
+  animation: caretBlink 0.9s step-end infinite;
+}
+
+.hero-eyebrow .type-caret.is-done {
+  animation: none;
+  opacity: 0;
+  transition: opacity 400ms ease 600ms;
+}
+
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ---- 霓虹通电：hero 插画一次性亮灯闪烁 ---- */
+@keyframes neonWarmup {
+  0% { filter: brightness(0.55); }
+  9% { filter: brightness(1.25); }
+  13% { filter: brightness(0.7); }
+  22% { filter: brightness(1.15); }
+  27% { filter: brightness(0.85); }
+  38% { filter: brightness(1.05); }
+  100% { filter: brightness(1); }
+}
+
+body.hero-reveal #shader-background {
+  animation: neonWarmup 1.7s ease-out 1 both;
+}
+
+/* ---- 出发信息板：翻牌进场（3D flap） ---- */
+#experience .experience-timeline-list,
+#experience .experience-timeline-inner {
+  perspective: 700px;
+}
+
+#experience .experience-timeline-item.reveal,
+#experience .experience-next-stop.reveal {
+  transform: rotateX(-72deg) translateY(8px);
+  transform-origin: 50% 0;
+  transition:
+    opacity 500ms var(--ease-station),
+    transform 640ms var(--ease-station);
+  transition-delay: calc(var(--reveal-i, 0) * 110ms);
+}
+
+#experience .experience-timeline-item.reveal.is-in,
+#experience .experience-next-stop.reveal.is-in {
+  transform: none;
+}
+
+/* ---- 磁吸按钮：JS 写入位移变量 ---- */
+.hero-cta,
+.hero-cta-secondary,
+.contact-action {
+  transform: translate3d(var(--mag-x, 0px), var(--mag-y, 0px), 0);
+}
+
+.hero-cta:hover {
+  transform: translate3d(var(--mag-x, 0px), calc(var(--mag-y, 0px) - 2px), 0);
+}
+
+/* ---- 导航与联系链接：划线 hover ---- */
+.nav-links li a,
+.contact-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size var(--dur-fast) var(--ease-station);
+}
+
+.nav-links li a:hover,
+.contact-link:hover {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title .char,
+  #experience .experience-timeline-item.reveal,
+  #experience .experience-next-stop.reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  body.hero-reveal #shader-background {
+    animation: none;
+  }
+
+  .hero-eyebrow .type-caret {
+    display: none;
+  }
+
+  .ghost-word {
+    transform: none !important;
   }
 }
