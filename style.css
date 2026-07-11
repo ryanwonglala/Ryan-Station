@@ -6117,3 +6117,445 @@ body.cursor-down .cursor-ring-i {
   content: '✓';
   color: #0c0e15;
 }
+
+/* ==========================================================================
+   ☀️ 白昼车站 Day Shift —— 真·日间模式
+   规则：地上区块跟随昼夜（暖纸底/墨字/深琥珀）；
+   物理夜保留——出发翻牌板是黑的、地下层（俱乐部之门/音乐区）没有窗；
+   夜间大气（尘埃/列车灯/星点）白天退场，蓝图切白图纸
+   ========================================================================== */
+
+/* --- 核心令牌翻转（语义已审计：--paper=正文墨色、--night=页面底色） --- */
+body.light-mode {
+  --night: #ede8da;
+  --surface: #f8f4e9;
+  --surface-2: #f4efe2;
+  --line: rgba(28, 30, 38, 0.16);
+  --paper: #1c1e26;
+  --muted: #5c5849;
+  --amber: #96660f;
+  --cyan: #0e6e84;
+  --about-text-primary: #22242c;
+  --about-text-secondary: rgba(34, 36, 44, 0.74);
+  --about-accent: #8a6320;
+  --detail-text-strong: rgba(28, 30, 38, 0.95);
+  --detail-text-soft: rgba(28, 30, 38, 0.76);
+  --project-text-panel: rgba(250, 246, 236, 0.72);
+}
+
+/* --- 日间底纸：晨光冠 + 暖光池（结构呼应夜空，方向相同） --- */
+body.light-mode {
+  background-color: #ede8da;
+  background-image:
+    radial-gradient(rgba(28, 30, 38, 0.045) 1px, transparent 1px),
+    radial-gradient(120% 90% at 78% -10%, rgba(126, 156, 224, 0.20) 0%, rgba(237, 232, 218, 0) 55%),
+    radial-gradient(90% 70% at 10% 105%, rgba(206, 148, 62, 0.16) 0%, rgba(237, 232, 218, 0) 55%),
+    radial-gradient(70% 60% at 94% 86%, rgba(158, 128, 186, 0.10) 0%, rgba(237, 232, 218, 0) 60%),
+    linear-gradient(180deg, #f6f1e5 0%, #ede8d8 45%, #e8e2d0 100%);
+  background-size: 16px 16px, auto, auto, auto, auto;
+}
+
+/* 夜间大气退场；颗粒减淡 */
+body.light-mode #atmosphere-canvas {
+  display: none;
+}
+
+body.light-mode::after {
+  opacity: 0.028;
+}
+
+/* --- 进站线 --- */
+body.light-mode .route-track {
+  background: linear-gradient(to bottom, transparent, rgba(28, 30, 38, 0.22), transparent);
+}
+
+body.light-mode .route-progress {
+  background: linear-gradient(to bottom, rgba(150, 102, 15, 0.9), rgba(150, 102, 15, 0.4));
+  box-shadow: 0 0 10px rgba(150, 102, 15, 0.35);
+}
+
+body.light-mode .route-stop {
+  border-color: rgba(28, 30, 38, 0.35);
+  background: #ede8da;
+}
+
+body.light-mode .route-stop.is-active {
+  border-color: #96660f;
+  box-shadow: 0 0 10px rgba(150, 102, 15, 0.45);
+}
+
+body.light-mode .route-label {
+  color: rgba(28, 30, 38, 0.6);
+}
+
+body.light-mode .route-stop.is-active + .route-label,
+body.light-mode .route-label.is-active {
+  color: #96660f;
+}
+
+/* --- 幽灵字 --- */
+body.light-mode .ghost-word {
+  -webkit-text-stroke-color: rgba(28, 30, 38, 0.1);
+}
+
+/* --- 站台展廊 --- */
+body.light-mode .gallery-panel-num {
+  -webkit-text-stroke-color: rgba(150, 102, 15, 0.38);
+}
+
+body.light-mode .gallery-mode .gallery-panel .project-eyebrow {
+  color: #96660f;
+}
+
+body.light-mode .gallery-mode .gallery-panel .project-subtitle {
+  color: rgba(28, 30, 38, 0.78);
+}
+
+body.light-mode .project-stats span {
+  border-color: rgba(150, 102, 15, 0.45);
+  color: rgba(28, 30, 38, 0.8);
+}
+
+body.light-mode .gallery-window {
+  border-color: rgba(150, 102, 15, 0.42);
+  background: #14171f;
+  box-shadow: 0 30px 70px rgba(28, 30, 38, 0.28);
+}
+
+body.light-mode .gallery-panel-cta {
+  border-color: rgba(150, 102, 15, 0.6);
+  color: #96660f;
+  background: rgba(150, 102, 15, 0.05);
+}
+
+body.light-mode .gallery-panel-cta:hover {
+  background: #96660f;
+  color: #f6f1e5;
+  border-color: #96660f;
+}
+
+body.light-mode .project-progress-current,
+body.light-mode .project-progress-total,
+body.light-mode .project-progress-divider {
+  color: rgba(28, 30, 38, 0.75);
+}
+
+/* --- 案例档案 --- */
+body.light-mode .detail-case-num {
+  -webkit-text-stroke-color: rgba(150, 102, 15, 0.34);
+}
+
+body.light-mode .detail-kicker {
+  color: #96660f;
+  border-color: rgba(150, 102, 15, 0.55);
+  box-shadow: 0 0 0 3px rgba(150, 102, 15, 0.07);
+}
+
+body.light-mode .detail-meta span {
+  color: rgba(28, 30, 38, 0.72);
+  border-color: rgba(150, 102, 15, 0.45);
+}
+
+body.light-mode .projects-section.is-detail .project-sphere {
+  border-color: rgba(150, 102, 15, 0.4);
+  background: #14171f; /* 拱窗是屏幕，白天也是暗的 */
+  box-shadow: 0 24px 60px rgba(28, 30, 38, 0.3);
+}
+
+body.light-mode .projects-section.is-detail .detail-media {
+  background: rgba(28, 30, 38, 0.04);
+  box-shadow: 0 18px 44px rgba(28, 30, 38, 0.16);
+}
+
+body.light-mode .projects-section.is-detail .detail-media:hover {
+  border-color: rgba(150, 102, 15, 0.55);
+}
+
+body.light-mode .detail-split-index {
+  color: #96660f;
+}
+
+body.light-mode .detail-split-index::after {
+  background: rgba(150, 102, 15, 0.5);
+}
+
+body.light-mode .projects-section.is-detail .detail-split::before {
+  border-color: #96660f;
+  box-shadow: 0 0 10px rgba(150, 102, 15, 0.3);
+}
+
+body.light-mode .project-back {
+  color: #96660f;
+  border-color: rgba(150, 102, 15, 0.55);
+  background: rgba(246, 241, 229, 0.8);
+}
+
+body.light-mode .project-back:hover {
+  background: #96660f;
+  border-color: #96660f;
+  color: #f6f1e5;
+}
+
+body.light-mode .detail-share {
+  color: #96660f;
+  border-color: rgba(150, 102, 15, 0.5);
+}
+
+body.light-mode .detail-share::before {
+  color: rgba(150, 102, 15, 0.6);
+}
+
+body.light-mode .detail-share:hover {
+  background: rgba(150, 102, 15, 0.08);
+  border-color: rgba(150, 102, 15, 0.85);
+}
+
+body.light-mode .detail-share.is-copied {
+  background: #96660f;
+  border-color: #96660f;
+  color: #f6f1e5;
+}
+
+body.light-mode .detail-share.is-copied::before {
+  color: #f6f1e5;
+}
+
+body.light-mode .detail-paper-link {
+  color: #96660f;
+  border-color: rgba(150, 102, 15, 0.5);
+  background: rgba(150, 102, 15, 0.05);
+}
+
+body.light-mode .detail-paper-link:hover {
+  background: #96660f;
+  border-color: #96660f;
+  color: #f6f1e5;
+}
+
+/* 灯箱与视频窗保持暗（媒体查看的物理逻辑） */
+
+/* --- 站长档案卡 --- */
+body.light-mode .guild-card {
+  background: linear-gradient(160deg, rgba(28, 30, 38, 0.045), rgba(28, 30, 38, 0.012) 45%, rgba(28, 30, 38, 0) 80%);
+  border-color: rgba(28, 30, 38, 0.2);
+}
+
+body.light-mode .guild-card::before,
+body.light-mode .guild-card::after,
+body.light-mode .guild-corner {
+  border-color: rgba(150, 102, 15, 0.7);
+}
+
+body.light-mode .guild-ribbon span {
+  color: #96660f;
+  border-color: rgba(150, 102, 15, 0.5);
+  background: #f2edde;
+}
+
+body.light-mode #about .guild-card .about-photo {
+  outline-color: rgba(150, 102, 15, 0.4);
+}
+
+body.light-mode .guild-class {
+  color: #96660f;
+}
+
+body.light-mode .guild-notes .about-skill::before {
+  color: rgba(150, 102, 15, 0.85);
+}
+
+body.light-mode .guild-notes .about-skill::after {
+  background: #96660f;
+}
+
+/* --- 蓝图 → 白图纸（经典制图纸） --- */
+body.light-mode .bp-paper > rect:first-of-type {
+  fill: rgba(252, 249, 241, 0.9);
+}
+
+body.light-mode #bp-grid-minor path {
+  stroke: rgba(28, 30, 38, 0.05);
+}
+
+body.light-mode #bp-grid-major path {
+  stroke: rgba(28, 30, 38, 0.1);
+}
+
+body.light-mode .bp-frame {
+  stroke: rgba(28, 30, 38, 0.3);
+}
+
+body.light-mode .bp-corner-mark {
+  stroke: rgba(150, 102, 15, 0.7);
+}
+
+body.light-mode .bp-outline {
+  stroke: rgba(28, 30, 38, 0.85);
+}
+
+body.light-mode .bp-hatch {
+  stroke: rgba(28, 30, 38, 0.4);
+}
+
+body.light-mode .bp-center {
+  stroke: rgba(150, 102, 15, 0.6);
+}
+
+body.light-mode .bp-joint-outer {
+  stroke: rgba(28, 30, 38, 0.85);
+  fill: #faf6ec;
+}
+
+body.light-mode .bp-joint-inner {
+  stroke: rgba(150, 102, 15, 0.85);
+}
+
+body.light-mode .bp-cross {
+  stroke: rgba(28, 30, 38, 0.5);
+}
+
+body.light-mode .bp-bolt {
+  fill: rgba(150, 102, 15, 0.85);
+}
+
+body.light-mode .bp-dim-line,
+body.light-mode .bp-dim-ext {
+  stroke: rgba(14, 110, 132, 0.6);
+}
+
+body.light-mode .bp-dim-text {
+  fill: rgba(14, 110, 132, 0.95);
+}
+
+body.light-mode .bp-tag-diamond {
+  fill: #96660f;
+}
+
+body.light-mode .bp-tag-text {
+  fill: rgba(28, 30, 38, 0.85);
+}
+
+body.light-mode .bp-tb-rect,
+body.light-mode .bp-tb-rule {
+  stroke: rgba(28, 30, 38, 0.5);
+}
+
+body.light-mode .bp-tb-cell {
+  fill: rgba(28, 30, 38, 0.6);
+}
+
+body.light-mode .bp-status-dot {
+  fill: #96660f;
+}
+
+/* --- 出发信息板：板子是黑的（物理夜），浮在晨光大厅里 --- */
+body.light-mode #experience.experience-section {
+  color: #22242c;
+}
+
+body.light-mode #experience .experience-header h2,
+body.light-mode #experience .experience-header p {
+  color: #22242c;
+}
+
+body.light-mode #experience .experience-timeline {
+  background: linear-gradient(180deg, #141824, #0e111a);
+  border: 1px solid rgba(234, 229, 214, 0.12);
+  border-radius: 16px;
+  padding: 10px 18px;
+  box-shadow: 0 30px 70px rgba(28, 30, 38, 0.24);
+}
+
+body.light-mode #experience .experience-detail {
+  color: rgba(34, 36, 44, 0.78);
+}
+
+/* 站钟保持背光屏（白天也亮） */
+body.light-mode .station-clock {
+  background: linear-gradient(180deg, #141824, #0e111a);
+  border-color: rgba(234, 229, 214, 0.12);
+}
+
+body.light-mode .station-clock-time {
+  color: #d9a554;
+}
+
+body.light-mode .station-clock-label,
+body.light-mode .station-clock-tz {
+  color: rgba(234, 229, 214, 0.5);
+}
+
+/* --- 通讯室 --- */
+body.light-mode #contact .contact-header h2,
+body.light-mode #contact .contact-header p {
+  color: #22242c;
+}
+
+body.light-mode #contact .contact-item {
+  box-shadow: 0 18px 40px rgba(28, 30, 38, 0.14);
+}
+
+/* --- 自定义光标 --- */
+body.light-mode .cursor-ring-i {
+  border-color: rgba(28, 30, 38, 0.4);
+}
+
+body.light-mode.cursor-hover .cursor-ring-i {
+  border-color: rgba(150, 102, 15, 0.85);
+  background: rgba(150, 102, 15, 0.06);
+}
+
+body.light-mode .cursor-dot::after {
+  background: #96660f;
+  box-shadow: 0 0 8px rgba(150, 102, 15, 0.45);
+}
+
+/* --- 白昼车站补丁：通讯室暗罩与白字翻转 --- */
+body.light-mode #contact.contact-section {
+  color: #22242c;
+}
+
+body.light-mode #contact.contact-section::before {
+  background: linear-gradient(120deg, rgba(28, 30, 38, 0.06), rgba(28, 30, 38, 0.02));
+  border-top-color: rgba(28, 30, 38, 0.1);
+  border-bottom-color: rgba(28, 30, 38, 0.1);
+}
+
+body.light-mode #contact .contact-info {
+  color: rgba(28, 30, 38, 0.88);
+}
+
+body.light-mode #contact .contact-link {
+  color: rgba(28, 30, 38, 0.85);
+  border-bottom-color: rgba(28, 30, 38, 0.35);
+}
+
+body.light-mode #contact .contact-link:hover {
+  color: #0e6e84;
+  border-color: #0e6e84;
+}
+
+body.light-mode #contact .contact-note {
+  color: rgba(28, 30, 38, 0.55);
+}
+
+body.light-mode #contact .contact-action {
+  color: rgba(28, 30, 38, 0.78);
+  border-color: rgba(28, 30, 38, 0.25);
+}
+
+body.light-mode #contact .contact-action.primary {
+  border-color: rgba(28, 30, 38, 0.45);
+  background: rgba(28, 30, 38, 0.06);
+  color: rgba(28, 30, 38, 0.92);
+}
+
+body.light-mode #contact .contact-action:hover {
+  border-color: #0e6e84;
+  color: #0e6e84;
+}
+
+/* --- 白昼车站补丁：案例档案副标题（衬线斜体白字 → 墨字） --- */
+body.light-mode .detail-subtitle {
+  color: rgba(28, 30, 38, 0.82);
+}
