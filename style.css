@@ -5500,3 +5500,75 @@ body.hero-reveal #shader-background {
     transition: none;
   }
 }
+
+/* --- 工作台面：图纸在左、批注栏在右，蓝图不再独占一整块 --- */
+.guild-desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(28px, 4.5vw, 64px);
+  align-items: center;
+  width: 100%;
+}
+
+.guild-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  counter-reset: guild-note;
+}
+
+.guild-notes .about-skills-label {
+  margin-bottom: 26px;
+}
+
+#about .guild-notes .about-skills {
+  width: 100%;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+/* 能力条目 → 图纸批注：编号 + 琥珀菱形 + 细分隔线 */
+.guild-notes .about-skill {
+  counter-increment: guild-note;
+  position: relative;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.guild-notes .about-skill::before {
+  content: 'NOTE 0' counter(guild-note);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: rgba(217, 165, 84, 0.75);
+  margin-bottom: 10px;
+}
+
+.guild-notes .about-skill::after {
+  content: '';
+  position: absolute;
+  top: -3.5px;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  background: var(--amber);
+  transform: rotate(45deg);
+}
+
+#about .guild-notes .about-skill-title {
+  font-size: 1.02rem;
+  margin-bottom: 8px;
+}
+
+#about .guild-notes .about-skill-text {
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 980px) {
+  .guild-desk {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
