@@ -2157,3 +2157,161 @@ document.addEventListener('DOMContentLoaded', () => {
     io.observe(blueprint);
   });
 })();
+
+// ========================================================================
+// ============ 🕐 灯光工程D：站台生活层（时钟/重翻牌/仓鼠/光标） ==========
+// ========================================================================
+
+(() => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
+
+  // ---------- D1 站台时钟：新加坡时间 GMT+8，逢秒更新 ----------
+  const initStationClock = () => {
+    const el = document.querySelector('.station-clock-time');
+    if (!el) return;
+    const pad = (n) => String(n).padStart(2, '0');
+    const tick = () => {
+      const sg = new Date(Date.now() + (new Date().getTimezoneOffset() + 480) * 60000);
+      el.innerHTML = `${pad(sg.getHours())}<span class="clock-colon">:</span>${pad(sg.getMinutes())}<span class="clock-colon">:</span>${pad(sg.getSeconds())}`;
+    };
+    tick();
+    window.setInterval(tick, 1000);
+  };
+
+  // ---------- D2 出发板闲时重翻牌：可见时每 9-15s 随机一行 ----------
+  const initBoardReflap = () => {
+    if (prefersReducedMotion) return;
+    const section = document.getElementById('experience');
+    const rows = section ? [...section.querySelectorAll('.experience-timeline-item')] : [];
+    if (!section || !rows.length) return;
+    let visible = false;
+
+    const flap = (index) => {
+      const row = rows[typeof index === 'number' ? index : Math.floor(Math.random() * rows.length)];
+      if (!row) return;
+      row.classList.remove('is-reflap');
+      void row.offsetWidth;
+      row.classList.add('is-reflap');
+      row.addEventListener('animationend', () => row.classList.remove('is-reflap'), { once: true });
+    };
+
+    const schedule = () => {
+      window.setTimeout(() => {
+        if (visible && !document.hidden) flap();
+        schedule();
+      }, 9000 + Math.random() * 6000);
+    };
+
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { visible = entry.isIntersecting; });
+    }, { threshold: 0.2 }).observe(section);
+    schedule();
+    window.__stationLife = Object.assign(window.__stationLife || {}, { flap });
+  };
+
+  // ---------- D3 站台仓鼠：偶尔沿站台边缘跑过，点到会受惊小跳 ----------
+  const initStationMouse = () => {
+    if (prefersReducedMotion || !finePointer || window.innerWidth < 1024) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'station-mouse';
+    wrap.setAttribute('aria-hidden', 'true');
+    wrap.innerHTML = `<div class="hamster">
+      <div class="hamster__body">
+        <div class="hamster__head">
+          <div class="hamster__ear"></div>
+          <div class="hamster__eye"></div>
+          <div class="hamster__nose"></div>
+        </div>
+        <div class="hamster__limb hamster__limb--fr"></div>
+        <div class="hamster__limb hamster__limb--fl"></div>
+        <div class="hamster__limb hamster__limb--br"></div>
+        <div class="hamster__limb hamster__limb--bl"></div>
+        <div class="hamster__tail"></div>
+      </div>
+    </div>`;
+    document.body.appendChild(wrap);
+    let running = false;
+
+    const run = () => {
+      if (running || document.hidden) return;
+      running = true;
+      wrap.classList.add('is-running');
+    };
+    wrap.addEventListener('animationend', (e) => {
+      if (e.target === wrap && e.animationName === 'stationMouseRun') {
+        wrap.classList.remove('is-running', 'is-startled');
+        running = false;
+      }
+    });
+    wrap.addEventListener('click', () => {
+      wrap.classList.add('is-startled');
+      window.setTimeout(() => wrap.classList.remove('is-startled'), 460);
+    });
+
+    // 首跑 35s 后，此后每 2-3.5 分钟一趟
+    window.setTimeout(run, 35000);
+    window.setInterval(() => { if (Math.random() < 0.8) run(); }, 150000);
+    window.__stationLife = Object.assign(window.__stationLife || {}, { mouse: run });
+  };
+
+  // ---------- D4 自定义光标：琥珀点即时跟随 + 拖尾环惯性趋近 ----------
+  const initCursor = () => {
+    if (prefersReducedMotion || !finePointer || window.innerWidth < 1024) return;
+    const dot = document.createElement('div');
+    dot.className = 'cursor-dot';
+    const ring = document.createElement('div');
+    ring.className = 'cursor-ring';
+    ring.innerHTML = '<div class="cursor-ring-i"></div>';
+    document.body.append(dot, ring);
+    document.body.classList.add('custom-cursor');
+
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
+    let rx = x;
+    let ry = y;
+    let raf = null;
+    let shown = false;
+
+    const loop = () => {
+      rx += (x - rx) * 0.16;
+      ry += (y - ry) * 0.16;
+      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+      if (Math.abs(x - rx) > 0.15 || Math.abs(y - ry) > 0.15) {
+        raf = requestAnimationFrame(loop);
+      } else {
+        raf = null;
+      }
+    };
+
+    const INTERACTIVE = 'a, button, [role="button"], input, select, textarea, label, summary, .project-detail-hotspot, .detail-media, .gallery-window, .language-option, .theme-switch, .station-mouse';
+    window.addEventListener('pointermove', (e) => {
+      x = e.clientX;
+      y = e.clientY;
+      if (!shown) {
+        shown = true;
+        rx = x;
+        ry = y;
+        document.body.classList.add('cursor-on');
+      }
+      const hit = e.target && e.target.closest ? e.target.closest(INTERACTIVE) : null;
+      document.body.classList.toggle('cursor-hover', Boolean(hit));
+      if (!raf) raf = requestAnimationFrame(loop);
+    }, { passive: true });
+
+    document.addEventListener('pointerdown', () => document.body.classList.add('cursor-down'));
+    document.addEventListener('pointerup', () => document.body.classList.remove('cursor-down'));
+    document.documentElement.addEventListener('mouseleave', () => {
+      shown = false;
+      document.body.classList.remove('cursor-on');
+    });
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initStationClock();
+    initBoardReflap();
+    initStationMouse();
+    initCursor();
+  });
+})();

@@ -1395,12 +1395,12 @@ body.splash-exit .loading-overlay .loader {
 }
 
 /* ============ Hamster CSS ============ */
-.loading-overlay .hamster,
-.loading-overlay .hamster div {
+:is(.loading-overlay, .station-mouse) .hamster,
+:is(.loading-overlay, .station-mouse) .hamster div {
   position: absolute;
 }
 
-.loading-overlay .hamster {
+:is(.loading-overlay, .station-mouse) .hamster {
   animation: hamster var(--dur) ease-in-out infinite;
   top: 50%;
   left: 50%;
@@ -1411,7 +1411,7 @@ body.splash-exit .loading-overlay .loader {
   z-index: 5;
 }
 
-.loading-overlay .hamster__head {
+:is(.loading-overlay, .station-mouse) .hamster__head {
   animation: hamsterHead var(--dur) ease-in-out infinite;
   background: hsl(30, 90%, 55%);
   border-radius: 70% 30% 0 100% / 40% 25% 25% 60%;
@@ -1424,7 +1424,7 @@ body.splash-exit .loading-overlay .loader {
   transform-origin: 100% 50%;
 }
 
-.loading-overlay .hamster__ear {
+:is(.loading-overlay, .station-mouse) .hamster__ear {
   animation: hamsterEar var(--dur) ease-in-out infinite;
   background: hsl(0, 90%, 85%);
   border-radius: 50%;
@@ -1436,7 +1436,7 @@ body.splash-exit .loading-overlay .loader {
   transform-origin: 50% 75%;
 }
 
-.loading-overlay .hamster__eye {
+:is(.loading-overlay, .station-mouse) .hamster__eye {
   animation: hamsterEye var(--dur) linear infinite;
   background-color: hsl(0, 0%, 0%);
   border-radius: 50%;
@@ -1446,7 +1446,7 @@ body.splash-exit .loading-overlay .loader {
   height: 0.5em;
 }
 
-.loading-overlay .hamster__nose {
+:is(.loading-overlay, .station-mouse) .hamster__nose {
   background: hsl(0, 90%, 75%);
   border-radius: 35% 65% 85% 15% / 70% 50% 50% 30%;
   top: 0.75em;
@@ -1455,7 +1455,7 @@ body.splash-exit .loading-overlay .loader {
   height: 0.25em;
 }
 
-.loading-overlay .hamster__body {
+:is(.loading-overlay, .station-mouse) .hamster__body {
   animation: hamsterBody var(--dur) ease-in-out infinite;
   background: hsl(30, 90%, 90%);
   border-radius: 50% 30% 50% 30% / 15% 60% 40% 40%;
@@ -1469,8 +1469,8 @@ body.splash-exit .loading-overlay .loader {
   transform-style: preserve-3d;
 }
 
-.loading-overlay .hamster__limb--fr,
-.loading-overlay .hamster__limb--fl {
+:is(.loading-overlay, .station-mouse) .hamster__limb--fr,
+:is(.loading-overlay, .station-mouse) .hamster__limb--fl {
   clip-path: polygon(0 0, 100% 0, 70% 80%, 60% 100%, 0% 100%, 40% 80%);
   top: 2em;
   left: 0.5em;
@@ -1479,20 +1479,20 @@ body.splash-exit .loading-overlay .loader {
   transform-origin: 50% 0;
 }
 
-.loading-overlay .hamster__limb--fr {
+:is(.loading-overlay, .station-mouse) .hamster__limb--fr {
   animation: hamsterFRLimb var(--dur) linear infinite;
   background: linear-gradient(hsl(30, 90%, 80%) 80%, hsl(0, 90%, 75%) 80%);
   transform: rotate(15deg) translateZ(-1px);
 }
 
-.loading-overlay .hamster__limb--fl {
+:is(.loading-overlay, .station-mouse) .hamster__limb--fl {
   animation: hamsterFLLimb var(--dur) linear infinite;
   background: linear-gradient(hsl(30, 90%, 90%) 80%, hsl(0, 90%, 85%) 80%);
   transform: rotate(15deg);
 }
 
-.loading-overlay .hamster__limb--br,
-.loading-overlay .hamster__limb--bl {
+:is(.loading-overlay, .station-mouse) .hamster__limb--br,
+:is(.loading-overlay, .station-mouse) .hamster__limb--bl {
   border-radius: 0.75em 0.75em 0 0;
   clip-path: polygon(0 0, 100% 0, 100% 30%, 70% 90%, 70% 100%, 30% 100%, 40% 90%, 0% 30%);
   top: 1em;
@@ -1502,19 +1502,19 @@ body.splash-exit .loading-overlay .loader {
   transform-origin: 50% 30%;
 }
 
-.loading-overlay .hamster__limb--br {
+:is(.loading-overlay, .station-mouse) .hamster__limb--br {
   animation: hamsterBRLimb var(--dur) linear infinite;
   background: linear-gradient(hsl(30, 90%, 80%) 90%, hsl(0, 90%, 75%) 90%);
   transform: rotate(-25deg) translateZ(-1px);
 }
 
-.loading-overlay .hamster__limb--bl {
+:is(.loading-overlay, .station-mouse) .hamster__limb--bl {
   animation: hamsterBLLimb var(--dur) linear infinite;
   background: linear-gradient(hsl(30, 90%, 90%) 90%, hsl(0, 90%, 85%) 90%);
   transform: rotate(-25deg);
 }
 
-.loading-overlay .hamster__tail {
+:is(.loading-overlay, .station-mouse) .hamster__tail {
   animation: hamsterTail var(--dur) linear infinite;
   background: hsl(0, 90%, 85%);
   border-radius: 0.25em 50% 50% 0.25em;
@@ -5863,5 +5863,211 @@ body.club-door-lock {
   .club-door-panel,
   .club-door-glow {
     transition: none;
+  }
+}
+
+/* ==========================================================================
+   灯光工程D · 站台生活层 —— 车站在值班
+   实时时钟 / 出发板闲时重翻牌 / 站台仓鼠彩蛋 / 自定义光标
+   ========================================================================== */
+
+/* --- D1 站台时钟（出发板表头右侧） --- */
+#experience .experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.station-clock {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  border: 1px solid var(--line);
+  padding: 10px 18px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.station-clock-label,
+.station-clock-tz {
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  color: rgba(234, 229, 214, 0.45);
+}
+
+.station-clock-time {
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+  min-width: 7.2ch;
+  text-align: center;
+}
+
+.clock-colon {
+  animation: clockColon 1s steps(1, end) infinite;
+}
+
+@keyframes clockColon {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0.25; }
+}
+
+/* --- D2 出发板闲时重翻牌 --- */
+@keyframes boardReflap {
+  0% { transform: rotateX(0); }
+  32% { transform: rotateX(-66deg); filter: brightness(1.3); }
+  58% { transform: rotateX(10deg); }
+  78% { transform: rotateX(-4deg); }
+  100% { transform: rotateX(0); filter: brightness(1); }
+}
+
+#experience .experience-timeline-item.is-reflap {
+  animation: boardReflap 660ms var(--ease-station);
+  transform-origin: 50% 0;
+  backface-visibility: hidden;
+}
+
+/* --- D3 站台仓鼠：偶尔沿站台边缘跑过 --- */
+.station-mouse {
+  position: fixed;
+  bottom: 6px;
+  left: 0;
+  width: 7em;
+  height: 3.4em;
+  font-size: 8px;
+  --dur: 0.55s; /* 四肢频率比开屏滚轮里的更快：赶路 */
+  z-index: 900;
+  pointer-events: none;
+  transform: translateX(-12em) scaleX(-1);
+  cursor: none;
+}
+
+.station-mouse .hamster {
+  top: 0.4em;
+  left: 2em;
+  transform: none;
+  animation-name: none; /* 去掉滚轮里的整体起伏，改为贴地小颠 */
+}
+
+.station-mouse.is-running {
+  pointer-events: auto;
+  animation: stationMouseRun 9s linear forwards;
+}
+
+.station-mouse.is-running .hamster {
+  animation: stationMouseBob 0.55s ease-in-out infinite;
+}
+
+@keyframes stationMouseRun {
+  from { transform: translateX(-12em) scaleX(-1); }
+  to { transform: translateX(calc(100vw + 14em)) scaleX(-1); }
+}
+
+@keyframes stationMouseBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.28em); }
+}
+
+/* 被点到：受惊小跳 */
+.station-mouse.is-startled .hamster {
+  animation: stationMouseHop 420ms var(--ease-station);
+}
+
+@keyframes stationMouseHop {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(-1.6em) rotate(-6deg); }
+  100% { transform: translateY(0); }
+}
+
+/* --- D4 自定义光标：琥珀点 + 惯性拖尾环 --- */
+body.custom-cursor,
+body.custom-cursor * {
+  cursor: none !important;
+}
+
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+body.cursor-on .cursor-dot,
+body.cursor-on .cursor-ring {
+  opacity: 1;
+}
+
+.cursor-dot::after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(217, 165, 84, 0.55);
+}
+
+.cursor-ring-i {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(234, 229, 214, 0.38);
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 280ms var(--ease-station), border-color 280ms ease, background 280ms ease;
+}
+
+body.cursor-hover .cursor-ring-i {
+  transform: translate(-50%, -50%) scale(1.55);
+  border-color: rgba(217, 165, 84, 0.8);
+  background: rgba(217, 165, 84, 0.06);
+}
+
+body.cursor-down .cursor-ring-i {
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+/* --- 无动画偏好 / 触屏：全部退场（JS 亦短路） --- */
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+  .station-mouse,
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+
+  #experience .experience-timeline-item.is-reflap {
+    animation: none;
+  }
+
+  .clock-colon {
+    animation: none;
+  }
+
+  body.custom-cursor,
+  body.custom-cursor * {
+    cursor: auto !important;
+  }
+}
+
+@media (max-width: 720px) {
+  #experience .experience-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .station-clock {
+    padding: 8px 14px;
+  }
+
+  .station-clock-time {
+    font-size: 1rem;
   }
 }
