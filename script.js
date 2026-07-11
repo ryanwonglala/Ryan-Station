@@ -764,6 +764,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const CASE_SLUGS = ['robotic-arm', 'hango', 'flexilock', 'security-robot'];
+
   const openDetail = (index, fromHistory = false) => {
     if (detailOpen && activeIndex === index) return;
     detailOpen = true;
@@ -777,7 +779,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('detail-mode');
     scrollToProjects();
     if (!fromHistory) {
-      history.pushState({ detail: true, index: activeIndex }, '', '#projects-detail');
+      history.pushState({ detail: true, index: activeIndex }, '', `#case/${CASE_SLUGS[activeIndex] || activeIndex + 1}`);
     }
   };
 
@@ -1080,6 +1082,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const shareButton = detailView ? detailView.querySelector('.detail-share') : null;
+  if (shareButton) {
+    const shareLabel = shareButton.querySelector('.detail-share-label');
+    let shareTimer = null;
+    shareButton.addEventListener('click', async () => {
+      const url = `${location.origin}${location.pathname}#case/${CASE_SLUGS[activeIndex] || activeIndex + 1}`;
+      let copied = false;
+      try {
+        await navigator.clipboard.writeText(url);
+        copied = true;
+      } catch (err) {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { copied = document.execCommand('copy'); } catch (err2) { copied = false; }
+        ta.remove();
+      }
+      if (!copied) return;
+      const t = (key, fallback) => (window.PortfolioI18n && window.PortfolioI18n.t(key)) || fallback;
+      shareButton.classList.add('is-copied');
+      if (shareLabel) shareLabel.textContent = t('projects.copied', 'Link copied');
+      window.clearTimeout(shareTimer);
+      shareTimer = window.setTimeout(() => {
+        shareButton.classList.remove('is-copied');
+        if (shareLabel) shareLabel.textContent = t('projects.copyLink', 'Copy case link');
+      }, 1800);
+    });
+  }
+
   window.addEventListener('popstate', (event) => {
     if (event.state && event.state.detail) {
       openDetail(event.state.index, true);
@@ -1088,7 +1123,28 @@ document.addEventListener('DOMContentLoaded', () => {
     closeDetail(true);
   });
 
-  if (location.hash === '#projects-detail') {
+  const parseCaseHash = () => {
+    const m = location.hash.match(/^#case\/([\w-]+)$/);
+    if (!m) return -1;
+    const bySlug = CASE_SLUGS.indexOf(m[1]);
+    if (bySlug !== -1) return bySlug;
+    const n = parseInt(m[1], 10);
+    return Number.isInteger(n) && n >= 1 && n <= copyItems.length ? n - 1 : -1;
+  };
+
+  const initialCase = parseCaseHash();
+  if (initialCase !== -1) {
+    // 直链进入：先垫一层展廊记录，返回站台时不会退出网站
+    history.replaceState({ detail: false }, '', `${location.pathname}${location.search}#projects`);
+    history.pushState({ detail: true, index: initialCase }, '', `#case/${CASE_SLUGS[initialCase] || initialCase + 1}`);
+    openDetail(initialCase, true);
+    // 开屏/展廊初始化会挪动布局，落稳后再对一次位
+    window.addEventListener('load', () => {
+      window.setTimeout(() => {
+        if (detailOpen) projectsSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }, 400);
+    });
+  } else if (location.hash === '#projects-detail') {
     openDetail(activeIndex, true);
   }
 
@@ -2113,7 +2169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sphereLayer = section.querySelector('.sphere-image-layer');
     const windowEls = [...track.querySelectorAll('.gallery-window')];
     let detailVid = -1;
-    const classWatch = new MutationObserver(() => {
+    const syncDetailVideo = () => {
       const inDetail = section.classList.contains('is-detail');
       if (inDetail && detailVid === -1 && sphereLayer) {
         const numEl = section.querySelector('.detail-case-num');
@@ -2126,8 +2182,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (windowEls[detailVid]) windowEls[detailVid].appendChild(videos[detailVid]);
         detailVid = -1;
       }
-    });
+    };
+    const classWatch = new MutationObserver(syncDetailVideo);
     classWatch.observe(section, { attributes: true, attributeFilter: ['class'] });
+    syncDetailVideo(); // 直链 #case/<slug> 进入时 is-detail 早于本模块初始化
   });
 })();
 
