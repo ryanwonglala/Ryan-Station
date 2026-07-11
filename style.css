@@ -6559,3 +6559,39 @@ body.light-mode #contact .contact-action:hover {
 body.light-mode .detail-subtitle {
   color: rgba(28, 30, 38, 0.82);
 }
+
+/* --- 白昼车站补丁：移动纵向项目面板（T209）白字翻墨 ---
+   基础轮播文字是白色字面量（原本压在视频上）；桌面展廊有自己的日间覆盖，
+   移动面板走这组（与展廊日间取值一致，展廊选择器在层叠中不受影响） */
+body.light-mode .project-copy .project-eyebrow {
+  color: #96660f;
+}
+
+body.light-mode .project-copy .project-title {
+  color: rgba(28, 30, 38, 0.95);
+}
+
+body.light-mode .project-copy .project-subtitle {
+  color: rgba(28, 30, 38, 0.78);
+}
+
+/* 轮播导航轴线/箭头/菱形（移动端可见） */
+body.light-mode .projects-axis-horizontal {
+  background: linear-gradient(to right, transparent, rgba(28, 30, 38, 0.55), transparent);
+}
+
+body.light-mode .projects-axis-horizontal::before,
+body.light-mode .projects-axis-horizontal::after {
+  border-top-color: rgba(28, 30, 38, 0.6);
+  border-right-color: rgba(28, 30, 38, 0.6);
+}
+
+body.light-mode .axis-diamond {
+  border-color: rgba(28, 30, 38, 0.7);
+  background: rgba(246, 241, 229, 0.9);
+  box-shadow: 0 0 12px rgba(28, 30, 38, 0.2);
+}
+
+body.light-mode .projects-axis {
+  background: linear-gradient(to bottom, transparent, rgba(28, 30, 38, 0.4), transparent);
+}
