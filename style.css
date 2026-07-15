@@ -531,6 +531,13 @@ body.light-mode .music-cta {
     right: 20px;
     left: 20px;
     max-width: calc(100vw - 40px);
+    /* 换行一旦允许，固定 50px 高就装不下第二行（769–880px 区间主题开关会漏到胶囊外） */
+    height: auto;
+  }
+
+  /* 收起标签让平板宽度仍排得下一行；height:auto 是排不下时的兜底 */
+  .glass-capsule-nav .theme-switch-li .text {
+    display: none;
   }
 }
 
