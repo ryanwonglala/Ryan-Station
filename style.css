@@ -679,6 +679,11 @@ body.light-mode .hero-eyebrow {
   text-shadow: 0 1px 22px rgba(244, 241, 234, 0.6);
 }
 
+/* --amber 在日间翻为深赭（供浅底文字用），此处它是填充色，故正文翻奶白 */
+body.light-mode .hero-cta {
+  color: #fdfaf3;
+}
+
 body.light-mode .hero-cta-secondary {
   color: #2b2416;
   border-color: rgba(33, 28, 20, 0.35);
