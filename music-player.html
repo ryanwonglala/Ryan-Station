@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Ryan Station music player and AI mood terminal.">
+  <meta name="description" content="Ryan Station music player with a resident station DJ.">
   <title>Music Zone - Acid Glitch Hub</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="music-player.css">
@@ -57,20 +57,14 @@ DURATION: <span class="track-duration">0:00</span>
       </pre>
       <div class="ai-terminal">
         <div class="ai-terminal-header">
-          <label for="ai-input" data-i18n="musicPlayer.terminal">AI TERMINAL</label>
-          <button id="ai-settings-btn" class="ai-settings-btn" type="button" title="Configure Gemini API Key" data-i18n-title="musicPlayer.settings">
-            <svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-cog"></use></svg>
-          </button>
-        </div>
-        <div class="mood-presets" id="moodPresets" role="group" aria-label="Quick mood picks" data-i18n-aria-label="musicPlayer.moodPresetsAria"></div>
-        <div class="ai-input-row">
-          <input id="ai-input" type="text" placeholder="> enter mood to hack the system" data-i18n-placeholder="musicPlayer.inputPlaceholder">
+          <span class="ai-terminal-label" data-i18n="musicPlayer.terminal">STATION DJ</span>
           <button id="terminal-toggle" class="terminal-toggle" type="button" aria-expanded="true" aria-controls="terminal-log" title="Collapse terminal log" data-i18n-title="musicPlayer.collapseTerminal">
             <svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-chevron-up"></use></svg>
           </button>
         </div>
+        <div class="mood-presets" id="moodPresets" role="group" aria-label="Quick mood picks" data-i18n-aria-label="musicPlayer.moodPresetsAria"></div>
         <div id="terminal-log" class="terminal-log" aria-live="polite">
-          <div class="terminal-line system" data-i18n="musicPlayer.systemReady">&gt; SYSTEM: Ready for commands.</div>
+          <div class="terminal-line system" data-i18n="musicPlayer.systemReady">&gt; SYSTEM: DJ booth online. Pick a mood.</div>
         </div>
       </div>
     </section>

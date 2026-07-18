@@ -90,7 +90,6 @@ h1, h2, h3, h4 {
 
 .back-home-btn:focus-visible,
 .glitch-btn:focus-visible,
-.ai-terminal input:focus-visible,
 .terminal-toggle:focus-visible,
 .volume-control input:focus-visible,
 #seekBar:focus-visible {
@@ -498,33 +497,9 @@ main.brutalist-container {
   margin-top: auto;
 }
 
-.ai-terminal label {
+.ai-terminal-label {
   font-family: 'Impact', 'Arial Black', sans-serif;
   letter-spacing: 0.3em;
-}
-
-.ai-terminal input {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid var(--alert-red);
-  color: var(--acid-lime);
-  font-family: inherit;
-  font-size: 1rem;
-  padding: 0.3rem 0;
-}
-
-.ai-terminal input::placeholder {
-  color: rgba(204, 255, 0, 0.5);
-}
-
-.ai-input-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.ai-input-row input {
-  flex: 1;
 }
 
 .terminal-toggle {
@@ -555,23 +530,6 @@ main.brutalist-container {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-}
-
-.ai-settings-btn {
-  background: transparent;
-  border: 2px solid var(--alert-red);
-  color: var(--acid-lime);
-  padding: 0.2rem 0.4rem;
-  font-size: 0.9rem;
-  opacity: 0.6;
-  cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.ai-settings-btn:hover,
-.ai-settings-btn:focus-visible {
-  opacity: 1;
-  transform: translateY(-1px);
 }
 
 .terminal-log {
@@ -828,14 +786,6 @@ main.brutalist-container {
   .terminal-toggle {
     width: 44px;
     height: 44px;
-  }
-
-  .ai-settings-btn {
-    min-width: 44px;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
   }
 
   /* Keep the visible track/thumb the same thin Acid Glitch line, but grow
@@ -1318,35 +1268,9 @@ body.b1-arrival-short .music-language-switcher {
   transition: background 140ms ease, color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
-.mood-chip:hover:not(:disabled) {
+.mood-chip:hover {
   background: var(--acid-lime);
   color: #050505;
   border-style: solid;
   box-shadow: 0 0 14px rgba(204, 255, 0, 0.5);
-}
-
-.mood-chip:disabled {
-  opacity: 0.35;
-  cursor: wait;
-}
-
-.dj-thinking::after {
-  content: '▌';
-  animation: b1Thinking 900ms steps(3, end) infinite;
-}
-
-@keyframes b1Thinking {
-  0% { content: '▌'; }
-  33% { content: '▌▌'; }
-  66% { content: '▌▌▌'; }
-}
-
-.ai-terminal input:disabled {
-  opacity: 0.4;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dj-thinking::after {
-    animation: none;
-  }
 }

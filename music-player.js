@@ -30,8 +30,6 @@ const crtStatus = document.querySelector('.crt-status');
 const staticNoise = document.querySelector('.static-noise');
 const crtTv = document.querySelector('.crt-tv');
 const crtVideo = document.getElementById('mv-player');
-const aiInput = document.getElementById('ai-input');
-const aiSettingsBtn = document.getElementById('ai-settings-btn');
 const terminalLog = document.getElementById('terminal-log');
 const terminalToggle = document.getElementById('terminal-toggle');
 
@@ -42,7 +40,7 @@ let isPlaying = false;
 let playMode = 'sequential';
 let isSeeking = false;
 let sidebarOpen = false;
-let terminalCollapsed = true;
+let terminalCollapsed = false;
 
 const PLAY_MODE_ICONS = {
   sequential: 'icon-list-ul',
@@ -56,24 +54,6 @@ function mpT(path, fallback = '') {
 
 function formatMpT(path, replacements, fallback = '') {
   return mpT(path, fallback).replace(/\{(\w+)\}/g, (_, key) => replacements[key] || '');
-}
-
-// ========================================================================
-// ========================= ⚙️ Gemini Helpers ============================
-// ========================================================================
-
-function getDeepSeekKey() {
-  return localStorage.getItem('DEEPSEEK_API_KEY') || '';
-}
-
-function setDeepSeekKey(value) {
-  if (value) {
-    localStorage.setItem('DEEPSEEK_API_KEY', value);
-  }
-}
-
-function clearDeepSeekKey() {
-  localStorage.removeItem('DEEPSEEK_API_KEY');
 }
 
 const b1ReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -458,107 +438,85 @@ function fallbackToStatic() {
 }
 
 // ========================================================================
-// ==================== 🤖 AI DJ（DeepSeek 双路引擎） =====================
-// 主路：/api/dj 无服务函数（站长 key 在 Vercel 环境变量，访客零配置）
-// 备路：浏览器直连 DeepSeek（本地开发 / 未配环境变量时，key 在 localStorage）
+// ==================== 📻 离线 DJ（预生成台词，零 API） ==================
+// 台词库在 dj-lines.json：每首歌的报幕词 + 心情反应词 + 通用兜底模板。
+// 点歌 = 本地 tags 匹配；播报 = 查表随机挑一句。加载失败时 DJ 静音，不影响播放。
 // ========================================================================
 
-const DJ_HISTORY_LIMIT = 10;
-const djHistory = [];
-let djPending = false;
+let djLines = null;
+let djBusyUntil = 0;
 
-function buildDjSystemPrompt() {
-  const lang = (window.PortfolioI18n && window.PortfolioI18n.getLanguage && window.PortfolioI18n.getLanguage()) || 'en';
-  const contextList = playlist.map((track, index) => {
-    const tags = Array.isArray(track.tags) && track.tags.length ? track.tags.join(', ') : 'none';
-    return `${index + 1}. "${track.title}" — ${track.artist || 'unknown'} [${tags}]`;
-  }).join('\n');
-  return [
-    'You are the resident DJ of "Ryan\'s Station — After Hours" (underground floor B1).',
-    'Personality: warm, playful, a little radio-host flair. Keep replies to 1-2 short sentences.',
-    `Reply in ${lang === 'zh' ? 'Chinese' : 'the same language as the user (default English)'}.`,
-    'You can ONLY pick tracks from this list:',
-    contextList,
-    'Always answer with strict JSON: {"reply": "...", "picks": ["Exact Title", "..."]}.',
-    'picks = 1 to 3 titles copied EXACTLY from the list, best match first. If the user is only chatting, picks may be [].',
-  ].join('\n');
-}
-
-async function callDj(messages) {
-  const body = JSON.stringify({ messages });
-  // 主路：站内无服务函数
+async function loadDjLines() {
   try {
-    const res = await fetch('api/dj', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-    });
-    const type = res.headers.get('content-type') || '';
-    if (res.ok && type.includes('application/json')) {
-      const data = await res.json();
-      if (data && data.content) return { content: data.content };
-      if (data && data.error === 'no-server-key') { /* 落备路 */ }
-      else if (data && data.error) return { error: data.error };
-    }
-  } catch (err) { /* 本地静态服务器无函数，落备路 */ }
-
-  // 备路：浏览器直连 DeepSeek
-  const key = getDeepSeekKey();
-  if (!key) return { noKey: true };
-  try {
-    const res = await fetch('https://api.deepseek.com/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages,
-        temperature: 0.8,
-        max_tokens: 400,
-        response_format: { type: 'json_object' },
-      }),
-    });
-    if (!res.ok) {
-      const text = await res.text();
-      return { error: `DeepSeek ${res.status}: ${text.slice(0, 140)}` };
-    }
-    const data = await res.json();
-    const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    if (!content) return { error: 'Empty response' };
-    return { content };
-  } catch (err) {
-    return { error: err.message };
-  }
+    const res = await fetch('dj-lines.json');
+    if (res.ok) djLines = await res.json();
+  } catch (err) { /* DJ 静音也不影响播放 */ }
 }
 
-function parseDjJson(raw) {
-  const trimmed = String(raw).trim();
-  try {
-    return JSON.parse(trimmed);
-  } catch (err) {
-    const match = trimmed.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error('Unparseable DJ response');
-  }
+function djLang() {
+  return (window.PortfolioI18n && window.PortfolioI18n.getLanguage && window.PortfolioI18n.getLanguage()) || 'en';
 }
 
-// 模糊匹配：全等 → 归一化全等 → 包含（双向）
-function normalizeTitle(s) {
-  return String(s || '').toLowerCase().replace(/[\s\u3000·\-—_,，。.!！?？'"「」『』()（）\[\]]/g, '');
+function djRandomLine(pool) {
+  if (!Array.isArray(pool) || !pool.length) return '';
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function findTrackIndexByTitle(targetTitle) {
-  if (!targetTitle) return -1;
-  const raw = targetTitle.trim().toLowerCase();
-  let idx = playlist.findIndex((t) => (t.title || '').trim().toLowerCase() === raw);
-  if (idx !== -1) return idx;
-  const norm = normalizeTitle(targetTitle);
-  if (!norm) return -1;
-  idx = playlist.findIndex((t) => normalizeTitle(t.title) === norm);
-  if (idx !== -1) return idx;
-  return playlist.findIndex((t) => {
-    const n = normalizeTitle(t.title);
-    return n && (n.includes(norm) || norm.includes(n));
+function djIntroFor(track) {
+  if (!djLines || !track) return '';
+  const lang = djLang();
+  const entry = djLines.tracks && djLines.tracks[track.title];
+  const pool = (entry && entry[lang] && entry[lang].length)
+    ? entry[lang]
+    : (djLines.generic && djLines.generic[lang]) || [];
+  return djRandomLine(pool)
+    .replace('{title}', track.title || '')
+    .replace('{artist}', track.artist || '--');
+}
+
+// 报幕调度：开播 0.9s 后才开口，连环切歌不刷屏
+let djAnnounceTimer = null;
+let lastAnnouncedIndex = -1;
+
+function scheduleDjAnnounce() {
+  if (djAnnounceTimer) window.clearTimeout(djAnnounceTimer);
+  if (currentTrackIndex === lastAnnouncedIndex) return;
+  const idx = currentTrackIndex;
+  djAnnounceTimer = window.setTimeout(() => {
+    djAnnounceTimer = null;
+    if (!isPlaying || currentTrackIndex !== idx) return;
+    const line = djIntroFor(playlist[idx]);
+    if (!line) return;
+    lastAnnouncedIndex = idx;
+    appendToTerminalLog(`> DJ: ${line}`, 'ai');
+  }, 900);
+}
+
+// 心情点歌：本地按 tags 匹配 + 随机挑一首（避开当前曲目）
+function djMoodPick(tag, userText) {
+  const now = Date.now();
+  if (now < djBusyUntil) return;
+  djBusyUntil = now + 600;
+
+  appendToTerminalLog(`> USER: ${userText}`, 'user');
+
+  const matches = [];
+  playlist.forEach((track, index) => {
+    if (Array.isArray(track.tags) && track.tags.includes(tag)) matches.push(index);
   });
+  if (!matches.length) return;
+
+  let pool = matches.filter((index) => index !== currentTrackIndex);
+  if (!pool.length) pool = matches;
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+
+  const moodEntry = djLines && djLines.moods && djLines.moods[tag];
+  const moodLine = djRandomLine(moodEntry && moodEntry[djLang()]);
+  if (moodLine) appendToTerminalLog(`> DJ: ${moodLine}`, 'ai');
+
+  loadTrack(idx);
+  playTrack();
+  appendTrackChip(idx);
 }
 
 // ========================================================================
@@ -714,113 +672,6 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-if (aiInput) {
-  aiInput.addEventListener('keydown', async (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const mood = aiInput.value.trim();
-      if (!mood) return;
-      aiInput.value = '';
-      await hackTheSystem(mood);
-    }
-  });
-}
-
-if (aiSettingsBtn) {
-  aiSettingsBtn.addEventListener('click', () => {
-    const existing = getDeepSeekKey();
-    const input = window.prompt(mpT('djKeyPrompt', 'Enter DeepSeek API Key — only needed if the station key is not configured (leave blank to clear):'), existing);
-    if (input === null) return;
-    const trimmed = input.trim();
-    if (trimmed) {
-      setDeepSeekKey(trimmed);
-      appendToTerminalLog(mpT('djKeySaved', '> SYSTEM: DeepSeek API key saved.'), 'system');
-    } else {
-      clearDeepSeekKey();
-      appendToTerminalLog(mpT('djKeyCleared', '> SYSTEM: DeepSeek API key cleared.'), 'system');
-    }
-  });
-}
-
-// ========================================================================
-// ========================= 🛰️ AI Terminal Stub ==========================
-// ========================================================================
-
-async function hackTheSystem(mood) {
-  if (djPending) return;
-  djPending = true;
-  setDjBusy(true);
-  appendToTerminalLog(`> USER: ${mood}`, 'user');
-
-  const thinking = document.createElement('div');
-  thinking.className = 'terminal-line ai dj-thinking';
-  thinking.textContent = '> AI: ';
-  terminalLog.appendChild(thinking);
-  terminalLog.scrollTop = terminalLog.scrollHeight;
-
-  const messages = [
-    { role: 'system', content: buildDjSystemPrompt() },
-    ...djHistory,
-    { role: 'user', content: mood },
-  ];
-
-  const result = await callDj(messages);
-  thinking.remove();
-
-  if (result.noKey) {
-    appendToTerminalLog(mpT('djNoKey', '> SYSTEM: DJ booth is offline — no station key configured. Click the gear to plug in your own DeepSeek key (platform.deepseek.com).'), 'system');
-    djPending = false;
-    setDjBusy(false);
-    return;
-  }
-  if (result.error) {
-    appendToTerminalLog(formatMpT('djError', { error: result.error }, `> SYSTEM: Signal lost — ${result.error}`), 'system');
-    djPending = false;
-    setDjBusy(false);
-    return;
-  }
-
-  let parsed;
-  try {
-    parsed = parseDjJson(result.content);
-  } catch (err) {
-    appendToTerminalLog(formatMpT('djError', { error: err.message }, `> SYSTEM: Signal lost — ${err.message}`), 'system');
-    djPending = false;
-    setDjBusy(false);
-    return;
-  }
-
-  djHistory.push({ role: 'user', content: mood });
-  djHistory.push({ role: 'assistant', content: String(result.content).slice(0, 600) });
-  while (djHistory.length > DJ_HISTORY_LIMIT) djHistory.shift();
-
-  appendToTerminalLog(`> AI: ${parsed.reply || 'Copy that.'}`, 'ai');
-
-  const picks = Array.isArray(parsed.picks) ? parsed.picks : (parsed.target ? [parsed.target] : []);
-  const indexes = [];
-  picks.forEach((title) => {
-    const idx = findTrackIndexByTitle(title);
-    if (idx !== -1 && !indexes.includes(idx)) indexes.push(idx);
-  });
-
-  if (picks.length && !indexes.length) {
-    appendToTerminalLog(formatMpT('notFound', { target: picks[0] }, `> SYSTEM: Could not find "${picks[0]}".`), 'system');
-  }
-  if (indexes.length) {
-    loadTrack(indexes[0]);
-    playTrack();
-    appendToTerminalLog(formatMpT('playingTrack', { title: playlist[indexes[0]].title }, `> SYSTEM: Playing "${playlist[indexes[0]].title}"`), 'system');
-    indexes.forEach((idx) => appendTrackChip(idx));
-  }
-  djPending = false;
-  setDjBusy(false);
-}
-
-function setDjBusy(busy) {
-  if (aiInput) aiInput.disabled = busy;
-  document.querySelectorAll('.mood-chip').forEach((chip) => { chip.disabled = busy; });
-}
-
 // 心情快捷键：从曲库真实标签生成，点一下就点歌
 function buildMoodPresets() {
   const box = document.getElementById('moodPresets');
@@ -844,8 +695,7 @@ function buildMoodPresets() {
       chip.className = 'mood-chip';
       chip.textContent = lang() === 'zh' ? p.zh : p.en;
       chip.addEventListener('click', () => {
-        if (djPending) return;
-        hackTheSystem(lang() === 'zh' ? p.promptZh : p.promptEn);
+        djMoodPick(p.tag, lang() === 'zh' ? p.promptZh : p.promptEn);
       });
       box.appendChild(chip);
     });
@@ -864,6 +714,7 @@ function buildMoodPresets() {
 // ========================================================================
 
 async function init() {
+  loadDjLines();
   const loaded = await loadPlaylist();
   if (loaded && playlist.length > 0) {
     updateVolume();
@@ -1097,7 +948,10 @@ window.addEventListener('resize', () => {
 const b1BaseUpdatePlaybackState = updatePlaybackState;
 updatePlaybackState = function (playing) {
   b1BaseUpdatePlaybackState(playing);
-  if (playing) startSpectrum();
+  if (playing) {
+    startSpectrum();
+    scheduleDjAnnounce();
+  }
 };
 
 // CORS 探测：真频谱可用时给 audio 挂 crossOrigin（必须在设 src 前定型）

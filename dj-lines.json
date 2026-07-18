@@ -1,0 +1,480 @@
+{
+  "moods": {
+    "happy": {
+      "zh": [
+        "收到,今晚的快乐由 B1 承包。",
+        "开心是吧?这单我接了,调台中……",
+        "好嘞,把多巴胺旋钮拧到最大。"
+      ],
+      "en": [
+        "Copy that — happiness is on the house tonight.",
+        "One order of joy, coming right up from B1.",
+        "Cranking the dopamine dial to max."
+      ]
+    },
+    "energy": {
+      "zh": [
+        "要燃?站住别动,我给你接根电线。",
+        "收到点火请求,倒计时三、二、一——",
+        "好,把功放推到红区,别怪我没提醒。"
+      ],
+      "en": [
+        "High voltage requested — hold still while I wire you up.",
+        "Ignition sequence received. Three, two, one—",
+        "Pushing the amp into the red. You asked for it."
+      ]
+    },
+    "party": {
+      "zh": [
+        "蹦迪协议已激活,地板责任自负。",
+        "收到!灯球降下,B1 现在是舞池。",
+        "今晚的地面维修费记你账上,开跳。"
+      ],
+      "en": [
+        "Party protocol engaged. The floor is your problem now.",
+        "Disco ball descending — B1 is officially a dance floor.",
+        "Floor repairs go on your tab. Now move."
+      ]
+    },
+    "vibe": {
+      "zh": [
+        "懂了,灯光调暗,节奏放软。",
+        "松弛模式启动,靠背往后倒就行。",
+        "好说,给你找一首不着急的。"
+      ],
+      "en": [
+        "Say less. Dimming the lights, softening the beat.",
+        "Chill mode on — lean back, I've got the rest.",
+        "Here's one that's in no hurry at all."
+      ]
+    },
+    "sad": {
+      "zh": [
+        "懂,有些歌就是要在地下一层听。",
+        "收到,纸巾在调音台左边,自取。",
+        "行,今晚允许 emo 十分钟,计时开始。"
+      ],
+      "en": [
+        "I get it. Some songs only work one floor underground.",
+        "Tissues are left of the mixer. Help yourself.",
+        "Ten minutes of feelings, sanctioned. Timer starts now."
+      ]
+    },
+    "weird": {
+      "zh": [
+        "整活请求已受理,后果概不负责。",
+        "你确定?好吧,这首放出来我也要坐牢的。",
+        "收到,正在从货架最底层取货……"
+      ],
+      "en": [
+        "Chaos request accepted. No refunds.",
+        "You sure? Fine — but we both go down for this one.",
+        "Fetching something from the very bottom shelf…"
+      ]
+    }
+  },
+  "generic": {
+    "zh": [
+      "下一位登台——《{title}》,掌声。",
+      "换盘,《{title}》,{artist}。",
+      "接下来这首《{title}》,B1 独家信号。"
+    ],
+    "en": [
+      "Next on deck — \"{title}\". Give it up.",
+      "Switching plates: \"{title}\" by {artist}.",
+      "Up next, \"{title}\" — a B1 exclusive signal."
+    ]
+  },
+  "tracks": {
+    "神曼波": {
+      "zh": [
+        "仙品出场,《神曼波》——曼波界的天花板,懂的都懂。",
+        "警告:接下来三分钟,你的脑子只会剩下曼波。"
+      ],
+      "en": [
+        "Divine mambo incoming. Your brain will be 100% mambo for the next three minutes.",
+        "The ceiling of the mambo genre. Connoisseurs, rejoice."
+      ]
+    },
+    "Kamin": {
+      "zh": [
+        "《Kamin》,宿命的小曲——是宿命让你今晚点开了 B1。",
+        "这首小曲有点宿命感,信不信由你。"
+      ],
+      "en": [
+        "\"Kamin\" — the little tune of destiny. Destiny also brought you to B1 tonight.",
+        "A small song with a suspiciously large sense of fate."
+      ]
+    },
+    "宝莲": {
+      "zh": [
+        "《宝莲》,燃起来了!字面意思,消防通道在你左手边。",
+        "宝莲上台,全场自动升温两度。"
+      ],
+      "en": [
+        "\"Bao Lian\" — it's lit. Literally. Fire exit's on your left.",
+        "Room temperature rises two degrees when this one plays."
+      ]
+    },
+    "Something Just Like This": {
+      "zh": [
+        "混音版《Something Just Like This》,超级英雄不睡觉,你也别睡。",
+        "老朋友新调子,副歌记得跟着挥手。"
+      ],
+      "en": [
+        "The mixed version — superheroes don't sleep, neither should you.",
+        "An old friend in a new coat. Hands up for the drop."
+      ]
+    },
+    "一等情事": {
+      "zh": [
+        "《一等情事》,小木头出品——一等一的心事,慢慢听。",
+        "这首歌邮费到付,收件人是你的心事。"
+      ],
+      "en": [
+        "\"First-Class Love Affair\" — first-class feelings, standard delivery.",
+        "Handle with care: fragile contents inside this one."
+      ]
+    },
+    "执迷不悟": {
+      "zh": [
+        "Emo 曼波版《执迷不悟》——曼波也有心碎的时候。",
+        "执迷不悟?没事,B1 不劝人回头。"
+      ],
+      "en": [
+        "The emo mambo cut. Even mambo gets its heart broken sometimes.",
+        "No interventions here — B1 respects your bad decisions."
+      ]
+    },
+    "难得真兄弟（交响曲版）": {
+      "zh": [
+        "交响曲版《难得真兄弟》——请起立,兄弟情已升格为国事。",
+        "百人乐团为兄弟情护航,场面话不多说。"
+      ],
+      "en": [
+        "The symphonic version. Please rise — brotherhood is now a state affair.",
+        "A full orchestra deployed for friendship. As it should be."
+      ]
+    },
+    "青基": {
+      "zh": [
+        "《青基》,离人很远,离基很近。",
+        "古风混哈气,B1 特调,小口慢品。"
+      ],
+      "en": [
+        "\"Qing Ji\" — far from home, close to the meme.",
+        "Ancient style, modern nonsense. Sip slowly."
+      ]
+    },
+    "基米说": {
+      "zh": [
+        "《基米说》——离神很近,信号极强,不用调天线。",
+        "基米开口,全场安静,这是规矩。"
+      ],
+      "en": [
+        "\"Jimmy Says\" — divine proximity, maximum signal strength.",
+        "When Jimmy speaks, the floor goes quiet. House rules."
+      ]
+    },
+    "夜哈": {
+      "zh": [
+        "《夜哈》——开头就蚌埠住的话,后面请扶稳。",
+        "深夜限定,笑着笑着就哭了的那种。"
+      ],
+      "en": [
+        "\"Night Ha\" — if the intro breaks you, brace for the rest.",
+        "Late-night special: starts funny, ends in feelings."
+      ]
+    },
+    "风哈雨": {
+      "zh": [
+        "《风哈雨》,古风小哈——风雅这块,哈基米也是懂的。",
+        "一首歌看完哈基米的江湖路,请品。"
+      ],
+      "en": [
+        "\"Wind, Ha, Rain\" — turns out the meme does poetry too.",
+        "A whole wuxia saga in one song. Savor it."
+      ]
+    },
+    "哈基Wake": {
+      "zh": [
+        "《哈基Wake》,白切基风味——清淡,但是上头。",
+        "起床铃声天花板,现在补个回笼觉还来得及。"
+      ],
+      "en": [
+        "\"Haji Wake\" — plain-poached flavor, dangerously addictive.",
+        "The final boss of alarm tones. Good morning, again."
+      ]
+    },
+    "跳楼基": {
+      "zh": [
+        "《跳楼基》——'比原唱好听'是投稿人自己说的,我只负责放。",
+        "游乐场限定曲目,系好安全带。"
+      ],
+      "en": [
+        "\"Tiaolou Ji\" — 'better than the original', says the uploader. I just press play.",
+        "Theme-park certified. Fasten your seatbelt."
+      ]
+    },
+    "最后一哈": {
+      "zh": [
+        "《最后一哈》——投稿人备注:听哭了。B1 概不负责情绪修复。",
+        "最后一哈,哈完这次就……好吧下次还哈。"
+      ],
+      "en": [
+        "\"The Last Ha\" — uploader's note says it made them cry. You've been warned.",
+        "The final ha. Until the next one, obviously."
+      ]
+    },
+    "起哈了": {
+      "zh": [
+        "《起哈了》——以耄之名,你还愿意吗?愿意的话就别按跳过。",
+        "起哈号角已吹响,B1 全员就位。"
+      ],
+      "en": [
+        "\"Rise and Ha\" — in the name of the elder, do you accept?",
+        "The ha-horn has sounded. All hands on deck."
+      ]
+    },
+    "把基米拼好给你": {
+      "zh": [
+        "《把基米拼好给你》——搞了半天要自己拼,说明书都不给。",
+        "本曲不含胶水,拼装过程请保持哈气。"
+      ],
+      "en": [
+        "\"Assembling Jimmy For You\" — turns out it's IKEA rules: you build it yourself.",
+        "Glue not included. Keep breathing the ha."
+      ]
+    },
+    "LBI利比-跳楼机": {
+      "zh": [
+        "原版《跳楼机》,LBI利比——心动这种事,失重了才知道。",
+        "本站唯一合法过山车,三、二、一,下坠。"
+      ],
+      "en": [
+        "The original \"Drop Tower\" — you only feel it when gravity lets go.",
+        "B1's only licensed roller coaster. Three, two, one, drop."
+      ]
+    },
+    "不值得DJ": {
+      "zh": [
+        "《不值得DJ》——不值得,但是好嗨欧,矛盾文学的巅峰。",
+        "一边心碎一边蹦,这就是 DJ 版的意义。"
+      ],
+      "en": [
+        "\"Not Worth It (DJ)\" — heartbreak at 140 BPM. Peak contradiction.",
+        "Cry on the inside, bounce on the outside. That's the remix way."
+      ]
+    },
+    "周杰伦-晴天": {
+      "zh": [
+        "周董的《晴天》——从前从前,有人喜欢你。B1 今晚放晴。",
+        "这首歌一响,谁的青春不塌方。"
+      ],
+      "en": [
+        "Jay Chou's \"Sunny Day\" — once upon a time, somebody liked you.",
+        "One chord in and everyone's suddenly seventeen again."
+      ]
+    },
+    "美人画卷DJ": {
+      "zh": [
+        "《美人画卷DJ》——画卷展开,腰自己会动,别怪我。",
+        "国风蹦迪特供,扭起来就完事了。"
+      ],
+      "en": [
+        "\"Beauty Scroll (DJ)\" — the scroll unrolls, your waist moves on its own.",
+        "Traditional aesthetics, club physics. Just move."
+      ]
+    },
+    "小乐哥（王唯乐）-执迷不悟": {
+      "zh": [
+        "小乐哥原版《执迷不悟》——原汁原味,固执得理直气壮。",
+        "原版登场,翻唱们先靠边站一站。"
+      ],
+      "en": [
+        "The original \"Obsessed\" — stubbornness, straight from the source.",
+        "The OG cut. Covers, please step aside."
+      ]
+    },
+    "辞九门回忆": {
+      "zh": [
+        "《辞九门回忆》——进步的小曲,一步一个戏台。",
+        "戏腔一开,B1 秒变九门。"
+      ],
+      "en": [
+        "\"Farewell, Gate Nine\" — opera vocals turn B1 into old Peking.",
+        "One verse in and this basement grows a stage."
+      ]
+    },
+    "难得真兄弟（俄语版）": {
+      "zh": [
+        "俄语版《难得真兄弟》——达瓦里希,干了这杯电子伏特加。",
+        "兄弟情不分语种,乌拉!"
+      ],
+      "en": [
+        "\"True Brothers\" in Russian — tovarishch, raise your digital vodka.",
+        "Brotherhood needs no translation. Ura!"
+      ]
+    },
+    "山坡的狗尾巴草-藏语版": {
+      "zh": [
+        "藏语版《山坡的狗尾巴草》——换个语言,山坡还是那个山坡。",
+        "高原信号接入,狗尾巴草随风摆。"
+      ],
+      "en": [
+        "\"Foxtail on the Hill\", Tibetan version — same hill, new altitude.",
+        "Highland frequency locked in. Sway accordingly."
+      ]
+    },
+    "探窗": {
+      "zh": [
+        "《探窗》——勾栏听曲,今晚 B1 就是那个勾栏。",
+        "戏腔探窗,窗里窗外都是故事。"
+      ],
+      "en": [
+        "\"Peeking Through the Window\" — tonight, B1 is the old theatre.",
+        "Opera through a window frame. Stories on both sides."
+      ]
+    },
+    "着魔": {
+      "zh": [
+        "《着魔》——投稿人留言:别给我小马唱死了。我尽量。",
+        "着魔预警,这首歌单曲循环有依赖性。"
+      ],
+      "en": [
+        "\"Possessed\" — uploader begs me to go easy on them. No promises.",
+        "Warning: this one loops itself. You won't stop it."
+      ]
+    },
+    "海市蜃楼": {
+      "zh": [
+        "《海市蜃楼》——离别的土特产,保质期无限长。",
+        "看得见摸不着的,都在这首歌里了。"
+      ],
+      "en": [
+        "\"Mirage\" — a souvenir from goodbye, with no expiry date.",
+        "Everything you can see but never touch, in one track."
+      ]
+    },
+    "伯虎说": {
+      "zh": [
+        "《伯虎说》——超!级!炎!舞!爆!字面意思,全都要。",
+        "唐伯虎进电音房,烧起来了。"
+      ],
+      "en": [
+        "\"Bohu Says\" — SUPER! BLAZING! DANCE! EXPLOSION! All of the above.",
+        "A Ming-dynasty poet walks into a rave. This happens."
+      ]
+    },
+    "鸳鸯戏": {
+      "zh": [
+        "《鸳鸯戏》——我太想进步了,进步到舞池中央。",
+        "鸳鸯下水,戏台开锣,国风电音双修。"
+      ],
+      "en": [
+        "\"Mandarin Ducks\" — ambition so strong it dances.",
+        "Folk opera meets club bass. Both survive, barely."
+      ]
+    },
+    "一路向北": {
+      "zh": [
+        "周董的《一路向北》——后视镜里的经典,一脚油门到 2005。",
+        "深夜驾驶专用,目的地:回不去的那年。"
+      ],
+      "en": [
+        "Jay Chou's \"All the Way North\" — one pedal press back to 2005.",
+        "Night-drive certified. Destination: a year you can't return to."
+      ]
+    },
+    "天真的橡皮（DJ）": {
+      "zh": [
+        "《天真的橡皮DJ》——'我还以为减速带呢',结果是回忆撞了上来。",
+        "童年橡皮擦不掉的,交给 DJ 来炸。"
+      ],
+      "en": [
+        "\"Naive Eraser (DJ)\" — thought it was a speed bump; it was nostalgia.",
+        "What childhood couldn't erase, the remix detonates."
+      ]
+    },
+    "⚡免→ 我↘ 蹉↗ 跎↗ 苦↘（完整版）⚡": {
+      "zh": [
+        "《免我蹉跎苦》完整版——曼波两句得了?不行,今天放完整版。",
+        "高压电预警⚡这首歌的箭头比歌词还多。"
+      ],
+      "en": [
+        "The FULL version — 'two lines of mambo is enough'? Not tonight.",
+        "High voltage ⚡ this title has more arrows than lyrics."
+      ]
+    },
+    "暮色回响-English.Ver": {
+      "zh": [
+        "英文版《暮色回响》——暮色不分时区,回响照常送达。",
+        "黄昏频段,英文信号,一样上头。"
+      ],
+      "en": [
+        "\"Echoes of Dusk\", English version — dusk observes no time zones.",
+        "Twilight frequency, English signal, same ache."
+      ]
+    },
+    "赐我": {
+      "zh": [
+        "《赐我》——求而不得的都在这首歌里,音量自己把握。",
+        "这首歌上桌,B1 的灯自动暗三分。"
+      ],
+      "en": [
+        "\"Grant Me\" — everything asked for and never given, in one song.",
+        "The lights in B1 dim on their own for this one."
+      ]
+    },
+    "九万字": {
+      "zh": [
+        "《九万字》——九万字写不完的,三分钟唱给你。",
+        "一封没寄出去的长信,古风邮戳。"
+      ],
+      "en": [
+        "\"Ninety Thousand Words\" — what a novel couldn't say, three minutes will.",
+        "An unsent letter with an ancient postmark."
+      ]
+    },
+    "跳楼机粤语版": {
+      "zh": [
+        "粤语版《跳楼机》——同一台跳楼机,换个语言照样失重。",
+        "广东话限定回合,心跳照旧超速。"
+      ],
+      "en": [
+        "\"Drop Tower\" in Cantonese — same ride, new language, same free fall.",
+        "Cantonese round. Heart rate limits still do not apply."
+      ]
+    },
+    "在夜里跳舞": {
+      "zh": [
+        "《在夜里跳舞》——B1 没有白天,所以这首歌永远合时宜。",
+        "夜间舞蹈许可证已发放,有效期到天亮。"
+      ],
+      "en": [
+        "\"Dancing in the Night\" — B1 has no daytime, so this one's always on time.",
+        "Night-dancing permit issued. Valid until sunrise."
+      ]
+    },
+    "还是跳楼机": {
+      "zh": [
+        "《还是跳楼机》——是的,还是它。这台跳楼机 B1 是拆不掉了。",
+        "第 N 次登上跳楼机,惯性使然,别挣扎。"
+      ],
+      "en": [
+        "\"Drop Tower, Again\" — yes, again. We can't dismantle this ride.",
+        "Your Nth trip on the tower. Stop fighting the inertia."
+      ]
+    },
+    "是胃炎": {
+      "zh": [
+        "《是胃炎》——前面忘了,后面忘了,总之这不是《誓言》。",
+        "空耳医学奇迹,建议饭后服用本曲。"
+      ],
+      "en": [
+        "\"It's Gastritis\" — a misheard-lyrics medical miracle. Not \"The Vow\".",
+        "Forgot the beginning, forgot the end. The middle is all stomach."
+      ]
+    }
+  }
+}
