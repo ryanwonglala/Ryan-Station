@@ -644,7 +644,7 @@ body.light-mode .music-cta {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .nav-brand-name {
     display: none;
   }
