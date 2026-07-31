@@ -69,6 +69,58 @@
   vertical-align: -0.125em;
 }
 
+/* ============ 通用可访问性工具类 ============ */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 跳转到正文：默认移出视口，键盘聚焦时落回（开屏期间不可达） */
+.skip-link {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 100000;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #10131f;
+  font: 600 0.78rem/1 "Manrope", "Noto Sans SC", "PingFang SC", sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(calc(-100% - 24px));
+  pointer-events: none;
+  transition: transform 200ms var(--ease-station), opacity 200ms var(--ease-station);
+}
+
+.skip-link:focus {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+body.splash-active .skip-link {
+  display: none;
+}
+
+/* 主题色选区，呼应车站琥珀 */
+::selection {
+  background: rgba(217, 165, 84, 0.32);
+  color: inherit;
+}
+
+body.light-mode ::selection {
+  background: rgba(138, 99, 32, 0.22);
+}
+
 /* ============ CSS 变量定义 - 主题颜色 ============ */
 :root {
   /* 黑暗模式颜色 (默认) */
@@ -275,10 +327,57 @@ body::before {
   box-shadow: 0 20px 45px rgba(5, 10, 24, 0.55);
 }
 
+/* ---- 站台品牌字标：胶囊左侧，点击回首页 ---- */
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 6px;
+  padding: 0 12px 0 6px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-station), text-shadow var(--dur-fast) var(--ease-station);
+}
+
+.nav-brand-mark {
+  display: block;
+  flex: 0 0 auto;
+  animation: brand-spin 18s linear infinite;
+}
+
+.nav-brand:hover,
+.nav-brand:focus-visible {
+  color: var(--amber);
+  text-shadow: 0 0 10px rgba(217, 165, 84, 0.4);
+}
+
+@keyframes brand-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 body.light-mode .glass-capsule-nav {
   background: rgba(255, 255, 255, 0.65);
   border-color: rgba(15, 23, 42, 0.15);
   box-shadow: 0 15px 35px rgba(15, 23, 42, 0.2);
+}
+
+body.light-mode .nav-brand {
+  color: rgba(15, 23, 42, 0.8);
+  border-right-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .nav-brand:hover,
+body.light-mode .nav-brand:focus-visible {
+  color: #8a6320;
+  text-shadow: 0 0 10px rgba(138, 99, 32, 0.3);
 }
 
 body.light-mode .glass-capsule-nav .nav-links li a {
@@ -425,15 +524,19 @@ body.light-mode #nav-cursor.highlight::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  appearance: none;
   padding: 10px 24px;
   border-radius: 999px;
   border: 1px solid transparent;
   color: #e5f9ff;
+  font-family: inherit;
   font-weight: 600;
   font-size: 15px;
   letter-spacing: 1px;
   text-transform: uppercase;
   text-decoration: none;
+  text-align: center;
+  cursor: pointer;
   background:
     linear-gradient(rgba(2, 6, 23, 0.55), rgba(2, 6, 23, 0.55)) padding-box,
     linear-gradient(90deg, #00f2ea, #ff0050) border-box;
@@ -538,6 +641,32 @@ body.light-mode .music-cta {
   /* 收起标签让平板宽度仍排得下一行；height:auto 是排不下时的兜底 */
   .glass-capsule-nav .theme-switch-li .text {
     display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-brand-name {
+    display: none;
+  }
+
+  .nav-brand {
+    margin-right: 0;
+    padding-right: 6px;
+  }
+}
+
+/* 移动端取消 fixed 背景附着：iOS Safari 的滚动抖动/性能大头 */
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  #contact .contact-action {
+    min-height: 40px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -1923,6 +2052,10 @@ body.splash-exit .loading-overlay .loader {
     transition: none;
   }
 
+  .nav-brand-mark {
+    animation: none;
+  }
+
   body.splash-active .loading-overlay,
   body.splash-exit .loading-overlay,
   .loading-overlay .splash-logo,
@@ -1963,189 +2096,6 @@ body.splash-exit .loading-overlay .loader {
   100% {
     background-position: 102% 0;
   }
-}
-
-/* ============ 音乐区域确认弹窗样式 ============ */
-.music-modal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(10px);
-  animation: fadeIn 0.3s ease-out;
-}
-
-.music-modal.show {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.music-modal-content {
-  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
-  padding: 40px 50px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: slideUp 0.4s ease-out;
-  max-width: 450px;
-  width: 90%;
-}
-
-body.light-mode .music-modal-content {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 240, 255, 0.95) 100%);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.music-modal-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  color: white;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-  animation: pulse-icon 2s ease-in-out infinite;
-}
-
-@keyframes pulse-icon {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
-  }
-}
-
-.music-modal-content h2 {
-  color: #e2e8f0;
-  font-size: 28px;
-  margin: 0 0 5px 0;
-  font-weight: bold;
-}
-
-body.light-mode .music-modal-content h2 {
-  color: #334155;
-}
-
-.music-modal-content h3 {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 20px;
-  margin: 0 0 25px 0;
-  font-weight: normal;
-  font-style: italic;
-}
-
-body.light-mode .music-modal-content h3 {
-  color: rgba(51, 65, 85, 0.7);
-}
-
-.music-modal-content p {
-  color: #cbd5e1;
-  font-size: 18px;
-  margin: 10px 0;
-  line-height: 1.6;
-}
-
-body.light-mode .music-modal-content p {
-  color: #475569;
-}
-
-.music-modal-content p.english {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 15px;
-  font-style: italic;
-  margin-bottom: 30px;
-}
-
-body.light-mode .music-modal-content p.english {
-  color: rgba(71, 85, 105, 0.7);
-}
-
-.music-modal-buttons {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 30px;
-}
-
-.music-modal-btn {
-  padding: 14px 35px;
-  border: none;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.music-modal-btn.cancel {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-body.light-mode .music-modal-btn.cancel {
-  background: rgba(71, 85, 105, 0.1);
-  color: #334155;
-  border: 2px solid rgba(71, 85, 105, 0.3);
-}
-
-.music-modal-btn.cancel:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-body.light-mode .music-modal-btn.cancel:hover {
-  background: rgba(71, 85, 105, 0.2);
-  border-color: rgba(71, 85, 105, 0.5);
-}
-
-.music-modal-btn.confirm {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: 2px solid transparent;
-}
-
-.music-modal-btn.confirm:hover {
-  background: linear-gradient(135deg, #7c8ff5 0%, #8a5bb5 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
 }
 
 /* ============ Projects Showcase ============ */
@@ -4008,7 +3958,7 @@ body.detail-mode {
   }
 
   .glass-capsule-nav {
-    top: 10px;
+    top: calc(10px + env(safe-area-inset-top, 0px));
     left: 12px;
     right: 12px;
     max-width: calc(100vw - 24px);
@@ -4018,6 +3968,15 @@ body.detail-mode {
     flex-wrap: wrap;
     justify-content: center;
     overflow-x: visible;
+  }
+
+  .nav-brand-name {
+    display: none;
+  }
+
+  .nav-brand {
+    margin-right: 0;
+    padding-right: 6px;
   }
 
   .glass-capsule-nav .nav-links {

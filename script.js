@@ -88,8 +88,14 @@ window.addEventListener('DOMContentLoaded', () => {
 const navItems = document.querySelectorAll(".glass-capsule-nav .nav-links li");
 
 function activeLink() {
-  navItems.forEach((item) => item.classList.remove("active"));
+  navItems.forEach((item) => {
+    item.classList.remove("active");
+    const link = item.querySelector('a[href^="#"]');
+    if (link) link.removeAttribute('aria-current');
+  });
   this.classList.add("active");
+  const link = this.querySelector('a[href^="#"]');
+  if (link) link.setAttribute('aria-current', 'true');
 }
 
 navItems.forEach((item) => item.addEventListener("click", activeLink));
@@ -101,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const musicTrigger = document.getElementById('music-trigger');
   const languageSwitcher = document.querySelector('.language-switcher');
   const themeSwitchLi = document.querySelector('.theme-switch-li');
+  const navBrand = document.querySelector('.nav-brand');
 
   if (!nav || !cursor) {
     return;
@@ -132,6 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (musicTrigger) {
     musicTrigger.addEventListener('mouseenter', resetToContainer);
     musicTrigger.addEventListener('focus', resetToContainer);
+  }
+
+  if (navBrand) {
+    navBrand.addEventListener('mouseenter', resetToContainer);
+    navBrand.addEventListener('focus', resetToContainer);
   }
 
   if (languageSwitcher) {
@@ -174,6 +186,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const setActiveSection = (id) => {
     navLiById.forEach((li, key) => {
       li.classList.toggle('active', key === id);
+      const link = li.querySelector('a[href^="#"]');
+      if (link) {
+        if (key === id) {
+          link.setAttribute('aria-current', 'true');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      }
     });
   };
 
@@ -251,32 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const viewHintModal = document.getElementById('view-hint-modal');
-  const viewHintConfirm = document.getElementById('view-hint-confirm');
-  if (!viewHintModal || !viewHintConfirm) {
-    return;
-  }
-
-  const seenKey = 'viewHintSeen';
-  const hideHint = () => {
-    viewHintModal.classList.remove('show');
-    viewHintModal.setAttribute('aria-hidden', 'true');
-  };
-
-  const acknowledge = () => {
-    localStorage.setItem(seenKey, '1');
-    hideHint();
-  };
-
-  viewHintConfirm.addEventListener('click', acknowledge);
-  viewHintModal.addEventListener('click', (event) => {
-    if (event.target === viewHintModal) {
-      acknowledge();
-    }
-  });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
   const projectsSection = document.querySelector('.projects-section');
   if (!projectsSection) {
     return;
@@ -296,6 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxImage = lightbox ? lightbox.querySelector('.lightbox-image') : null;
   const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
   const lightboxFrame = lightbox ? lightbox.querySelector('.lightbox-frame') : null;
+  let lightboxLastFocus = null;
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const rootStyles = getComputedStyle(document.documentElement);
@@ -709,6 +704,10 @@ document.addEventListener('DOMContentLoaded', () => {
       lightboxImage.removeAttribute('src');
       lightboxImage.alt = '';
     }
+    if (lightboxLastFocus && lightboxLastFocus.focus) {
+      lightboxLastFocus.focus();
+    }
+    lightboxLastFocus = null;
   };
 
   const openMediaFromElement = (element) => {
@@ -733,6 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const openLightbox = ({ type, src, alt, originEl }) => {
     if (!lightbox || !src) return;
+    lightboxLastFocus = document.activeElement;
     if (lightboxFrame && originEl) {
       const originRect = originEl.getBoundingClientRect();
       const frameRect = lightboxFrame.getBoundingClientRect();
@@ -761,6 +761,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (type === 'image' && lightboxImage) {
       lightboxImage.src = src;
       lightboxImage.alt = alt || ((window.PortfolioI18n && window.PortfolioI18n.t('projects.detailPreview')) || 'Detail preview');
+    }
+    if (lightboxClose) {
+      lightboxClose.focus({ preventScroll: true });
     }
   };
 
@@ -1589,7 +1592,22 @@ if (musicTrigger) {
 if (clubStayBtn) clubStayBtn.addEventListener('click', closeClubDoor);
 if (clubEnterBtn) clubEnterBtn.addEventListener('click', enterClub);
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && clubDoorActive) closeClubDoor();
+  if (e.key === 'Escape' && clubDoorActive) {
+    closeClubDoor();
+    return;
+  }
+  if (e.key !== 'Tab' || !clubDoorActive) return;
+  const focusables = [clubStayBtn, clubEnterBtn].filter(Boolean);
+  if (!focusables.length) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
 });
 
 // ========================================================================
@@ -1599,6 +1617,9 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
   const copyButtons = document.querySelectorAll('[data-copy]');
   if (!copyButtons.length) return;
+
+  const statusEl = document.getElementById('copy-status');
+  let statusTimer = null;
 
   const fallbackCopy = (text) => {
     const textarea = document.createElement('textarea');
@@ -1622,7 +1643,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           fallbackCopy(text);
         }
-        button.textContent = (window.PortfolioI18n && window.PortfolioI18n.t('common.copied')) || 'Copied';
+        const copiedLabel = (window.PortfolioI18n && window.PortfolioI18n.t('common.copied')) || 'Copied';
+        button.textContent = copiedLabel;
+        if (statusEl) {
+          statusEl.textContent = copiedLabel;
+          window.clearTimeout(statusTimer);
+          statusTimer = window.setTimeout(() => {
+            statusEl.textContent = '';
+          }, 1400);
+        }
         button.disabled = true;
         window.setTimeout(() => {
           button.textContent = (window.PortfolioI18n && window.PortfolioI18n.t('common.copy')) || 'Copy';
