@@ -22,6 +22,9 @@ const currentTimeDisplay = document.getElementById('currentTimeDisplay');
 const totalTimeDisplay = document.getElementById('totalTimeDisplay');
 const playlistItems = document.getElementById('playlistItems');
 const playlistCount = document.getElementById('playlistCount');
+const playlistSearch = document.getElementById('playlistSearch');
+const playlistSearchClear = document.getElementById('playlistSearchClear');
+const playlistEmptyState = document.getElementById('playlistEmptyState');
 const playlistSidebar = document.getElementById('playlistSidebar');
 const playlistTab = document.getElementById('playlistTab');
 const seekBar = document.getElementById('seekBar');
@@ -41,6 +44,7 @@ let playMode = 'sequential';
 let isSeeking = false;
 let sidebarOpen = false;
 let terminalCollapsed = false;
+let playlistQuery = '';
 
 const PLAY_MODE_ICONS = {
   sequential: 'icon-list-ul',
@@ -53,7 +57,7 @@ function mpT(path, fallback = '') {
 }
 
 function formatMpT(path, replacements, fallback = '') {
-  return mpT(path, fallback).replace(/\{(\w+)\}/g, (_, key) => replacements[key] || '');
+  return mpT(path, fallback).replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? '');
 }
 
 const b1ReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -121,13 +125,11 @@ async function loadPlaylist() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    playlist = data.tracks || [];
+    playlist = Array.isArray(data.tracks) ? data.tracks : [];
 
-    if (playlist.length > 0) {
-      renderPlaylist();
-      loadTrack(0);
-      updatePlaylistCount();
-    }
+    renderPlaylist();
+    updatePlaylistCount();
+    if (playlist.length > 0) loadTrack(0);
 
     return true;
   } catch (error) {
@@ -141,51 +143,128 @@ async function loadPlaylist() {
 // ========================= 🎵 播放列表渲染 ===============================
 // ========================================================================
 
+function getPlaylistSearchText(track) {
+  const tags = Array.isArray(track.tags) ? track.tags : [];
+  return [track.title, track.artist, ...tags]
+    .filter((value) => value !== undefined && value !== null)
+    .join(' ')
+    .toLocaleLowerCase();
+}
+
+function getVisiblePlaylist() {
+  const query = playlistQuery.toLocaleLowerCase();
+  return playlist.reduce((visible, track, index) => {
+    if (!query || getPlaylistSearchText(track).includes(query)) {
+      visible.push({ track, index });
+    }
+    return visible;
+  }, []);
+}
+
+function getPlaylistTrackLabel(track, index) {
+  const title = track.title || 'Untitled';
+  const artist = track.artist || '--';
+  return formatMpT(
+    'trackAria',
+    { number: index + 1, title, artist },
+    `${index + 1}. ${title} — ${artist}`,
+  );
+}
+
+function selectPlaylistTrack(index) {
+  if (currentTrackIndex === index && isPlaying) {
+    pauseTrack();
+  } else {
+    loadTrack(index);
+    playTrack();
+  }
+}
+
+function updatePlaylistSearchUI() {
+  if (!playlistSearchClear) return;
+  playlistSearchClear.disabled = !playlistQuery;
+}
+
+function handlePlaylistSearch(event) {
+  playlistQuery = event.target.value.trim();
+  renderPlaylist();
+  updatePlaylistCount();
+}
+
+function clearPlaylistSearch() {
+  if (!playlistSearch) return;
+  playlistSearch.value = '';
+  playlistQuery = '';
+  renderPlaylist();
+  updatePlaylistCount();
+  playlistSearch.focus();
+}
+
 function renderPlaylist() {
   if (!playlistItems) return;
+  const visibleTracks = getVisiblePlaylist();
   playlistItems.innerHTML = '';
 
-  playlist.forEach((track, index) => {
-    const item = document.createElement('div');
+  visibleTracks.forEach(({ track, index }) => {
+    const item = document.createElement('button');
+    item.type = 'button';
     item.className = 'playlist-item';
-    item.innerHTML = `
-      <div class="playlist-item-number">${index + 1}</div>
-      <div class="playlist-item-info">
-        <div class="playlist-item-title">${track.title || 'Untitled'}</div>
-        <div class="playlist-item-artist">${track.artist || '--'}</div>
-      </div>
-    `;
+    item.dataset.trackIndex = String(index);
+    item.setAttribute('aria-label', getPlaylistTrackLabel(track, index));
 
-    item.addEventListener('click', () => {
-      if (currentTrackIndex === index && isPlaying) {
-        pauseTrack();
-      } else {
-        loadTrack(index);
-        playTrack();
-      }
-    });
+    const number = document.createElement('span');
+    number.className = 'playlist-item-number';
+    number.textContent = String(index + 1);
+    number.setAttribute('aria-hidden', 'true');
+
+    const info = document.createElement('span');
+    info.className = 'playlist-item-info';
+
+    const title = document.createElement('span');
+    title.className = 'playlist-item-title';
+    title.textContent = track.title || 'Untitled';
+
+    const artist = document.createElement('span');
+    artist.className = 'playlist-item-artist';
+    artist.textContent = track.artist || '--';
+
+    info.append(title, artist);
+    item.append(number, info);
+    item.addEventListener('click', () => selectPlaylistTrack(index));
 
     playlistItems.appendChild(item);
   });
 
+  playlistItems.hidden = visibleTracks.length === 0;
+  if (playlistEmptyState) {
+    playlistEmptyState.hidden = visibleTracks.length > 0;
+  }
+  updatePlaylistSearchUI();
   updatePlaylistUI();
 }
 
 function updatePlaylistUI() {
   if (!playlistItems) return;
   const items = playlistItems.querySelectorAll('.playlist-item');
-  items.forEach((item, index) => {
-    if (index === currentTrackIndex) {
-      item.classList.add('active');
+  items.forEach((item) => {
+    const isCurrent = Number(item.dataset.trackIndex) === currentTrackIndex;
+    item.classList.toggle('active', isCurrent);
+    if (isCurrent) {
+      item.setAttribute('aria-current', 'true');
     } else {
-      item.classList.remove('active');
+      item.removeAttribute('aria-current');
     }
   });
 }
 
 function updatePlaylistCount() {
   if (playlistCount) {
-    playlistCount.textContent = `(${playlist.length})`;
+    const visibleCount = getVisiblePlaylist().length;
+    playlistCount.textContent = `(${visibleCount})`;
+    playlistCount.setAttribute(
+      'aria-label',
+      formatMpT('tracksShown', { count: visibleCount }, `${visibleCount} tracks shown`),
+    );
   }
 }
 
@@ -607,10 +686,14 @@ if (modeBtnPlayer) modeBtnPlayer.addEventListener('click', togglePlayMode);
 if (volumeBtn) volumeBtn.addEventListener('click', toggleVolumeControl);
 if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
 if (playlistTab) playlistTab.addEventListener('click', toggleSidebar);
+if (playlistSearch) playlistSearch.addEventListener('input', handlePlaylistSearch);
+if (playlistSearchClear) playlistSearchClear.addEventListener('click', clearPlaylistSearch);
 if (terminalToggle) terminalToggle.addEventListener('click', toggleTerminalLogVisibility);
 if (crtVideo) {
   crtVideo.addEventListener('error', fallbackToStatic);
 }
+
+updatePlaylistSearchUI();
 
 if (seekBar) {
   seekBar.addEventListener('input', handleSeekInput);
@@ -636,6 +719,11 @@ audioPlayer.addEventListener('loadedmetadata', () => {
 audioPlayer.addEventListener('ended', handleTrackEnd);
 
 document.addEventListener('keydown', (e) => {
+  const target = e.target instanceof Element ? e.target : null;
+  if (target && (target.closest('input, textarea, select, button, a[href]') || target.isContentEditable)) {
+    return;
+  }
+
   switch (e.code) {
     case 'Space':
       e.preventDefault();
@@ -727,6 +815,8 @@ async function init() {
 
   if (window.PortfolioI18n) {
     window.PortfolioI18n.onChange(() => {
+      renderPlaylist();
+      updatePlaylistCount();
       updatePlayModeUI();
       updateTerminalToggleUI();
       updateTvState(isPlaying);

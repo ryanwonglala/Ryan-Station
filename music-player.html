@@ -20,9 +20,37 @@
     <div class="playlist-shell">
       <header>
         <h2 data-i18n="musicPlayer.playQueue">Play Queue</h2>
-        <p id="playlistCount">(0)</p>
+        <p id="playlistCount" aria-live="polite" aria-atomic="true">(0)</p>
       </header>
+      <div class="playlist-search">
+        <label class="playlist-search-label" for="playlistSearch" data-i18n="musicPlayer.searchLabel">Search tracks / 搜索曲目</label>
+        <div class="playlist-search-row">
+          <input
+            id="playlistSearch"
+            class="playlist-search-input"
+            type="search"
+            placeholder="Title, artist, or tag / 标题、歌手或标签"
+            data-i18n-placeholder="musicPlayer.searchPlaceholder"
+            autocomplete="off"
+            enterkeyhint="search"
+            aria-controls="playlistItems"
+          >
+          <button
+            id="playlistSearchClear"
+            class="playlist-search-clear"
+            type="button"
+            disabled
+            aria-label="Clear playlist search / 清空播放列表搜索"
+            data-i18n-aria-label="musicPlayer.clearSearch"
+            title="Clear search / 清空搜索"
+            data-i18n-title="musicPlayer.clearSearch"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+      </div>
       <div class="playlist-items" id="playlistItems"></div>
+      <p class="playlist-empty-state" id="playlistEmptyState" role="status" hidden data-i18n="musicPlayer.noSearchResults">No tracks match your search / 没有找到匹配的曲目</p>
     </div>
   </aside>
 
