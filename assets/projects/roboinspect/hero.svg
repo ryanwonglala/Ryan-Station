@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">RoboInspect multi-robot inspection system map</title>
+  <desc id="desc">A schematic showing two mobile inspection robots navigating a mapped facility, locating anomalies, and handing evidence to a response station.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#151a28"/>
+      <stop offset="0.55" stop-color="#0c0e15"/>
+      <stop offset="1" stop-color="#111726"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#20283a" stop-opacity="0.94"/>
+      <stop offset="1" stop-color="#111722" stop-opacity="0.92"/>
+    </linearGradient>
+    <linearGradient id="route" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#64d9e8"/>
+      <stop offset="0.58" stop-color="#d9a554"/>
+      <stop offset="1" stop-color="#ef6f61"/>
+    </linearGradient>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M50 0H0V50" fill="none" stroke="#eae5d6" stroke-opacity="0.055" stroke-width="1"/>
+    </pattern>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <circle cx="1390" cy="90" r="330" fill="#64d9e8" opacity="0.045"/>
+  <circle cx="190" cy="890" r="420" fill="#d9a554" opacity="0.055"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#eae5d6">
+    <text x="88" y="92" font-size="22" letter-spacing="7" fill="#d9a554">GRADUATION PROJECT · 2026</text>
+    <text x="88" y="166" font-size="74" font-family="Georgia, serif" font-style="italic" font-weight="600">RoboInspect</text>
+    <text x="90" y="208" font-size="20" letter-spacing="4" fill="#eae5d6" opacity="0.66">MULTI-ROBOT INDOOR INSPECTION SYSTEM</text>
+    <text x="1412" y="92" text-anchor="end" font-size="18" letter-spacing="3" fill="#64d9e8">ROS 2 · NAV2 · VISION</text>
+  </g>
+
+  <g transform="translate(86 262)" filter="url(#shadow)">
+    <rect width="1060" height="642" rx="26" fill="url(#panel)" stroke="#eae5d6" stroke-opacity="0.16"/>
+    <path d="M52 64H1008M52 578H1008" stroke="#eae5d6" stroke-opacity="0.12"/>
+    <text x="52" y="45" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" letter-spacing="3" fill="#eae5d6" opacity="0.55">FACILITY MAP / LIVE MISSION</text>
+
+    <g transform="translate(52 88)">
+      <path d="M0 0H310V162H438V0H748V116H956V454H656V356H454V498H164V372H0Z" fill="#0a0d14" stroke="#eae5d6" stroke-opacity="0.26" stroke-width="3"/>
+      <path d="M310 0V102M438 162V274H164V372M748 116V274H956M454 356V274H656V356" fill="none" stroke="#eae5d6" stroke-opacity="0.17" stroke-width="3"/>
+      <path d="M92 88C180 88 198 228 308 228S430 222 504 186 596 104 704 164 766 314 874 352" fill="none" stroke="url(#route)" stroke-width="8" stroke-linecap="round" stroke-dasharray="3 18"/>
+      <path d="M94 88C224 54 330 114 350 212S424 398 548 400 654 308 690 238" fill="none" stroke="#64d9e8" stroke-opacity="0.5" stroke-width="3" stroke-dasharray="10 12"/>
+
+      <g transform="translate(90 88)" filter="url(#glow)">
+        <circle r="40" fill="#101827" stroke="#64d9e8" stroke-width="4"/>
+        <path d="M-22-13H22V16H-22Z" fill="#64d9e8" opacity="0.2" stroke="#64d9e8" stroke-width="2"/>
+        <circle cy="-19" r="7" fill="#64d9e8"/>
+        <path d="M0-40V-58" stroke="#64d9e8" stroke-width="3"/>
+      </g>
+      <g transform="translate(694 238)" filter="url(#glow)">
+        <circle r="40" fill="#20180f" stroke="#d9a554" stroke-width="4"/>
+        <path d="M-22-13H22V16H-22Z" fill="#d9a554" opacity="0.22" stroke="#d9a554" stroke-width="2"/>
+        <circle cy="-19" r="7" fill="#d9a554"/>
+        <path d="M0-40V-58" stroke="#d9a554" stroke-width="3"/>
+      </g>
+
+      <g transform="translate(350 212)" filter="url(#glow)">
+        <path d="M0-30L28 18H-28Z" fill="#ef6f61" opacity="0.2" stroke="#ef6f61" stroke-width="3"/>
+        <circle cy="2" r="5" fill="#ef6f61"/>
+      </g>
+      <g transform="translate(874 352)" filter="url(#glow)">
+        <path d="M0-30L28 18H-28Z" fill="#ef6f61" opacity="0.2" stroke="#ef6f61" stroke-width="3"/>
+        <circle cy="2" r="5" fill="#ef6f61"/>
+      </g>
+
+      <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" letter-spacing="2">
+        <text x="28" y="155" fill="#64d9e8">SCOUT 01</text>
+        <text x="624" y="305" fill="#d9a554">SCOUT 02</text>
+        <text x="308" y="174" fill="#ef6f61">ANOMALY A</text>
+        <text x="814" y="410" fill="#ef6f61">ANOMALY B</text>
+      </g>
+    </g>
+  </g>
+
+  <g transform="translate(1184 262)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+    <rect width="330" height="642" rx="26" fill="url(#panel)" stroke="#eae5d6" stroke-opacity="0.16"/>
+    <text x="30" y="48" font-size="15" letter-spacing="3" fill="#eae5d6" opacity="0.55">MISSION PIPELINE</text>
+    <g transform="translate(30 88)">
+      <g fill="none" stroke="#eae5d6" stroke-opacity="0.16"><path d="M18 34V430"/><path d="M18 430H270"/></g>
+      <g font-size="16" letter-spacing="2" fill="#eae5d6">
+        <circle cx="18" cy="34" r="9" fill="#64d9e8"/>
+        <text x="46" y="40">ALLOCATE</text>
+        <text x="46" y="62" font-size="12" opacity="0.48">split inspection route</text>
+
+        <circle cx="18" cy="130" r="9" fill="#64d9e8"/>
+        <text x="46" y="136">NAVIGATE</text>
+        <text x="46" y="158" font-size="12" opacity="0.48">resilient viewpoints</text>
+
+        <circle cx="18" cy="226" r="9" fill="#d9a554"/>
+        <text x="46" y="232">INSPECT</text>
+        <text x="46" y="254" font-size="12" opacity="0.48">camera + LiDAR evidence</text>
+
+        <circle cx="18" cy="322" r="9" fill="#ef6f61"/>
+        <text x="46" y="328">LOCALIZE</text>
+        <text x="46" y="350" font-size="12" opacity="0.48">map anomaly position</text>
+
+        <circle cx="18" cy="418" r="9" fill="#d9a554"/>
+        <text x="46" y="424">REPORT</text>
+        <text x="46" y="446" font-size="12" opacity="0.48">English + 中文 evidence</text>
+      </g>
+    </g>
+    <g transform="translate(30 558)">
+      <rect width="270" height="52" rx="26" fill="#d9a554" fill-opacity="0.08" stroke="#d9a554" stroke-opacity="0.45"/>
+      <text x="135" y="33" text-anchor="middle" font-size="13" letter-spacing="2" fill="#d9a554">SIMULATION E2E VALIDATED</text>
+    </g>
+  </g>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" letter-spacing="2" fill="#eae5d6" opacity="0.42">
+    <text x="88" y="958">TURTLEBOT3 FIELD-TESTED · SO-ARM101 STANDALONE VALIDATED</text>
+    <text x="1512" y="958" text-anchor="end">OPERATOR-SUPERVISED HANDOFF</text>
+  </g>
+</svg>

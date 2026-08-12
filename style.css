@@ -2322,7 +2322,7 @@ body.detail-mode {
   transition: opacity var(--projects-transition) ease, transform var(--projects-transition) ease;
 }
 
-.projects-section.is-detail .project-sphere video.sphere-image {
+.projects-section.is-detail .project-sphere .sphere-image {
   inset: 0;
   width: 100%;
   height: 100%;
@@ -2761,6 +2761,19 @@ body.detail-mode {
   background: rgba(248, 250, 252, 0.14);
   border-color: rgba(248, 250, 252, 0.5);
   color: var(--detail-text-strong);
+}
+
+.detail-resource-link + .detail-resource-link {
+  margin-left: 10px;
+}
+
+.projects-section.is-detail .detail-split--text-only,
+.projects-section.is-detail .detail-split--text-only:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.projects-section.is-detail .detail-split--text-only .detail-split-text {
+  max-width: 760px;
 }
 
 .detail-media--pair {
@@ -4646,7 +4659,7 @@ body.hero-reveal #shader-background {
 
 .projects-section.gallery-mode:not(.is-detail) {
   display: block;
-  height: 480vh;
+  height: var(--gallery-scroll-height, 480vh);
   padding: 0;
   min-height: 0;
 }
@@ -4822,7 +4835,7 @@ body.hero-reveal #shader-background {
   background: var(--surface-2);
 }
 
-.gallery-window .sphere-video {
+.gallery-window .sphere-image {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -4849,6 +4862,293 @@ body.hero-reveal #shader-background {
 
 @media (max-width: 1023px) {
   .gallery-track { display: none; }
+}
+
+/* ========================================================================
+   Other Work archive — a native disclosure folder after the robotics stage
+   ======================================================================== */
+
+.project-archive {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: clamp(64px, 10vw, 140px) 8vw;
+  color: var(--paper);
+  background:
+    radial-gradient(circle at 16% 20%, rgba(217, 165, 84, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(12, 14, 21, 0.98), rgba(16, 19, 31, 0.98));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-family: "Manrope", "Segoe UI", "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+.project-archive-inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.project-archive-folder {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(234, 229, 214, 0.025);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.project-archive-folder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, rgba(217, 165, 84, 0.055), transparent 34%);
+}
+
+.project-archive-folder summary {
+  position: relative;
+  min-height: 148px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  padding: 36px clamp(26px, 5vw, 64px);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.project-archive-folder summary::-webkit-details-marker {
+  display: none;
+}
+
+.project-archive-folder summary:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -4px;
+}
+
+.archive-tab {
+  position: absolute;
+  top: -1px;
+  left: clamp(26px, 5vw, 64px);
+  width: 124px;
+  height: 12px;
+  border: 1px solid rgba(217, 165, 84, 0.52);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  background: rgba(217, 165, 84, 0.14);
+}
+
+.archive-summary-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.archive-kicker,
+.archive-project-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.archive-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  line-height: 1;
+  color: var(--paper);
+}
+
+.archive-summary-note {
+  max-width: 66ch;
+  color: rgba(234, 229, 214, 0.62);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.archive-toggle {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(217, 165, 84, 0.45);
+  border-radius: 50%;
+  transition: background 240ms var(--ease-station), transform 360ms var(--ease-station);
+}
+
+.archive-toggle::before,
+.archive-toggle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 1px;
+  background: var(--amber);
+  transform: translate(-50%, -50%);
+}
+
+.archive-toggle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.project-archive-folder[open] .archive-toggle {
+  background: var(--amber);
+  transform: rotate(45deg);
+}
+
+.project-archive-folder[open] .archive-toggle::before,
+.project-archive-folder[open] .archive-toggle::after {
+  background: #0c0e15;
+}
+
+.archive-project-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(30px, 6vw, 82px);
+  align-items: center;
+  padding: 12px clamp(26px, 5vw, 64px) clamp(36px, 6vw, 72px);
+  border-top: 1px dashed rgba(217, 165, 84, 0.28);
+}
+
+.archive-project-media {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  aspect-ratio: 16 / 10;
+  background: var(--surface-2);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.35);
+}
+
+.archive-project-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.78) contrast(1.03);
+}
+
+.archive-project-index {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 6px 10px;
+  border: 1px solid rgba(234, 229, 214, 0.32);
+  border-radius: 999px;
+  background: rgba(12, 14, 21, 0.78);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+}
+
+.archive-project-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.archive-project-copy h3 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4.5vw, 4.2rem);
+  font-style: italic;
+  line-height: 0.95;
+  color: var(--paper);
+}
+
+.archive-project-copy > p:not(.archive-project-eyebrow) {
+  max-width: 62ch;
+  color: rgba(234, 229, 214, 0.72);
+  font-size: 0.98rem;
+  line-height: 1.78;
+}
+
+.archive-project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.archive-project-tags span {
+  padding: 7px 12px;
+  border: 1px dashed rgba(217, 165, 84, 0.4);
+  border-radius: 999px;
+  color: rgba(234, 229, 214, 0.76);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.archive-project-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 11px 18px;
+  border: 1px solid rgba(217, 165, 84, 0.5);
+  border-radius: 999px;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 220ms var(--ease-station), color 220ms var(--ease-station), transform 220ms var(--ease-station);
+}
+
+.archive-project-link:hover {
+  color: #0c0e15;
+  background: var(--amber);
+  transform: translateY(-2px);
+}
+
+.archive-project-link:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .project-archive {
+    padding: 52px 16px 72px;
+  }
+
+  .project-archive-folder summary {
+    min-height: 132px;
+    gap: 16px;
+    padding: 30px 20px;
+  }
+
+  .archive-tab {
+    left: 20px;
+    width: 88px;
+  }
+
+  .archive-title {
+    font-size: clamp(1.7rem, 9vw, 2.5rem);
+  }
+
+  .archive-summary-note {
+    font-size: 0.82rem;
+  }
+
+  .archive-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
+  .archive-project-card {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    padding: 8px 20px 34px;
+  }
 }
 
 /* ==========================================================================
@@ -4991,6 +5291,10 @@ body.hero-reveal #shader-background {
 
 .projects-section.is-detail .detail-split:nth-child(even) .detail-media {
   order: 2;
+}
+
+.projects-section.is-detail .detail-split.detail-split--text-only {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 /* 脊线站点标记 */
@@ -6565,4 +6869,39 @@ body.light-mode .axis-diamond {
 
 body.light-mode .projects-axis {
   background: linear-gradient(to bottom, transparent, rgba(28, 30, 38, 0.4), transparent);
+}
+
+/* --- 白昼车站补丁：Other Work 收纳夹 --- */
+body.light-mode .project-archive {
+  color: #22242c;
+  background:
+    radial-gradient(circle at 16% 20%, rgba(150, 102, 15, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(246, 241, 229, 0.98), rgba(237, 232, 218, 0.98));
+}
+
+body.light-mode .project-archive-folder {
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 28px 70px rgba(28, 30, 38, 0.13);
+}
+
+body.light-mode .archive-title,
+body.light-mode .archive-project-copy h3 {
+  color: rgba(28, 30, 38, 0.95);
+}
+
+body.light-mode .archive-summary-note,
+body.light-mode .archive-project-copy > p:not(.archive-project-eyebrow),
+body.light-mode .archive-project-tags span {
+  color: rgba(28, 30, 38, 0.68);
+}
+
+body.light-mode .archive-kicker,
+body.light-mode .archive-project-eyebrow,
+body.light-mode .archive-project-link {
+  color: #96660f;
+}
+
+body.light-mode .archive-project-link:hover {
+  color: #fffaf0;
+  background: #96660f;
 }

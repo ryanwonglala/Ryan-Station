@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Ryan Wong's robotics and automation portfolio, covering ROS, TurtleBot3, robot navigation, AI vision, and manufacturing engineering experience.">
+  <meta name="description" content="Ryan Wong's robotics portfolio: multi-robot inspection, ROS 2 autonomy, AI vision, soft robotics, and real-hardware control.">
   <title>Ryan Wong | Robotics &amp; Automation Portfolio</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preload" href="assets/Dark-BG.webp" as="image" fetchpriority="high">
@@ -14,7 +14,7 @@
   <meta property="og:site_name" content="Ryan's Station">
   <meta property="og:url" content="https://ryan-station.vercel.app/">
   <meta property="og:title" content="Ryan Wong | Robotics &amp; Automation Portfolio">
-  <meta property="og:description" content="Robotics &amp; Automation engineer. ROS2 navigation, AI vision, manufacturing engineering — MSc @ SUTD, Singapore.">
+  <meta property="og:description" content="Multi-robot inspection, ROS 2 autonomy, AI vision, soft robotics, and real-hardware control — MSc @ SUTD, Singapore.">
   <!-- 社交抓取器按 OG 规范要求绝对 URL，相对路径会导致预览图不渲染 -->
   <meta property="og:image" content="https://ryan-station.vercel.app/assets/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -180,10 +180,10 @@
 
           <div class="project-sphere" role="img" aria-label="Project preview sphere" data-i18n-aria-label="projects.sphereAria">
             <div class="sphere-image-layer">
-              <video class="sphere-image sphere-video is-active" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/pic1.MP4" preload="none" poster="assets/posters/p1.jpg" muted loop playsinline aria-label="Project 1 hero media video" data-i18n-aria-label="projects.videoAria.0"></video>
-              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/Hango%20V1.1.mp4" preload="none" poster="assets/posters/p2.jpg" muted loop playsinline aria-label="Project 2 hero media video" data-i18n-aria-label="projects.videoAria.1"></video>
-              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%AE%9E%E7%89%A9%E6%BC%94%E7%A4%BA.mp4" preload="none" poster="assets/posters/p3.jpg" muted loop playsinline aria-label="Project 3 hero media video" data-i18n-aria-label="projects.videoAria.2"></video>
-              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/human%20detector.mp4" preload="none" poster="assets/posters/p4.jpg" muted loop playsinline aria-label="Project 4 hero media video" data-i18n-aria-label="projects.videoAria.3"></video>
+              <img class="sphere-image is-active" src="assets/projects/roboinspect/hero.svg" loading="lazy" decoding="async" alt="RoboInspect system map with two mobile robots, anomaly markers, and a response arm" data-i18n-alt="projects.mediaAlt.0">
+              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/human%20detector.mp4" preload="none" poster="assets/posters/p4.jpg" muted loop playsinline aria-label="Autonomous Security Robot hero video" data-i18n-aria-label="projects.videoAria.1"></video>
+              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%AE%9E%E7%89%A9%E6%BC%94%E7%A4%BA.mp4" preload="none" poster="assets/posters/p3.jpg" muted loop playsinline aria-label="FlexiLock hero video" data-i18n-aria-label="projects.videoAria.2"></video>
+              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/pic1.MP4" preload="none" poster="assets/posters/p1.jpg" muted loop playsinline aria-label="Robotic Arm Challenge hero video" data-i18n-aria-label="projects.videoAria.3"></video>
             </div>
             <div class="sphere-specular"></div>
             <div class="sphere-shadow"></div>
@@ -194,24 +194,24 @@
             <article class="project-copy is-active" data-index="0">
               <div class="project-centerline">
                 <div class="project-left">
-                  <p class="project-eyebrow">Project 01 · Competition</p>
-                  <h2 class="project-title">Robotic Arm Challenge</h2>
+                  <p class="project-eyebrow">Project 01 · Graduation Project</p>
+                  <h2 class="project-title">RoboInspect</h2>
                 </div>
                 <div class="project-right">
-                  <p class="project-subtitle">4th place in the final live competition — a one-week team build where a 6-DOF arm grasps objects at arbitrary positions, loads a mobile vehicle, and triggers its run through a color-coded maze. My part: arm control (motion planning, calibration, real-hardware execution).</p>
-                  <p class="project-stats"><span>4TH PLACE</span><span>6-DOF</span><span>1 WEEK</span></p>
+                  <p class="project-subtitle">A simulation-to-real ROS 2 inspection platform for multi-robot task allocation, autonomous navigation, vision-based anomaly mapping, and bilingual evidence reporting.</p>
+                  <p class="project-stats"><span>SIM E2E</span><span>TB3 FIELD</span><span>ROS 2</span></p>
                 </div>
               </div>
             </article>
             <article class="project-copy" data-index="1">
               <div class="project-centerline">
                 <div class="project-left">
-                  <p class="project-eyebrow">Project 02 · Design</p>
-                  <h2 class="project-title">Hango</h2>
+                  <p class="project-eyebrow">Project 02 · ROS2 Autonomy</p>
+                  <h2 class="project-title">Autonomous Security Robot</h2>
                 </div>
                 <div class="project-right">
-                  <p class="project-subtitle">A semester-long design project by a five-person interdisciplinary team, developed through four staged reviews from research to an exhibited prototype. My part: visual communication, presentation structure, and the final exhibition video.</p>
-                  <p class="project-stats"><span>5-PERSON TEAM</span><span>4 REVIEWS</span><span>EXHIBITED</span></p>
+                  <p class="project-subtitle">An autonomous patrol robot for the SUTD Robotics Lab — frontier-based SLAM mapping, Nav2 patrol, and YOLOv8 + CLIP classification fused with Lidar.</p>
+                  <p class="project-stats"><span>&lt;20 CM</span><span>YOLOV8+CLIP</span><span>NAV2</span></p>
                 </div>
               </div>
             </article>
@@ -230,12 +230,12 @@
             <article class="project-copy" data-index="3">
               <div class="project-centerline">
                 <div class="project-left">
-                  <p class="project-eyebrow">Project 04 · ROS2 Autonomy</p>
-                  <h2 class="project-title">Autonomous Security Robot</h2>
+                  <p class="project-eyebrow">Project 04 · Competition</p>
+                  <h2 class="project-title">Robotic Arm Challenge</h2>
                 </div>
                 <div class="project-right">
-                  <p class="project-subtitle">An autonomous patrol robot for the SUTD Robotics Lab — frontier-based SLAM mapping without prior maps, Nav2 patrol, and YOLOv8 + CLIP zero-shot person classification fused with Lidar (&lt;20 cm map projection error). My part: system architecture and control.</p>
-                  <p class="project-stats"><span>&lt;20 CM</span><span>YOLOV8+CLIP</span><span>NAV2</span></p>
+                  <p class="project-subtitle">4th place in a final live competition — a one-week team build where a 6-DOF arm grasps objects, loads a mobile vehicle, and triggers its run through a color-coded maze.</p>
+                  <p class="project-stats"><span>4TH PLACE</span><span>6-DOF</span><span>1 WEEK</span></p>
                 </div>
               </div>
             </article>
@@ -256,17 +256,17 @@
             </filter>
           </svg>
         </div>
-        <div class="project-detail-view" aria-hidden="true">
+        <div class="project-detail-view" aria-hidden="true" inert>
           <div class="project-detail-header">
             <span class="detail-case-num" aria-hidden="true">01</span>
             <div class="project-detail-panel">
               <p class="detail-kicker" data-detail="kicker">Project 01</p>
-              <h3 class="detail-title" data-detail="title">Aurora Lens</h3>
-              <p class="detail-subtitle" data-detail="subtitle"></p>
-              <p class="detail-description" data-detail="description">This project is a one-week team-based competition combining mechanism design and control theory on a real robotic platform.<br><br>The task required a 6-DOF robotic arm to grasp objects at arbitrary positions, place them onto a mobile vehicle, and trigger the vehicle to autonomously navigate a color-coded maze.<br><br>I was primarily responsible for the robotic arm control, focusing on motion planning, calibration, and reliable execution under real-world hardware constraints.</p>
+              <h3 class="detail-title" data-detail="title">RoboInspect — Multi-Robot Indoor Inspection System</h3>
+              <p class="detail-subtitle" data-detail="subtitle">End-to-end simulation; physical prototype field-tested.</p>
+              <p class="detail-description" data-detail="description">A ROS 2 multi-robot inspection system for route allocation, autonomous navigation, anomaly mapping, and bilingual evidence reporting.</p>
               <div class="detail-meta">
-                <span data-detail="meta1">Role: Interaction + Visual</span>
-                <span data-detail="meta2">Timeline: 8 weeks</span>
+                <span data-detail="meta1">Status: Completed academic prototype</span>
+                <span data-detail="meta2">Stack: ROS 2, Nav2, Gazebo, RViz</span>
               </div>
               <button class="detail-share" type="button">
                 <span class="detail-share-label" data-i18n="projects.copyLink">Copy case link</span>
@@ -277,8 +277,8 @@
           </div>
         </div>
       </div>
-      <button class="project-back" type="button" data-i18n="projects.backToShowroom">Back to showroom</button>
-      <div class="detail-lightbox" aria-hidden="true">
+      <button class="project-back" type="button" tabindex="-1" aria-hidden="true" data-i18n="projects.backToShowroom">Back to showroom</button>
+      <div class="detail-lightbox" aria-hidden="true" inert>
         <div class="lightbox-frame" role="dialog" aria-label="Media preview" data-i18n-aria-label="projects.mediaPreview">
           <button class="lightbox-close" type="button" aria-label="Close preview" data-i18n="common.close" data-i18n-aria-label="common.closePreview">Close</button>
           <img class="lightbox-media lightbox-image" alt="">
@@ -287,6 +287,41 @@
       </div>
 
     </section>
+    <aside id="project-archive" class="project-archive" aria-labelledby="project-archive-title">
+      <div class="project-archive-inner">
+        <details class="project-archive-folder">
+          <summary>
+            <span class="archive-tab" aria-hidden="true"></span>
+            <span class="archive-summary-copy">
+              <span class="archive-kicker" data-i18n="projects.archive.kicker">Other Work · 1 file</span>
+              <span id="project-archive-title" class="archive-title" data-i18n="projects.archive.title">Open the project archive</span>
+              <span class="archive-summary-note" data-i18n="projects.archive.note">Non-core projects stay available without competing with the robotics showcase.</span>
+            </span>
+            <span class="archive-toggle" aria-hidden="true"></span>
+          </summary>
+          <article id="archive-hango" class="archive-project-card">
+            <div class="archive-project-media">
+              <img src="assets/posters/p2.jpg" loading="lazy" decoding="async" alt="Hango exhibition project poster" data-i18n-alt="projects.archive.item.mediaAlt">
+              <span class="archive-project-index" aria-hidden="true">A-01</span>
+            </div>
+            <div class="archive-project-copy">
+              <p class="archive-project-eyebrow" data-i18n="projects.archive.item.eyebrow">Archived · Interdisciplinary Design</p>
+              <h3 data-i18n="projects.archive.item.title">Hango</h3>
+              <p data-i18n="projects.archive.item.description">A semester-long design project by a five-person interdisciplinary team, developed through four staged reviews from research to an exhibited prototype. My contribution focused on visual communication, presentation structure, and the final exhibition video.</p>
+              <div class="archive-project-tags" aria-label="Project facts" data-i18n-aria-label="projects.archive.item.factsAria">
+                <span data-i18n="projects.archive.item.facts.0">5-person team</span>
+                <span data-i18n="projects.archive.item.facts.1">4 reviews</span>
+                <span data-i18n="projects.archive.item.facts.2">Exhibited</span>
+              </div>
+              <a class="archive-project-link" href="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/Hango%20V1.1.mp4" target="_blank" rel="noopener noreferrer">
+                <span data-i18n="projects.archive.item.cta">Watch exhibition video</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </article>
+        </details>
+      </div>
+    </aside>
     <section id="about">
       <div class="about-inner">
         <div class="guild-card">

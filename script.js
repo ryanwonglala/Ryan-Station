@@ -285,6 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let detailSplitObserver = null;
   const detailHotspot = projectsSection.querySelector('.project-detail-hotspot');
   const backButton = projectsSection.querySelector('.project-back');
+  const archiveFolder = document.querySelector('.project-archive-folder');
+  const archiveCard = document.getElementById('archive-hango');
   const lightbox = projectsSection.querySelector('.detail-lightbox');
   const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
   const lightboxImage = lightbox ? lightbox.querySelector('.lightbox-image') : null;
@@ -316,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let wheelAccum = 0;
   let wheelTimeout = null;
   let detailOpen = false;
+  let lastDetailTrigger = null;
 
   if (progressTotal) {
     progressTotal.textContent = String(copyItems.length).padStart(2, '0');
@@ -338,13 +341,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const updateClasses = () => {
     const total = copyItems.length;
     copyItems.forEach((item, index) => {
-      item.classList.toggle('is-active', index === activeIndex);
+      const isActive = index === activeIndex;
+      item.classList.toggle('is-active', isActive);
       item.classList.toggle('is-prev', index === (activeIndex - 1 + total) % total);
       item.classList.toggle('is-next', index === (activeIndex + 1) % total);
+      item.setAttribute('aria-hidden', isActive ? 'false' : 'true');
     });
 
     sphereImages.forEach((image, index) => {
-      image.classList.toggle('is-active', index === activeIndex);
+      const isActive = index === activeIndex;
+      image.classList.toggle('is-active', isActive);
+      image.setAttribute('aria-hidden', isActive ? 'false' : 'true');
     });
 
     applyVideoPlayback();
@@ -360,48 +367,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const detailContent = [
     {
-      kicker: '',
-      title: '',
-      subtitle: '',
-      descriptionHtml: 'This project is a one-week team-based competition combining mechanism design and control theory on a real robotic platform.<br><br>The task required a 6-DOF robotic arm to grasp objects at arbitrary positions, place them onto a mobile vehicle, and trigger the vehicle to autonomously navigate a color-coded maze.<br><br>I was primarily responsible for the robotic arm control, focusing on motion planning, calibration, and reliable execution under real-world hardware constraints.',
-      meta: [],
-      media1Src: 'assets/projects/project1/pic2.JPG',
-      media2Src: 'assets/projects/project1/pic3.png',
-      media1Alt: 'Project 1 detail media 1',
-      media2Alt: 'Project 1 detail media 2',
-      media1Type: 'image',
-      media2Type: 'image',
+      kicker: 'Project 01 · Graduation Project',
+      title: 'RoboInspect — Multi-Robot Indoor Inspection System',
+      subtitle: 'End-to-end simulation; physical prototype field-tested.',
+      description: 'A simulation-to-real ROS 2 platform for multi-robot inspection, anomaly mapping, and evidence reporting.',
+      meta: ['Status: Completed academic prototype', 'Stack: ROS 2, Nav2, Gazebo, RViz'],
+      repositoryUrl: 'https://github.com/ryanwonglala/Multi-Robot-Inspection-System',
       splits: [
         {
-          title: 'Competition Outcome',
-          body: 'The system was evaluated in a final live competition. Our team achieved 4th place, with all grasping tasks completed reliably during the final runs.',
+          title: 'Fleet Inspection Pipeline',
+          body: 'Inspection routes are split across namespaced robot processes, with autonomous navigation, evidence capture, anomaly localization, and reporting.',
+          mediaSrcs: ['assets/projects/roboinspect/hero.svg'],
+          mediaAlts: ['RoboInspect fleet inspection architecture'],
         },
         {
-          title: 'System Workflow',
-          body: 'The workflow reflects how ideal kinematic models were adapted to real hardware conditions, including servo offsets, polarity differences, and power-related variation.',
+          title: 'Physical TurtleBot3 Trials',
+          body: 'Field trials covered localization, navigation, inspection, AprilTag terminal alignment, and guarded return and docking.',
+        },
+        {
+          title: 'SO-ARM Response Station',
+          body: 'A standalone vision-guided arm detects, grasps, verifies, transports, and sorts abnormal-coloured objects.',
+          mediaSrcs: ['https://raw.githubusercontent.com/ryanwonglala/Multi-Robot-Inspection-System/47bf992932856b28d8fb0cda36299cba022ff762/so-arm101/calibration/workzone.jpg'],
+          mediaAlts: ['SO-ARM101 camera work zone used for vision-guided sorting'],
+        },
+        {
+          title: 'Honest Integration Boundary',
+          body: 'Cross-platform handoff remains operator-supervised rather than an unattended production deployment.',
         },
       ],
     },
     {
-      kicker: '',
-      title: 'Hango',
-      subtitle: 'A semester-long interdisciplinary innovation design project.',
-      description: 'Hango is a semester-long collaborative design project developed by a five-person interdisciplinary team. Through four staged presentations, we refined the concept from early research into a final prototype and exhibition narrative—balancing clarity, feasibility, and visitor experience. My contributions focused on visual communication, presentation structure, and the final exhibition prototype display video.',
-      meta: [],
-      media1Type: 'image',
-      media1Src: 'assets/projects/project2/Pic1.jpg',
-      media1Alt: 'Project 2 poster image',
-      media2Type: 'image',
-      media2Src: 'assets/projects/project2/Pic3.JPG',
-      media2Alt: 'Project 2 detail photo',
+      kicker: 'Project 02',
+      title: 'Autonomous Security Robot',
+      subtitle: 'From uncharted exploration to AI-driven threat detection.',
+      description: 'An autonomous security agent for the SUTD Robotics Lab, combining exploration, patrol navigation, and AI vision.',
+      meta: ['Role: System Architecture & Control', 'Tech: ROS2, YOLOv8, CLIP, Nav2, Lidar'],
       splits: [
         {
-          title: 'Design Synthesis',
-          body: 'The final exhibition poster condensed insights from four design phases into a single, cohesive narrative structure.',
+          title: 'AI Vision & Asynchronous Reasoning',
+          body: 'A non-blocking vision server combines YOLOv8 and CLIP, then fuses camera bearings with Lidar to project classified markers onto the map.',
+          mediaSrcs: [
+            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/intruder%E6%A3%80%E6%B5%8B.png',
+            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/staff%E6%A3%80%E6%B5%8B.png',
+          ],
+          mediaAlts: ['Intruder detection result', 'Staff detection result'],
         },
         {
-          title: 'Team Collaboration',
-          body: 'An interdisciplinary team of five, bringing together diverse backgrounds throughout the full design process.',
+          title: 'Mission Orchestration & Navigation',
+          body: 'A mission state machine dispatches Nav2 patrols, performs systematic surveillance rotations, and respects visually detected restricted zones.',
+          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E5%AE%9E%E6%8B%8D%E5%9B%BE.jpg'],
+          mediaAlts: ['Autonomous Security Robot test environment'],
         },
       ],
     },
@@ -444,25 +459,24 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       kicker: 'Project 04',
-      title: 'Autonomous Security Robot',
-      subtitle: 'From Uncharted Exploration to AI-Driven Threat Detection.',
-      description: 'This project implements a fully autonomous security agent for the SUTD Robotics Lab. The system is capable of exploring unknown environments without prior maps using a custom frontier-based SLAM algorithm. Once mapped, the robot executes multi-room patrol missions, utilizing an asynchronous vision server that combines YOLOv8 with OpenAI\'s CLIP model for real-time, zero-shot classification of staff and intruders.',
-      meta: ['Role: System Architecture & Control | Tech: ROS2, YOLOv8, CLIP (ViT-B/32), Nav2, Lidar'],
+      title: 'Robotic Arm Challenge',
+      subtitle: '6-DOF arm control and task integration with a mobile robot.',
+      descriptionHtml: 'This project is a one-week team-based competition combining mechanism design and control theory on a real robotic platform.<br><br>The task required a 6-DOF robotic arm to grasp objects at arbitrary positions, place them onto a mobile vehicle, and trigger the vehicle to autonomously navigate a color-coded maze.<br><br>I was primarily responsible for the robotic arm control, focusing on motion planning, calibration, and reliable execution under real-world hardware constraints.',
+      meta: ['Role: Robotic Arm Control', 'Outcome: Final live competition'],
+      media1Src: 'assets/projects/project1/pic2.JPG',
+      media2Src: 'assets/projects/project1/pic3.png',
+      media1Alt: 'Robotic Arm Challenge detail media 1',
+      media2Alt: 'Robotic Arm Challenge detail media 2',
+      media1Type: 'image',
+      media2Type: 'image',
       splits: [
         {
-          title: 'AI Vision & Asynchronous Reasoning',
-          body: 'To ensure non-blocking navigation, the vision server operates via an asynchronous task queue. It integrates YOLOv8 for detection and the CLIP (ViT-B/32) model for semantic classification. By fusing horizontal camera bearings with Lidar point clouds, the system accurately projects classified threat markers (Staff vs. Intruder) onto the global map with <20cm error.',
-          mediaSrcs: [
-            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/intruder%E6%A3%80%E6%B5%8B.png',
-            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/staff%E6%A3%80%E6%B5%8B.png',
-          ],
-          mediaAlts: ['Intruder detection result', 'Staff detection result'],
+          title: 'Competition Outcome',
+          body: 'The system was evaluated in a final live competition. Our team achieved 4th place, with all grasping tasks completed reliably during the final runs.',
         },
         {
-          title: 'Mission Orchestration & Navigation',
-          body: 'A robust state machine (MissionState) manages the patrolling lifecycle. The scheduler dispatches the robot to target rooms using Nav2, performs systematic 360° surveillance through timed 90° incremental rotations, and monitors for visual \'STOP\' signs to dynamically respect restricted operational zones.',
-          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E5%AE%9E%E6%8B%8D%E5%9B%BE.jpg'],
-          mediaAlts: ['Test environment photo'],
+          title: 'System Workflow',
+          body: 'The workflow reflects how ideal kinematic models were adapted to real hardware conditions, including servo offsets, polarity differences, and power-related variation.',
         },
       ],
     },
@@ -499,9 +513,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const eyebrow = item.querySelector('.project-eyebrow');
       const title = item.querySelector('.project-title');
       const subtitle = item.querySelector('.project-subtitle');
+      const stats = Array.from(item.querySelectorAll('.project-stats span'));
       if (eyebrow) eyebrow.textContent = data.eyebrow || '';
       if (title) title.textContent = data.title || '';
       if (subtitle) subtitle.textContent = data.subtitle || '';
+      stats.forEach((stat, statIndex) => {
+        stat.textContent = (data.stats && data.stats[statIndex]) || '';
+      });
     });
   };
 
@@ -549,17 +567,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const panel = detailView.querySelector('.project-detail-panel');
-    const existingPaperLink = detailView.querySelector('.detail-paper-link');
-    if (existingPaperLink) existingPaperLink.remove();
+    detailView.querySelectorAll('.detail-resource-link').forEach((link) => link.remove());
+    const appendResourceLink = ({ href, label, iconId }) => {
+      if (!href || !panel) return;
+      const resourceLink = document.createElement('a');
+      resourceLink.className = 'detail-paper-link detail-resource-link';
+      resourceLink.href = href;
+      resourceLink.target = '_blank';
+      resourceLink.rel = 'noopener noreferrer';
+      resourceLink.innerHTML = `${iconId ? `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>` : ''}<span>${label}</span><span aria-hidden="true">↗</span>`;
+      panel.appendChild(resourceLink);
+    };
     if (data.paperUrl && panel) {
-      const paperLink = document.createElement('a');
-      paperLink.className = 'detail-paper-link';
-      paperLink.href = data.paperUrl;
-      paperLink.target = '_blank';
-      paperLink.rel = 'noopener noreferrer';
       const paperText = (window.PortfolioI18n && window.PortfolioI18n.t('projects.paperLink')) || 'View Full Research Paper';
-      paperLink.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-file-pdf"></use></svg> ${paperText}`;
-      panel.appendChild(paperLink);
+      appendResourceLink({ href: data.paperUrl, label: paperText, iconId: 'icon-file-pdf' });
+    }
+    if (data.repositoryUrl && panel) {
+      const repositoryText = (window.PortfolioI18n && window.PortfolioI18n.t('projects.sourceRepository')) || 'Open source repository';
+      appendResourceLink({ href: data.repositoryUrl, label: repositoryText, iconId: 'icon-cog' });
     }
 
     const sectionsContainer = detailView.querySelector('.project-detail-sections');
@@ -644,6 +669,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (mediaDiv.hasChildNodes()) {
           article.appendChild(mediaDiv);
+        } else {
+          article.classList.add('detail-split--text-only');
         }
         article.appendChild(textDiv);
         sectionsContainer.appendChild(article);
@@ -692,6 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!lightbox) return;
     lightbox.classList.remove('is-active', 'is-prep', 'is-image', 'is-video');
     lightbox.setAttribute('aria-hidden', 'true');
+    lightbox.inert = true;
     if (lightboxFrame) {
       lightboxFrame.style.setProperty('--lightbox-drag-y', '0px');
     }
@@ -750,6 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lightbox.classList.toggle('is-image', type === 'image');
     lightbox.classList.toggle('is-video', type === 'video');
     lightbox.setAttribute('aria-hidden', 'false');
+    lightbox.inert = false;
     requestAnimationFrame(() => {
       lightbox.classList.add('is-active');
     });
@@ -767,10 +796,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  const CASE_SLUGS = ['robotic-arm', 'hango', 'flexilock', 'security-robot'];
+  const CASE_SLUGS = ['roboinspect', 'security-robot', 'flexilock', 'robotic-arm'];
+  const ARCHIVE_CASE_SLUG = 'hango';
+
+  const revealArchiveCase = ({ focus = false } = {}) => {
+    if (!archiveFolder || !archiveCard) return;
+    archiveFolder.open = true;
+    requestAnimationFrame(() => {
+      archiveCard.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
+      if (focus) {
+        const firstLink = archiveCard.querySelector('a, button');
+        if (firstLink) firstLink.focus({ preventScroll: true });
+      }
+    });
+  };
 
   const openDetail = (index, fromHistory = false) => {
     if (detailOpen && activeIndex === index) return;
+    const trigger = document.activeElement;
+    if (!fromHistory && trigger instanceof HTMLElement && trigger !== document.body) {
+      lastDetailTrigger = trigger;
+    }
     detailOpen = true;
     activeIndex = index;
     updateClasses();
@@ -778,27 +824,32 @@ document.addEventListener('DOMContentLoaded', () => {
     projectsSection.classList.add('is-detail');
     if (detailView) {
       detailView.setAttribute('aria-hidden', 'false');
+      detailView.inert = false;
+    }
+    if (backButton) {
+      backButton.setAttribute('aria-hidden', 'false');
+      backButton.tabIndex = 0;
+    }
+    if (detailHotspot) {
+      detailHotspot.setAttribute('aria-hidden', 'true');
+      detailHotspot.tabIndex = -1;
     }
     document.body.classList.add('detail-mode');
     scrollToProjects();
     if (!fromHistory) {
       history.pushState({ detail: true, index: activeIndex }, '', `#case/${CASE_SLUGS[activeIndex] || activeIndex + 1}`);
     }
+    requestAnimationFrame(() => backButton?.focus({ preventScroll: true }));
   };
 
   const sphere = projectsSection.querySelector('.project-sphere');
   if (sphere) {
-    sphere.addEventListener('click', () => {
+    sphere.addEventListener('click', (event) => {
       if (!detailOpen) return;
-      const sphereVideo = sphere.querySelector('video.is-active') || sphere.querySelector('video');
-      if (sphereVideo) {
-        openMediaFromElement(sphereVideo);
-        return;
-      }
-      const sphereImage = sphere.querySelector('img.is-active') || sphere.querySelector('img');
-      if (sphereImage) {
-        openMediaFromElement(sphereImage);
-      }
+      const activeMedia = sphere.querySelector('.sphere-image.is-active') || sphere.querySelector('.sphere-image');
+      if (!activeMedia) return;
+      event.stopPropagation();
+      openMediaFromElement(activeMedia);
     });
   }
 
@@ -809,9 +860,23 @@ document.addEventListener('DOMContentLoaded', () => {
     projectsSection.classList.remove('is-detail');
     if (detailView) {
       detailView.setAttribute('aria-hidden', 'true');
+      detailView.inert = true;
+    }
+    if (backButton) {
+      backButton.setAttribute('aria-hidden', 'true');
+      backButton.tabIndex = -1;
+    }
+    if (detailHotspot) {
+      detailHotspot.setAttribute('aria-hidden', 'false');
+      detailHotspot.tabIndex = 0;
     }
     document.body.classList.remove('detail-mode');
     scrollToProjects();
+    const focusTarget = lastDetailTrigger;
+    lastDetailTrigger = null;
+    requestAnimationFrame(() => {
+      if (focusTarget?.isConnected) focusTarget.focus({ preventScroll: true });
+    });
     if (!fromHistory && history.state && history.state.detail) {
       history.back();
     }
@@ -1119,6 +1184,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.addEventListener('popstate', (event) => {
+    if (location.hash === `#case/${ARCHIVE_CASE_SLUG}`) {
+      closeDetail(true);
+      revealArchiveCase();
+      return;
+    }
     if (event.state && event.state.detail) {
       openDetail(event.state.index, true);
       return;
@@ -1147,9 +1217,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (detailOpen) projectsSection.scrollIntoView({ behavior: 'auto', block: 'start' });
       }, 400);
     });
+  } else if (location.hash === `#case/${ARCHIVE_CASE_SLUG}`) {
+    revealArchiveCase();
+    window.addEventListener('load', () => window.setTimeout(() => revealArchiveCase(), 200), { once: true });
   } else if (location.hash === '#projects-detail') {
     openDetail(activeIndex, true);
   }
+
+  window.addEventListener('hashchange', () => {
+    if (location.hash === `#case/${ARCHIVE_CASE_SLUG}`) revealArchiveCase();
+  });
 
   updateProjectCopy();
   updateClasses();
@@ -1237,9 +1314,9 @@ const experienceItems = [
       'Built and tested course projects involving TurtleBot3, ROS navigation, visual recognition, SLAM testing, and robotic arm control.',
       'Completed a real-robot Autonomous Security Robot demo using Ubuntu laptop + TurtleBot3, ROS navigation, YOLO/CLIP-based visual recognition, and exploratory SLAM testing.',
       'Completed a Robotic Arm Challenge involving 6-DOF arm control, calibration, object grasping, and task integration with a mobile robot.',
-      'Delivered a capstone Design Project focused on robotics/automation system integration, prototyping, testing, and final demonstration.',
+      'Delivered RoboInspect, a multi-robot indoor inspection graduation project spanning ROS 2 simulation, field-tested TurtleBot3 workflows, anomaly reporting, and a standalone SO-ARM sorting station.',
     ],
-    tags: ['ROS', 'TurtleBot3', 'Robot Navigation', 'YOLO', 'CLIP', 'SLAM Testing', 'Robotic Arm', 'System Integration'],
+    tags: ['ROS 2', 'Multi-Robot', 'TurtleBot3', 'Nav2', 'Computer Vision', 'SO-ARM101', 'System Integration'],
     media: {
       mode: 'single',
       images: ['assets/experience/4.jpg'],
@@ -2087,7 +2164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ========================================================================
 // ============ 🚉 灯光工程A：Projects 横向站台展廊（桌面 ≥1024） ==========
-// 滚动驱动整屏横移：四座灯箱月台（巨型编号 + 车窗视频 + 文案 + 检票 CTA）
+// 滚动驱动整屏横移：灯箱月台（巨型编号 + 车窗媒体 + 文案 + 检票 CTA）
 // 移动端保持 T209 纵向面板；is-detail 期间展廊隐藏、由既有 detail 系统接管
 // ========================================================================
 
@@ -2095,127 +2172,163 @@ document.addEventListener('DOMContentLoaded', () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   window.addEventListener('DOMContentLoaded', () => {
-    if (window.innerWidth < 1024) return;
     const section = document.getElementById('projects');
     const frame = section?.querySelector('.projects-frame');
+    const stage = section?.querySelector('.projects-stage');
+    const copyHost = section?.querySelector('.projects-copy');
+    const sphereLayer = section?.querySelector('.sphere-image-layer');
     const copies = section ? [...section.querySelectorAll('.project-copy')] : [];
-    const videos = section ? [...section.querySelectorAll('.sphere-video')] : [];
-    if (!section || !frame || copies.length !== 4 || videos.length !== 4) return;
+    const mediaItems = section ? [...section.querySelectorAll('.sphere-image')] : [];
+    const progressNav = section?.querySelector('.projects-nav');
+    const progressCurrent = section?.querySelector('.project-progress-current');
+    if (!section || !frame || !stage || !copyHost || !sphereLayer || !copies.length || copies.length !== mediaItems.length) return;
 
-    section.classList.add('gallery-mode');
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    let teardownGallery = null;
 
-    const track = document.createElement('div');
-    track.className = 'gallery-track';
+    const buildGallery = () => {
+      if (teardownGallery || !desktopQuery.matches) return;
 
-    const t = (key, fallback) =>
-      (window.PortfolioI18n && window.PortfolioI18n.t(key)) || fallback;
+      section.classList.add('gallery-mode');
+      section.style.setProperty('--gallery-scroll-height', `${(copies.length + 0.8) * 100}vh`);
 
-    copies.forEach((copy, i) => {
-      const panel = document.createElement('article');
-      panel.className = 'gallery-panel';
+      const track = document.createElement('div');
+      track.className = 'gallery-track';
+      const t = (key, fallback) =>
+        (window.PortfolioI18n && window.PortfolioI18n.t(key)) || fallback;
 
-      const num = document.createElement('span');
-      num.className = 'gallery-panel-num';
-      num.setAttribute('aria-hidden', 'true');
-      num.textContent = String(i + 1).padStart(2, '0');
-      panel.appendChild(num);
+      copies.forEach((copy, i) => {
+        const panel = document.createElement('article');
+        panel.className = 'gallery-panel';
 
-      const left = document.createElement('div');
-      left.className = 'gallery-panel-copy';
-      left.appendChild(copy); // 移动既有文案节点：i18n 刷新机制照常工作
+        const num = document.createElement('span');
+        num.className = 'gallery-panel-num';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(i + 1).padStart(2, '0');
+        panel.appendChild(num);
 
-      const cta = document.createElement('button');
-      cta.type = 'button';
-      cta.className = 'gallery-panel-cta';
-      cta.innerHTML = `<span data-i18n="projects.viewCase">${t('projects.viewCase', 'View case file')}</span><span class="cta-arrow" aria-hidden="true">→</span>`;
-      cta.addEventListener('click', () => {
-        const api = window.__stationGallery;
-        if (!api) return;
-        // 先把纵向滚动停在展廊区起点，避免 is-detail 收缩 100vh 时跳位
-        window.scrollTo({ top: section.offsetTop, behavior: 'auto' });
-        api.openDetail(i);
+        const left = document.createElement('div');
+        left.className = 'gallery-panel-copy';
+        left.appendChild(copy);
+
+        const cta = document.createElement('button');
+        cta.type = 'button';
+        cta.className = 'gallery-panel-cta';
+        cta.innerHTML = `<span data-i18n="projects.viewCase">${t('projects.viewCase', 'View case file')}</span><span class="cta-arrow" aria-hidden="true">→</span>`;
+        cta.addEventListener('click', () => {
+          const api = window.__stationGallery;
+          if (!api) return;
+          window.scrollTo({ top: section.offsetTop, behavior: 'auto' });
+          api.openDetail(i);
+        });
+        left.appendChild(cta);
+        panel.appendChild(left);
+
+        const windowEl = document.createElement('div');
+        windowEl.className = 'gallery-window';
+        windowEl.appendChild(mediaItems[i]);
+        panel.appendChild(windowEl);
+        track.appendChild(panel);
       });
-      left.appendChild(cta);
-      panel.appendChild(left);
 
-      const windowEl = document.createElement('div');
-      windowEl.className = 'gallery-window';
-      windowEl.appendChild(videos[i]); // 移动视频节点：class 保留，播放调度照常
-      panel.appendChild(windowEl);
+      frame.appendChild(track);
+      if (progressNav) frame.appendChild(progressNav);
 
-      track.appendChild(panel);
-    });
+      const N = copies.length;
+      let target = 0;
+      let current = 0;
+      let lastIdx = -1;
+      let raf = null;
+      let detailMediaIndex = -1;
+      const windowEls = [...track.querySelectorAll('.gallery-window')];
 
-    frame.appendChild(track);
+      const setActivePanel = (activePanelIndex) => {
+        [...track.querySelectorAll('.gallery-panel')].forEach((panel, panelIndex) => {
+          const isCurrent = panelIndex === activePanelIndex;
+          panel.setAttribute('aria-hidden', isCurrent ? 'false' : 'true');
+          const cta = panel.querySelector('.gallery-panel-cta');
+          if (cta) cta.tabIndex = isCurrent ? 0 : -1;
+        });
+      };
 
-    // 进度指示挪进 sticky 视口底部（若存在）
-    const progressNav = section.querySelector('.projects-nav');
-    if (progressNav) frame.appendChild(progressNav);
-    const progressCurrent = section.querySelector('.project-progress-current');
+      const apply = () => {
+        raf = null;
+        current = prefersReducedMotion ? target : current + (target - current) * 0.14;
+        if (Math.abs(target - current) < 0.1) current = target;
+        track.style.transform = `translate3d(${-current}px, 0, 0)`;
+        if (Math.abs(target - current) >= 0.1) raf = requestAnimationFrame(apply);
+      };
 
-    const N = copies.length;
-    let target = 0;
-    let current = 0;
-    let lastIdx = -1;
-    let raf = null;
+      const onScroll = () => {
+        if (section.classList.contains('is-detail')) {
+          frame.style.transform = '';
+          return;
+        }
+        const vw = window.innerWidth;
+        const total = section.offsetHeight - window.innerHeight;
+        const pinY = Math.min(Math.max(window.scrollY - section.offsetTop, 0), total);
+        frame.style.transform = `translate3d(0, ${pinY}px, 0)`;
+        const p = total > 0
+          ? Math.min(Math.max((window.scrollY - section.offsetTop) / total, 0), 1)
+          : 0;
+        target = p * (N - 1) * vw;
+        const idx = Math.min(N - 1, Math.max(0, Math.round(p * (N - 1))));
+        if (idx !== lastIdx) {
+          lastIdx = idx;
+          window.__stationGallery?.syncIndex(idx);
+          if (progressCurrent) progressCurrent.textContent = String(idx + 1).padStart(2, '0');
+          setActivePanel(idx);
+        }
+        if (!raf) raf = requestAnimationFrame(apply);
+      };
 
-    const apply = () => {
-      raf = null;
-      // 惯性趋近：滚动映射的横移带一点重量感
-      current = prefersReducedMotion ? target : current + (target - current) * 0.14;
-      if (Math.abs(target - current) < 0.1) current = target;
-      track.style.transform = `translate3d(${-current}px, 0, 0)`;
-      if (Math.abs(target - current) >= 0.1) raf = requestAnimationFrame(apply);
-    };
+      const syncDetailMedia = () => {
+        const inDetail = section.classList.contains('is-detail');
+        if (inDetail && detailMediaIndex === -1) {
+          const numEl = section.querySelector('.detail-case-num');
+          const idx = Math.min(N - 1, Math.max(0, (parseInt(numEl && numEl.textContent, 10) || 1) - 1));
+          detailMediaIndex = idx;
+          sphereLayer.appendChild(mediaItems[idx]);
+          if (mediaItems[idx].tagName === 'VIDEO') {
+            const playAttempt = mediaItems[idx].play();
+            if (playAttempt && playAttempt.catch) playAttempt.catch(() => {});
+          }
+        } else if (!inDetail && detailMediaIndex !== -1) {
+          windowEls[detailMediaIndex]?.appendChild(mediaItems[detailMediaIndex]);
+          detailMediaIndex = -1;
+        }
+      };
 
-    const onScroll = () => {
-      if (section.classList.contains('is-detail')) {
+      const classWatch = new MutationObserver(syncDetailMedia);
+      classWatch.observe(section, { attributes: true, attributeFilter: ['class'] });
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      syncDetailMedia();
+      onScroll();
+
+      teardownGallery = () => {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onScroll);
+        classWatch.disconnect();
+        if (raf) cancelAnimationFrame(raf);
+        copies.forEach((copy) => copyHost.appendChild(copy));
+        mediaItems.forEach((media) => sphereLayer.appendChild(media));
+        if (progressNav) stage.appendChild(progressNav);
+        track.remove();
         frame.style.transform = '';
-        return;
-      }
-      const vw = window.innerWidth;
-      const total = section.offsetHeight - window.innerHeight;
-      // 手动钉扎：把画框钉在视口内（sticky 在本页环境不生效）
-      const pinY = Math.min(Math.max(window.scrollY - section.offsetTop, 0), total);
-      frame.style.transform = `translate3d(0, ${pinY}px, 0)`;
-      const p = total > 0
-        ? Math.min(Math.max((window.scrollY - section.offsetTop) / total, 0), 1)
-        : 0;
-      target = p * (N - 1) * vw;
-      const idx = Math.min(N - 1, Math.max(0, Math.round(p * (N - 1))));
-      if (idx !== lastIdx) {
-        lastIdx = idx;
-        window.__stationGallery?.syncIndex(idx);
-        if (progressCurrent) progressCurrent.textContent = String(idx + 1).padStart(2, '0');
-      }
-      if (!raf) raf = requestAnimationFrame(apply);
+        section.classList.remove('gallery-mode');
+        section.style.removeProperty('--gallery-scroll-height');
+        teardownGallery = null;
+      };
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    onScroll();
-
-    // 案例档案：is-detail 时把当期视频移回拱窗媒体区，关闭时归还站台车窗
-    const sphereLayer = section.querySelector('.sphere-image-layer');
-    const windowEls = [...track.querySelectorAll('.gallery-window')];
-    let detailVid = -1;
-    const syncDetailVideo = () => {
-      const inDetail = section.classList.contains('is-detail');
-      if (inDetail && detailVid === -1 && sphereLayer) {
-        const numEl = section.querySelector('.detail-case-num');
-        const idx = Math.min(N - 1, Math.max(0, (parseInt(numEl && numEl.textContent, 10) || 1) - 1));
-        detailVid = idx;
-        sphereLayer.appendChild(videos[idx]);
-        const playAttempt = videos[idx].play();
-        if (playAttempt && playAttempt.catch) playAttempt.catch(() => {});
-      } else if (!inDetail && detailVid !== -1) {
-        if (windowEls[detailVid]) windowEls[detailVid].appendChild(videos[detailVid]);
-        detailVid = -1;
-      }
+    const syncGalleryMode = () => {
+      if (desktopQuery.matches) buildGallery();
+      else if (teardownGallery) teardownGallery();
     };
-    const classWatch = new MutationObserver(syncDetailVideo);
-    classWatch.observe(section, { attributes: true, attributeFilter: ['class'] });
-    syncDetailVideo(); // 直链 #case/<slug> 进入时 is-detail 早于本模块初始化
+
+    desktopQuery.addEventListener('change', syncGalleryMode);
+    syncGalleryMode();
   });
 })();
 
