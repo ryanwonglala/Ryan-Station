@@ -1364,6 +1364,9 @@ body.light-mode .lightbox { background: rgba(30, 26, 18, 0.72); }
     var(--bg);
 }
 .about-inner { max-width: var(--wrap); margin: 0 auto; }
+.about-section .section-head {
+  margin-bottom: clamp(44px, 6vh, 68px);
+}
 .about-grid {
   display: grid;
   grid-template-columns: minmax(280px, 360px) 1fr;
@@ -1754,10 +1757,18 @@ body.lang-zh .terminus-word { letter-spacing: 0.5em; text-indent: 0.5em; }
 .footer-top:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
 .footer-rights { margin: 0; padding-top: 24px; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
 
-.footer-hamster { position: relative; height: 86px; margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: center; }
-.station-mouse-footer { position: relative; width: 76px; height: 76px; font-size: 5px; }
-.station-mouse-footer .hamster { animation: footer-hamster-sleep 4s ease-in-out infinite; top: calc(50% - 5em); left: calc(50% - 5em); }
-@keyframes footer-hamster-sleep { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(1.5px) rotate(2deg); } }
+.footer-mascot { position: relative; height: 104px; margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: center; }
+.footer-pixelbot {
+  position: relative;
+  width: 82px;
+  height: 82px;
+  color: #ecbd6e;
+  filter: drop-shadow(0 0 14px rgba(217, 165, 84, 0.26));
+  animation: footer-pixelbot-sleep 4s ease-in-out infinite;
+}
+.footer-pixelbot svg { display: block; width: 100%; height: 100%; }
+body.light-mode .footer-pixelbot { color: #a87420; filter: drop-shadow(0 4px 8px rgba(35, 32, 26, 0.18)); }
+@keyframes footer-pixelbot-sleep { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(2px) rotate(1deg); } }
 .footer-lamp { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 3px; height: 20px; background: var(--line-strong); }
 .footer-lamp::after {
   content: '';
@@ -1927,6 +1938,7 @@ body.light-mode .led-strip { background: color-mix(in srgb, #241f16 88%, transpa
   .detect-media { aspect-ratio: 16 / 9; }
   .archive-card { grid-template-columns: 1fr; }
   .about-offduty { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .about-section .section-head { margin-bottom: 34px; }
   .offduty-copy { text-align: center; }
   .footer-columns { grid-template-columns: 1fr; }
   .hero-meta { bottom: calc(84px + var(--led-h)); gap: 8px; }
