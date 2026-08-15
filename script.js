@@ -1,2518 +1,975 @@
-// ========================================================================
-// ========================= 🎬 加载动画控制 START =========================
-// ========================================================================
+/* Ryan's Station — 夜行车站 v3 · 行为层
+ * 系统：开屏 / 传感器点场 / 准星光标 / 到站信息条 / 检测目标陈列 /
+ *       案例档案 / 灯箱 / 发车板 / 车站时钟 / 复制 / 像素彩蛋 / 音乐区入口
+ * 语言切换时全部动态区域重渲染。 */
+(function () {
+  'use strict';
 
-// 页面加载时显示开屏动画，资源就绪后再淡出
-window.addEventListener('DOMContentLoaded', () => {
-  const loadingOverlay = document.getElementById('loading-overlay');
-  const pageContent = document.getElementById('page-content');
-  const heroCta = document.querySelector('.hero-cta');
-
-  if (!loadingOverlay || !pageContent) {
-    document.body.classList.add('hero-reveal');
-    return;
-  }
-
-  if (!location.hash || location.hash === '#home') {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }
-
-  if (heroCta) {
-    heroCta.addEventListener('click', () => {
-      const targetHash = heroCta.getAttribute('href') || '#projects';
-      const targetSection = document.querySelector(targetHash);
-      if (targetSection) {
-        requestAnimationFrame(() => {
-          targetSection.scrollIntoView({ behavior: 'smooth' });
-          history.replaceState(null, '', targetHash);
-        });
-      }
-    });
-  }
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReducedMotion) {
-    loadingOverlay.remove();
-    document.body.classList.remove('splash-active', 'splash-exit');
-    document.body.classList.add('hero-reveal');
-    return;
-  }
-
-  const parseDuration = (value) => {
-    const trimmed = value.trim();
-    if (trimmed.endsWith('ms')) return parseFloat(trimmed);
-    if (trimmed.endsWith('s')) return parseFloat(trimmed) * 1000;
-    return parseFloat(trimmed);
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+  const t = (path, fallback) => {
+    const v = window.PortfolioI18n && window.PortfolioI18n.t(path);
+    return v !== undefined && v !== '' ? v : (fallback || '');
   };
-
-  const rootStyles = getComputedStyle(document.documentElement);
-  const fadeInMs = parseDuration(rootStyles.getPropertyValue('--splash-fade-in'));
-  const holdMs = parseDuration(rootStyles.getPropertyValue('--splash-hold'));
-  const fadeOutMs = parseDuration(rootStyles.getPropertyValue('--splash-fade-out'));
-  const minDisplayMs = fadeInMs + holdMs;
-
-  let exited = false;
-  const startExit = () => {
-    if (exited) return;
-    exited = true;
-
-    document.body.classList.add('splash-exit');
-
-    window.setTimeout(() => {
-      loadingOverlay.remove();
-      document.body.classList.remove('splash-active', 'splash-exit');
-      document.body.classList.add('hero-reveal');
-    }, fadeOutMs);
-  };
-
-  // 不再等待 window load：资源在后台继续加载，开屏只按最短展示时长计时退场。
-  const holdTimer = window.setTimeout(startExit, minDisplayMs);
-
-  const skipIntro = () => {
-    window.clearTimeout(holdTimer);
-    startExit();
-  };
-
-  loadingOverlay.addEventListener('click', skipIntro, { once: true });
-  loadingOverlay.addEventListener('keydown', skipIntro, { once: true });
-});
-
-// ========================================================================
-// ========================== 🎬 加载动画控制 END ==========================
-// ========================================================================
-
-// ========================================================================
-// ========================= 🧭 胶囊导航逻辑 ===============================
-// ========================================================================
-
-const navItems = document.querySelectorAll(".glass-capsule-nav .nav-links li");
-
-function activeLink() {
-  navItems.forEach((item) => {
-    item.classList.remove("active");
-    const link = item.querySelector('a[href^="#"]');
-    if (link) link.removeAttribute('aria-current');
-  });
-  this.classList.add("active");
-  const link = this.querySelector('a[href^="#"]');
-  if (link) link.setAttribute('aria-current', 'true');
-}
-
-navItems.forEach((item) => item.addEventListener("click", activeLink));
-
-document.addEventListener('DOMContentLoaded', () => {
-  const nav = document.querySelector('.glass-capsule-nav');
-  const cursor = document.getElementById('nav-cursor');
-  const navLinks = document.querySelectorAll('.glass-capsule-nav .nav-links a');
-  const musicTrigger = document.getElementById('music-trigger');
-  const languageSwitcher = document.querySelector('.language-switcher');
-  const themeSwitchLi = document.querySelector('.theme-switch-li');
-  const navBrand = document.querySelector('.nav-brand');
-
-  if (!nav || !cursor) {
-    return;
-  }
-
-  const resetToContainer = () => {
-    cursor.style.left = '0px';
-    cursor.style.width = `${nav.clientWidth}px`;
-    cursor.classList.remove('highlight');
-  };
-
-  const snapToLink = (target) => {
-    if (!target) return;
-    const navRect = nav.getBoundingClientRect();
-    const linkRect = target.getBoundingClientRect();
-    const navOffsetLeft = navRect.left + nav.clientLeft;
-    cursor.style.left = `${linkRect.left - navOffsetLeft}px`;
-    cursor.style.width = `${linkRect.width}px`;
-    cursor.classList.add('highlight');
-  };
-
-  navLinks.forEach((link) => {
-    link.addEventListener('mouseenter', () => snapToLink(link));
-    link.addEventListener('focus', () => snapToLink(link));
-  });
-
-  nav.addEventListener('mouseleave', resetToContainer);
-
-  if (musicTrigger) {
-    musicTrigger.addEventListener('mouseenter', resetToContainer);
-    musicTrigger.addEventListener('focus', resetToContainer);
-  }
-
-  if (navBrand) {
-    navBrand.addEventListener('mouseenter', resetToContainer);
-    navBrand.addEventListener('focus', resetToContainer);
-  }
-
-  if (languageSwitcher) {
-    languageSwitcher.addEventListener('mouseenter', resetToContainer);
-    languageSwitcher.addEventListener('focusin', resetToContainer);
-  }
-
-  if (themeSwitchLi) {
-    themeSwitchLi.addEventListener('mouseenter', resetToContainer);
-    themeSwitchLi.addEventListener('focusin', resetToContainer);
-  }
-
-  window.addEventListener('resize', resetToContainer);
-
-  requestAnimationFrame(resetToContainer);
-});
-
-// ========================================================================
-// ========================= 🧭 导航 Scrollspy ==============================
-// ========================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-  const sectionIds = ['home', 'projects', 'about', 'experience', 'contact'];
-  const sections = sectionIds
-    .map((id) => document.getElementById(id))
-    .filter(Boolean);
-
-  const navLiById = new Map();
-  navItems.forEach((li) => {
-    const link = li.querySelector('a[href^="#"]');
-    if (link) {
-      navLiById.set(link.getAttribute('href').slice(1), li);
-    }
-  });
-
-  if (!sections.length || !navLiById.size) {
-    return;
-  }
-
-  const setActiveSection = (id) => {
-    navLiById.forEach((li, key) => {
-      li.classList.toggle('active', key === id);
-      const link = li.querySelector('a[href^="#"]');
-      if (link) {
-        if (key === id) {
-          link.setAttribute('aria-current', 'true');
-        } else {
-          link.removeAttribute('aria-current');
-        }
-      }
-    });
-  };
-
-  const scrollSpyObserver = new IntersectionObserver((entries) => {
-    // 项目详情打开时导航高亮不应跟随背后的 Projects 区块滚动状态乱跳。
-    if (document.body.classList.contains('detail-mode')) {
-      return;
-    }
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        setActiveSection(entry.target.id);
-      }
-    });
-  }, { rootMargin: '-40% 0px -55% 0px' });
-
-  sections.forEach((section) => scrollSpyObserver.observe(section));
-});
-
-// ========================================================================
-// ========================= 🧾 About 入场/退场 ============================
-// ========================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-  const aboutSection = document.getElementById('about');
-  const nextSection = document.getElementById('experience');
-  if (!aboutSection) {
-    return;
-  }
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReducedMotion) {
-    aboutSection.classList.add('about-enter');
-    return;
-  }
-
-  const parseDuration = (value, fallback) => {
-    const trimmed = value.trim();
-    if (!trimmed) return fallback;
-    if (trimmed.endsWith('ms')) return parseFloat(trimmed);
-    if (trimmed.endsWith('s')) return parseFloat(trimmed) * 1000;
-    return parseFloat(trimmed);
-  };
-
-  const rootStyles = getComputedStyle(document.documentElement);
-  const enterThresholdValue = parseFloat(rootStyles.getPropertyValue('--about-enter-threshold')) || 0.3;
-  const exitTriggerValue = parseDuration(rootStyles.getPropertyValue('--about-exit-trigger'), 160);
-
-  const entryObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        aboutSection.classList.add('about-enter');
-      }
-    });
-  }, { threshold: enterThresholdValue });
-
-  entryObserver.observe(aboutSection);
-
-  if (nextSection) {
-    const exitObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          aboutSection.classList.add('about-exit');
-        } else {
-          aboutSection.classList.remove('about-exit');
-        }
-      });
-    }, { rootMargin: `0px 0px -${exitTriggerValue}px 0px` });
-
-    exitObserver.observe(nextSection);
-  }
-});
-
-// ========================================================================
-// ========================= 🎛 Projects 展柜交互 ==========================
-// ========================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-  const projectsSection = document.querySelector('.projects-section');
-  if (!projectsSection) {
-    return;
-  }
-
-  const copyItems = Array.from(projectsSection.querySelectorAll('.project-copy'));
-  const sphereImages = Array.from(projectsSection.querySelectorAll('.sphere-image'));
-  const progressCurrent = projectsSection.querySelector('.project-progress-current');
-  const progressTotal = projectsSection.querySelector('.project-progress-total');
-  const displacementMap = projectsSection.querySelector('#sphere-distortion feDisplacementMap');
-  const detailView = projectsSection.querySelector('.project-detail-view');
-  let detailSplitObserver = null;
-  const detailHotspot = projectsSection.querySelector('.project-detail-hotspot');
-  const backButton = projectsSection.querySelector('.project-back');
-  const archiveFolder = document.querySelector('.project-archive-folder');
-  const archiveCard = document.getElementById('archive-hango');
-  const lightbox = projectsSection.querySelector('.detail-lightbox');
-  const lightboxClose = lightbox ? lightbox.querySelector('.lightbox-close') : null;
-  const lightboxImage = lightbox ? lightbox.querySelector('.lightbox-image') : null;
-  const lightboxVideo = lightbox ? lightbox.querySelector('.lightbox-video') : null;
-  const lightboxFrame = lightbox ? lightbox.querySelector('.lightbox-frame') : null;
-  let lightboxLastFocus = null;
-
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const rootStyles = getComputedStyle(document.documentElement);
-  const parseNumber = (value, fallback) => {
-    const parsed = parseFloat(value);
-    return Number.isNaN(parsed) ? fallback : parsed;
-  };
-  const parseDuration = (value, fallback) => {
-    const trimmed = value.trim();
-    if (!trimmed) return fallback;
-    if (trimmed.endsWith('ms')) return parseFloat(trimmed);
-    if (trimmed.endsWith('s')) return parseFloat(trimmed) * 1000;
-    return parseFloat(trimmed);
-  };
-
-  const transitionMs = parseDuration(rootStyles.getPropertyValue('--projects-transition'), 780);
-  const distortBase = parseNumber(rootStyles.getPropertyValue('--projects-distort-base'), 14);
-  const distortPeak = parseNumber(rootStyles.getPropertyValue('--projects-distort-peak'), 28);
-  const swipeThreshold = parseNumber(rootStyles.getPropertyValue('--projects-swipe-threshold'), 60);
-
-  let activeIndex = 0;
-  let isAnimating = false;
-  let wheelAccum = 0;
-  let wheelTimeout = null;
-  let detailOpen = false;
-  let lastDetailTrigger = null;
-
-  if (progressTotal) {
-    progressTotal.textContent = String(copyItems.length).padStart(2, '0');
-  }
-
-  // T107: 球体视频按需播放——仅当 Projects 区块在视口内时才播放当前 active 视频，
-  // 其余（含离屏时）一律暂停，避免多路 R2 视频同时解码。
-  const applyVideoPlayback = () => {
-    const inView = projectsSection.classList.contains('is-active');
-    sphereImages.forEach((image, index) => {
-      if (image.tagName !== 'VIDEO') return;
-      if (inView && index === activeIndex) {
-        image.play().catch(() => {});
-      } else {
-        image.pause();
-      }
-    });
-  };
-
-  const updateClasses = () => {
-    const total = copyItems.length;
-    copyItems.forEach((item, index) => {
-      const isActive = index === activeIndex;
-      item.classList.toggle('is-active', isActive);
-      item.classList.toggle('is-prev', index === (activeIndex - 1 + total) % total);
-      item.classList.toggle('is-next', index === (activeIndex + 1) % total);
-      item.setAttribute('aria-hidden', isActive ? 'false' : 'true');
-    });
-
-    sphereImages.forEach((image, index) => {
-      const isActive = index === activeIndex;
-      image.classList.toggle('is-active', isActive);
-      image.setAttribute('aria-hidden', isActive ? 'false' : 'true');
-    });
-
-    applyVideoPlayback();
-
-    if (progressCurrent) {
-      progressCurrent.textContent = String(activeIndex + 1).padStart(2, '0');
-    }
-
-    if (detailHotspot) {
-      detailHotspot.classList.remove('is-disabled');
-    }
-  };
-
-  const detailContent = [
-    {
-      kicker: 'Project 01 · Graduation Project',
-      title: 'RoboInspect — Multi-Robot Indoor Inspection System',
-      subtitle: 'End-to-end simulation; physical prototype field-tested.',
-      description: 'A simulation-to-real ROS 2 platform for multi-robot inspection, anomaly mapping, and evidence reporting.',
-      meta: ['Status: Completed academic prototype', 'Stack: ROS 2, Nav2, Gazebo, RViz'],
-      repositoryUrl: 'https://github.com/ryanwonglala/Multi-Robot-Inspection-System',
-      splits: [
-        {
-          title: 'Fleet Inspection Pipeline',
-          body: 'Inspection routes are split across namespaced robot processes, with autonomous navigation, evidence capture, anomaly localization, and reporting.',
-          mediaSrcs: ['assets/projects/roboinspect/hero.svg'],
-          mediaAlts: ['RoboInspect fleet inspection architecture'],
-        },
-        {
-          title: 'Physical TurtleBot3 Trials',
-          body: 'Field trials covered localization, navigation, inspection, AprilTag terminal alignment, and guarded return and docking.',
-        },
-        {
-          title: 'SO-ARM Response Station',
-          body: 'A standalone vision-guided arm detects, grasps, verifies, transports, and sorts abnormal-coloured objects.',
-          mediaSrcs: ['https://raw.githubusercontent.com/ryanwonglala/Multi-Robot-Inspection-System/47bf992932856b28d8fb0cda36299cba022ff762/so-arm101/calibration/workzone.jpg'],
-          mediaAlts: ['SO-ARM101 camera work zone used for vision-guided sorting'],
-        },
-        {
-          title: 'Honest Integration Boundary',
-          body: 'Cross-platform handoff remains operator-supervised rather than an unattended production deployment.',
-        },
-      ],
-    },
-    {
-      kicker: 'Project 02',
-      title: 'Autonomous Security Robot',
-      subtitle: 'From uncharted exploration to AI-driven threat detection.',
-      description: 'An autonomous security agent for the SUTD Robotics Lab, combining exploration, patrol navigation, and AI vision.',
-      meta: ['Role: System Architecture & Control', 'Tech: ROS2, YOLOv8, CLIP, Nav2, Lidar'],
-      splits: [
-        {
-          title: 'AI Vision & Asynchronous Reasoning',
-          body: 'A non-blocking vision server combines YOLOv8 and CLIP, then fuses camera bearings with Lidar to project classified markers onto the map.',
-          mediaSrcs: [
-            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/intruder%E6%A3%80%E6%B5%8B.png',
-            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/staff%E6%A3%80%E6%B5%8B.png',
-          ],
-          mediaAlts: ['Intruder detection result', 'Staff detection result'],
-        },
-        {
-          title: 'Mission Orchestration & Navigation',
-          body: 'A mission state machine dispatches Nav2 patrols, performs systematic surveillance rotations, and respects visually detected restricted zones.',
-          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E5%AE%9E%E6%8B%8D%E5%9B%BE.jpg'],
-          mediaAlts: ['Autonomous Security Robot test environment'],
-        },
-      ],
-    },
-    {
-      kicker: 'Project 03',
-      title: 'FlexiLock: Variable Stiffness Support',
-      subtitle: 'Soft compliant rest, rigid on demand.',
-      description: 'Addressing the clinical need for "compliant at rest and stiff on demand" support, FlexiLock utilizes a bio-inspired vacuum-actuated scale jamming mechanism. It transitions from a highly flexible state to a rigid structure capable of outputting 5.88 Nm of bending moment at -60 kPa, specifically designed to manage MAS Grade 3-4 upper-limb spasticity.',
-      meta: ['Role: Soft Robotics & Mechanism Design', 'Tech: 3D Printing, Vacuum Actuation'],
-      paperUrl: 'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/Team%20Paper.pdf',
-      splits: [
-        {
-          title: 'Bio-Inspired Scale Jamming',
-          body: 'Inspired by pangolin armour geometry, we developed a variable stiffness mechanism utilizing geometric interlocking. Vacuum actuation creates robust friction between overlapping scales, allowing for rapid transition from soft to rigid states.',
-          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%90%AF%E5%8F%91.png'],
-          mediaAlts: ['Bio-inspired scale jamming mechanism'],
-        },
-        {
-          title: 'Design Iteration & Fabrication',
-          body: 'The scale morphology underwent rigorous iterations to optimize the overlap ratio and friction interface. The final wearable assembly integrates these 3D-printed PLA scales within a custom-sealed nylon envelope to ensure reliable vacuum distribution.',
-          mediaSrcs: [
-            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E9%B3%9E%E7%89%87%E8%BF%AD%E4%BB%A3.png',
-            'https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%B7%A5%E8%89%BA%E6%B5%81%E7%A8%8B.png',
-          ],
-          mediaAlts: ['Scale morphology iterations', 'Fabrication process workflow'],
-        },
-        {
-          title: 'Mechanical Validation',
-          body: 'Quantitative testing demonstrated the device\'s exceptional load-bearing capacity. Under a -60 kPa operating pressure, FlexiLock successfully withstood a 10 kg dead-weight load without visible deformation, yielding a 5.88 Nm bending moment.',
-          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/10kg%E8%B4%9F%E8%BD%BD%E8%AF%95%E9%AA%8C.png'],
-          mediaAlts: ['10 kg dead-weight load validation test'],
-        },
-        {
-          title: 'Mathematical Modeling & Analysis',
-          body: 'Beyond physical prototyping, a dimensional analysis was performed to extract core non-dimensional groups. A power-law regression model was subsequently established to accurately predict force output based on overlap ratio, vacuum pressure, and structural deflection.',
-          mediaSrcs: ['https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/model.png'],
-          mediaAlts: ['Mathematical modeling and regression analysis'],
-        },
-      ],
-    },
-    {
-      kicker: 'Project 04',
-      title: 'Robotic Arm Challenge',
-      subtitle: '6-DOF arm control and task integration with a mobile robot.',
-      descriptionHtml: 'This project is a one-week team-based competition combining mechanism design and control theory on a real robotic platform.<br><br>The task required a 6-DOF robotic arm to grasp objects at arbitrary positions, place them onto a mobile vehicle, and trigger the vehicle to autonomously navigate a color-coded maze.<br><br>I was primarily responsible for the robotic arm control, focusing on motion planning, calibration, and reliable execution under real-world hardware constraints.',
-      meta: ['Role: Robotic Arm Control', 'Outcome: Final live competition'],
-      media1Src: 'assets/projects/project1/pic2.JPG',
-      media2Src: 'assets/projects/project1/pic3.png',
-      media1Alt: 'Robotic Arm Challenge detail media 1',
-      media2Alt: 'Robotic Arm Challenge detail media 2',
-      media1Type: 'image',
-      media2Type: 'image',
-      splits: [
-        {
-          title: 'Competition Outcome',
-          body: 'The system was evaluated in a final live competition. Our team achieved 4th place, with all grasping tasks completed reliably during the final runs.',
-        },
-        {
-          title: 'System Workflow',
-          body: 'The workflow reflects how ideal kinematic models were adapted to real hardware conditions, including servo offsets, polarity differences, and power-related variation.',
-        },
-      ],
-    },
-  ];
-
-  const getProjectItems = () => (
-    (window.PortfolioI18n && window.PortfolioI18n.get('projects.items')) || []
-  );
-
-  const mergeProjectDetail = (base, translated) => {
-    const merged = { ...(base || {}), ...(translated || {}) };
-    const baseSplits = (base && base.splits) || [];
-    const translatedSplits = (translated && translated.splits) || [];
-    merged.splits = baseSplits.map((split, index) => ({
-      ...split,
-      ...(translatedSplits[index] || {}),
-    }));
-    if (translatedSplits.length > baseSplits.length) {
-      merged.splits = merged.splits.concat(translatedSplits.slice(baseSplits.length));
-    }
-    return merged;
-  };
-
-  const getProjectDetail = (index) => {
-    const translatedDetails = (window.PortfolioI18n && window.PortfolioI18n.get('projects.details')) || [];
-    return mergeProjectDetail(detailContent[index] || detailContent[0], translatedDetails[index]);
-  };
-
-  const updateProjectCopy = () => {
-    const items = getProjectItems();
-    copyItems.forEach((item, index) => {
-      const data = items[index];
-      if (!data) return;
-      const eyebrow = item.querySelector('.project-eyebrow');
-      const title = item.querySelector('.project-title');
-      const subtitle = item.querySelector('.project-subtitle');
-      const stats = Array.from(item.querySelectorAll('.project-stats span'));
-      if (eyebrow) eyebrow.textContent = data.eyebrow || '';
-      if (title) title.textContent = data.title || '';
-      if (subtitle) subtitle.textContent = data.subtitle || '';
-      stats.forEach((stat, statIndex) => {
-        stat.textContent = (data.stats && data.stats[statIndex]) || '';
-      });
-    });
-  };
-
-  const renderDetail = (index) => {
-    if (!detailView) return;
-    const data = getProjectDetail(index);
-    const caseNum = detailView.querySelector('.detail-case-num');
-    if (caseNum) caseNum.textContent = String(index + 1).padStart(2, '0');
-    const setText = (selector, value) => {
-      const el = detailView.querySelector(selector);
-      if (el) el.textContent = value;
-    };
-    const setAll = (selector, values) => {
-      const items = Array.from(detailView.querySelectorAll(selector));
-      items.forEach((item, idx) => {
-        const text = values[idx] || '';
-        item.textContent = text;
-        item.style.display = text ? '' : 'none';
-      });
-    };
-    setText('[data-detail="kicker"]', data.kicker);
-    setText('[data-detail="title"]', data.title);
-    setText('[data-detail="subtitle"]', data.subtitle);
-    const kickerEl = detailView.querySelector('[data-detail="kicker"]');
-    const titleEl = detailView.querySelector('[data-detail="title"]');
-    const subtitleEl = detailView.querySelector('[data-detail="subtitle"]');
-    if (kickerEl) kickerEl.style.display = data.kicker ? 'block' : 'none';
-    if (titleEl) titleEl.style.display = data.title ? 'block' : 'none';
-    if (subtitleEl) subtitleEl.style.display = data.subtitle ? 'block' : 'none';
-    const descriptionEl = detailView.querySelector('[data-detail="description"]');
-    if (descriptionEl) {
-      const hasHtml = Boolean(data.descriptionHtml);
-      const hasText = Boolean(data.description);
-      if (hasHtml) {
-        descriptionEl.innerHTML = data.descriptionHtml;
-      } else {
-        descriptionEl.textContent = data.description || '';
-      }
-      descriptionEl.style.display = hasHtml || hasText ? 'block' : 'none';
-    }
-    setAll('[data-detail="meta1"], [data-detail="meta2"]', data.meta);
-    const metaBlock = detailView.querySelector('.detail-meta');
-    if (metaBlock) {
-      metaBlock.style.display = data.meta.length ? 'flex' : 'none';
-    }
-
-    const panel = detailView.querySelector('.project-detail-panel');
-    detailView.querySelectorAll('.detail-resource-link').forEach((link) => link.remove());
-    const appendResourceLink = ({ href, label, iconId }) => {
-      if (!href || !panel) return;
-      const resourceLink = document.createElement('a');
-      resourceLink.className = 'detail-paper-link detail-resource-link';
-      resourceLink.href = href;
-      resourceLink.target = '_blank';
-      resourceLink.rel = 'noopener noreferrer';
-      resourceLink.innerHTML = `${iconId ? `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>` : ''}<span>${label}</span><span aria-hidden="true">↗</span>`;
-      panel.appendChild(resourceLink);
-    };
-    if (data.paperUrl && panel) {
-      const paperText = (window.PortfolioI18n && window.PortfolioI18n.t('projects.paperLink')) || 'View Full Research Paper';
-      appendResourceLink({ href: data.paperUrl, label: paperText, iconId: 'icon-file-pdf' });
-    }
-    if (data.repositoryUrl && panel) {
-      const repositoryText = (window.PortfolioI18n && window.PortfolioI18n.t('projects.sourceRepository')) || 'Open source repository';
-      appendResourceLink({ href: data.repositoryUrl, label: repositoryText, iconId: 'icon-cog' });
-    }
-
-    const sectionsContainer = detailView.querySelector('.project-detail-sections');
-    if (sectionsContainer) {
-      sectionsContainer.innerHTML = '';
-      (data.splits || []).forEach((split, idx) => {
-        const article = document.createElement('article');
-        article.className = 'detail-split';
-
-        const mediaDiv = document.createElement('div');
-        mediaDiv.className = 'detail-media';
-        mediaDiv.setAttribute('data-detail', `media${idx + 1}`);
-
-        if (split.mediaSrcs && split.mediaSrcs.length > 0) {
-          if (split.mediaSrcs.length > 1) {
-            mediaDiv.classList.add('detail-media--pair');
-            const pair = document.createElement('div');
-            pair.className = 'detail-media-pair';
-            split.mediaSrcs.forEach((src, imgIdx) => {
-              const img = document.createElement('img');
-              img.src = src;
-              img.alt = (split.mediaAlts && split.mediaAlts[imgIdx]) || '';
-              img.loading = 'lazy';
-              img.decoding = 'async';
-              pair.appendChild(img);
-            });
-            mediaDiv.appendChild(pair);
-          } else if (split.mediaType === 'video') {
-            const video = document.createElement('video');
-            video.src = split.mediaSrcs[0];
-            video.muted = true;
-            video.loop = true;
-            video.playsInline = true;
-            video.autoplay = true;
-            video.setAttribute('aria-label', (split.mediaAlts && split.mediaAlts[0]) || ((window.PortfolioI18n && window.PortfolioI18n.t('projects.detailVideoLabel')) || 'Detail media video'));
-            mediaDiv.appendChild(video);
-          } else {
-            const img = document.createElement('img');
-            img.src = split.mediaSrcs[0];
-            img.alt = (split.mediaAlts && split.mediaAlts[0]) || '';
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            mediaDiv.appendChild(img);
-          }
-        } else {
-          const legacySrc = idx === 0 ? data.media1Src : data.media2Src;
-          const legacyAlt = idx === 0 ? data.media1Alt : data.media2Alt;
-          const legacyType = idx === 0 ? (data.media1Type || 'image') : (data.media2Type || 'image');
-          if (legacySrc) {
-            if (legacyType === 'video') {
-              const video = document.createElement('video');
-              video.src = legacySrc;
-              video.muted = true;
-              video.loop = true;
-              video.playsInline = true;
-              video.autoplay = true;
-              video.setAttribute('aria-label', legacyAlt || ((window.PortfolioI18n && window.PortfolioI18n.t('projects.detailVideoLabel')) || 'Detail media video'));
-              mediaDiv.appendChild(video);
-            } else {
-              const img = document.createElement('img');
-              img.src = legacySrc;
-              img.alt = legacyAlt || '';
-              img.loading = 'lazy';
-              img.decoding = 'async';
-              mediaDiv.appendChild(img);
-            }
-          }
-        }
-
-        const textDiv = document.createElement('div');
-        textDiv.className = 'detail-split-text';
-        const figLabel = document.createElement('p');
-        figLabel.className = 'detail-split-index';
-        figLabel.textContent = `FIG. ${String(idx + 1).padStart(2, '0')}`;
-        const h4 = document.createElement('h4');
-        h4.textContent = split.title;
-        const p = document.createElement('p');
-        p.textContent = split.body;
-        textDiv.appendChild(figLabel);
-        textDiv.appendChild(h4);
-        textDiv.appendChild(p);
-
-        if (mediaDiv.hasChildNodes()) {
-          article.appendChild(mediaDiv);
-        } else {
-          article.classList.add('detail-split--text-only');
-        }
-        article.appendChild(textDiv);
-        sectionsContainer.appendChild(article);
-      });
-
-      // 案例档案：案卷段落逐段进场
-      if (detailSplitObserver) {
-        detailSplitObserver.disconnect();
-        detailSplitObserver = null;
-      }
-      const splitEls = Array.from(sectionsContainer.querySelectorAll('.detail-split'));
-      splitEls.forEach((el, i) => el.style.setProperty('--split-i', String(i % 3)));
-      if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-        splitEls.forEach((el) => el.classList.add('split-in'));
-      } else {
-        detailSplitObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('split-in');
-              detailSplitObserver.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-        splitEls.forEach((el) => detailSplitObserver.observe(el));
-      }
-    }
-
-    detailView.querySelectorAll('.detail-media').forEach((media) => {
-      media.onclick = () => {
-        const target = media.querySelector('video') || media.querySelector('img');
-        if (target) {
-          openMediaFromElement(target);
-        }
-      };
-    });
-  };
-
-  const scrollToProjects = () => {
-    projectsSection.scrollIntoView({
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      block: 'start',
-    });
-  };
-
-  const closeLightbox = () => {
-    if (!lightbox) return;
-    lightbox.classList.remove('is-active', 'is-prep', 'is-image', 'is-video');
-    lightbox.setAttribute('aria-hidden', 'true');
-    lightbox.inert = true;
-    if (lightboxFrame) {
-      lightboxFrame.style.setProperty('--lightbox-drag-y', '0px');
-    }
-    if (lightboxVideo) {
-      lightboxVideo.pause();
-      lightboxVideo.removeAttribute('src');
-      lightboxVideo.load();
-    }
-    if (lightboxImage) {
-      lightboxImage.removeAttribute('src');
-      lightboxImage.alt = '';
-    }
-    if (lightboxLastFocus && lightboxLastFocus.focus) {
-      lightboxLastFocus.focus();
-    }
-    lightboxLastFocus = null;
-  };
-
-  const openMediaFromElement = (element) => {
-    if (!element) return;
-    if (element.tagName === 'VIDEO') {
-      openLightbox({
-        type: 'video',
-        src: element.currentSrc || element.src,
-        originEl: element,
-      });
-      return;
-    }
-    if (element.tagName === 'IMG') {
-      openLightbox({
-        type: 'image',
-        src: element.currentSrc || element.src,
-        alt: element.alt,
-        originEl: element,
-      });
-    }
-  };
-
-  const openLightbox = ({ type, src, alt, originEl }) => {
-    if (!lightbox || !src) return;
-    lightboxLastFocus = document.activeElement;
-    if (lightboxFrame && originEl) {
-      const originRect = originEl.getBoundingClientRect();
-      const frameRect = lightboxFrame.getBoundingClientRect();
-      const scale = Math.min(
-        originRect.width / frameRect.width,
-        originRect.height / frameRect.height,
-      );
-      const translateX = originRect.left - frameRect.left;
-      const translateY = originRect.top - frameRect.top;
-      lightboxFrame.style.setProperty('--lightbox-x', `${translateX}px`);
-      lightboxFrame.style.setProperty('--lightbox-y', `${translateY}px`);
-      lightboxFrame.style.setProperty('--lightbox-scale', `${scale}`);
-    }
-    lightbox.classList.add('is-prep');
-    lightbox.classList.toggle('is-image', type === 'image');
-    lightbox.classList.toggle('is-video', type === 'video');
-    lightbox.setAttribute('aria-hidden', 'false');
-    lightbox.inert = false;
-    requestAnimationFrame(() => {
-      lightbox.classList.add('is-active');
-    });
-    if (type === 'video' && lightboxVideo) {
-      lightboxVideo.src = src;
-      lightboxVideo.currentTime = 0;
-      lightboxVideo.play().catch(() => {});
-    }
-    if (type === 'image' && lightboxImage) {
-      lightboxImage.src = src;
-      lightboxImage.alt = alt || ((window.PortfolioI18n && window.PortfolioI18n.t('projects.detailPreview')) || 'Detail preview');
-    }
-    if (lightboxClose) {
-      lightboxClose.focus({ preventScroll: true });
-    }
-  };
-
-  const CASE_SLUGS = ['roboinspect', 'security-robot', 'flexilock', 'robotic-arm'];
-  const ARCHIVE_CASE_SLUG = 'hango';
-
-  const revealArchiveCase = ({ focus = false } = {}) => {
-    if (!archiveFolder || !archiveCard) return;
-    archiveFolder.open = true;
-    requestAnimationFrame(() => {
-      archiveCard.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' });
-      if (focus) {
-        const firstLink = archiveCard.querySelector('a, button');
-        if (firstLink) firstLink.focus({ preventScroll: true });
-      }
-    });
-  };
-
-  const openDetail = (index, fromHistory = false) => {
-    if (detailOpen && activeIndex === index) return;
-    const trigger = document.activeElement;
-    if (!fromHistory && trigger instanceof HTMLElement && trigger !== document.body) {
-      lastDetailTrigger = trigger;
-    }
-    detailOpen = true;
-    activeIndex = index;
-    updateClasses();
-    renderDetail(activeIndex);
-    projectsSection.classList.add('is-detail');
-    if (detailView) {
-      detailView.setAttribute('aria-hidden', 'false');
-      detailView.inert = false;
-    }
-    if (backButton) {
-      backButton.setAttribute('aria-hidden', 'false');
-      backButton.tabIndex = 0;
-    }
-    if (detailHotspot) {
-      detailHotspot.setAttribute('aria-hidden', 'true');
-      detailHotspot.tabIndex = -1;
-    }
-    document.body.classList.add('detail-mode');
-    scrollToProjects();
-    if (!fromHistory) {
-      history.pushState({ detail: true, index: activeIndex }, '', `#case/${CASE_SLUGS[activeIndex] || activeIndex + 1}`);
-    }
-    requestAnimationFrame(() => backButton?.focus({ preventScroll: true }));
-  };
-
-  const sphere = projectsSection.querySelector('.project-sphere');
-  if (sphere) {
-    sphere.addEventListener('click', (event) => {
-      if (!detailOpen) return;
-      const activeMedia = sphere.querySelector('.sphere-image.is-active') || sphere.querySelector('.sphere-image');
-      if (!activeMedia) return;
-      event.stopPropagation();
-      openMediaFromElement(activeMedia);
-    });
-  }
-
-  const closeDetail = (fromHistory = false) => {
-    if (!detailOpen) return;
-    detailOpen = false;
-    closeLightbox();
-    projectsSection.classList.remove('is-detail');
-    if (detailView) {
-      detailView.setAttribute('aria-hidden', 'true');
-      detailView.inert = true;
-    }
-    if (backButton) {
-      backButton.setAttribute('aria-hidden', 'true');
-      backButton.tabIndex = -1;
-    }
-    if (detailHotspot) {
-      detailHotspot.setAttribute('aria-hidden', 'false');
-      detailHotspot.tabIndex = 0;
-    }
-    document.body.classList.remove('detail-mode');
-    scrollToProjects();
-    const focusTarget = lastDetailTrigger;
-    lastDetailTrigger = null;
-    requestAnimationFrame(() => {
-      if (focusTarget?.isConnected) focusTarget.focus({ preventScroll: true });
-    });
-    if (!fromHistory && history.state && history.state.detail) {
-      history.back();
-    }
-  };
-
-  const animateDistortion = () => {
-    if (prefersReducedMotion || !displacementMap) {
-      return;
-    }
-    const start = performance.now();
-    const from = distortPeak;
-    const to = distortBase;
-    const animate = (time) => {
-      const progress = Math.min((time - start) / transitionMs, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const value = from - (from - to) * eased;
-      displacementMap.setAttribute('scale', value.toFixed(2));
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-    displacementMap.setAttribute('scale', String(from));
-    requestAnimationFrame(animate);
-  };
-
-  const goToIndex = (nextIndex) => {
-    if (isAnimating) return;
-    const total = copyItems.length;
-    const boundedIndex = (nextIndex + total) % total;
-    if (boundedIndex === activeIndex) return;
-    isAnimating = true;
-    activeIndex = boundedIndex;
-    updateClasses();
-    animateDistortion();
-    window.setTimeout(() => {
-      isAnimating = false;
-    }, transitionMs);
-  };
-
-  const goNext = () => goToIndex(activeIndex + 1);
-  const goPrev = () => goToIndex(activeIndex - 1);
-
-  // 灯光工程A：横向站台展廊经此驱动轮播状态与 detail（gallery 模块在文件尾）
-  window.__stationGallery = {
-    openDetail: (i) => openDetail(i),
-    syncIndex: (i) => {
-      const total = copyItems.length;
-      const bounded = ((i % total) + total) % total;
-      if (bounded === activeIndex) return;
-      activeIndex = bounded;
-      updateClasses();
-    },
-  };
-
-  document.addEventListener('keydown', (event) => {
-    if (detailOpen) return;
-    if (projectsSection.classList.contains('gallery-mode')) return;
-    if (!projectsSection.matches(':hover') && !projectsSection.contains(document.activeElement)) {
-      return;
-    }
-    if (event.key === 'ArrowRight') {
-      goNext();
-    }
-    if (event.key === 'ArrowLeft') {
-      goPrev();
-    }
-  });
-
-  const projectsObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      // gallery 模式下区块高达 480vh，最大相交比 ~0.2，用低阈值判定"在站台上"
-      const enough = projectsSection.classList.contains('gallery-mode')
-        ? entry.intersectionRatio > 0.04
-        : entry.intersectionRatio >= 0.5;
-      if (entry.isIntersecting && enough) {
-        projectsSection.classList.add('is-active');
-      } else {
-        projectsSection.classList.remove('is-active');
-      }
-    });
-    applyVideoPlayback();
-  }, { threshold: [0.05, 0.5] });
-
-  projectsObserver.observe(projectsSection);
-
-  projectsSection.addEventListener('wheel', (event) => {
-    if (detailOpen) return;
-    if (projectsSection.classList.contains('gallery-mode')) return;
-    const useHorizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
-    if (!useHorizontal && !event.shiftKey) {
-      return;
-    }
-    const delta = useHorizontal ? event.deltaX : event.deltaY;
-    if (Math.abs(delta) < 4) return;
-    event.preventDefault();
-    wheelAccum += delta;
-    window.clearTimeout(wheelTimeout);
-    wheelTimeout = window.setTimeout(() => {
-      wheelAccum = 0;
-    }, 180);
-    if (Math.abs(wheelAccum) >= swipeThreshold) {
-      if (wheelAccum > 0) {
-        goNext();
-      } else {
-        goPrev();
-      }
-      wheelAccum = 0;
-    }
-  }, { passive: false });
-
-  let pointerStartX = 0;
-  let pointerActive = false;
-  let pointerLocked = false;
-
-  projectsSection.addEventListener('pointerdown', (event) => {
-    if (detailOpen) return;
-    if (projectsSection.classList.contains('gallery-mode')) return;
-    if (event.button !== 0) return;
-    if (event.target.closest('button, a, input, textarea, select')) {
-      return;
-    }
-    pointerActive = true;
-    pointerLocked = false;
-    pointerStartX = event.clientX;
-    projectsSection.setPointerCapture(event.pointerId);
-  });
-
-  projectsSection.addEventListener('pointermove', (event) => {
-    if (detailOpen) return;
-    if (!pointerActive || pointerLocked) return;
-    const deltaX = event.clientX - pointerStartX;
-    if (Math.abs(deltaX) >= swipeThreshold) {
-      pointerLocked = true;
-      if (deltaX > 0) {
-        goPrev();
-      } else {
-        goNext();
-      }
-    }
-  });
-
-  projectsSection.addEventListener('pointerup', () => {
-    if (detailOpen) return;
-    pointerActive = false;
-    pointerLocked = false;
-  });
-
-  projectsSection.addEventListener('pointercancel', () => {
-    if (detailOpen) return;
-    pointerActive = false;
-    pointerLocked = false;
-  });
-
-  if (detailHotspot) {
-    detailHotspot.addEventListener('click', () => {
-      openDetail(activeIndex);
-    });
-  }
-
-  projectsSection.addEventListener('click', (event) => {
-    if (!detailOpen) return;
-    const detailImage = event.target.closest('.detail-media img');
-    if (detailImage) {
-      openLightbox({
-        type: 'image',
-        src: detailImage.currentSrc || detailImage.src,
-        alt: detailImage.alt,
-        originEl: detailImage,
-      });
-      return;
-    }
-    const detailMedia = event.target.closest('.detail-media');
-    if (detailMedia) {
-      const detailVideo = detailMedia.querySelector('video');
-      if (detailVideo) {
-        openLightbox({
-          type: 'video',
-          src: detailVideo.currentSrc || detailVideo.src,
-          originEl: detailVideo,
-        });
-        return;
-      }
-    }
-    const heroVideo = event.target.closest('.project-sphere video');
-    if (heroVideo) {
-      openLightbox({ type: 'video', src: heroVideo.currentSrc || heroVideo.src, originEl: heroVideo });
-      return;
-    }
-    const heroSphere = event.target.closest('.project-sphere');
-    if (heroSphere) {
-      const heroImage = heroSphere.querySelector('img');
-      if (heroImage) {
-        openLightbox({
-          type: 'image',
-          src: heroImage.currentSrc || heroImage.src,
-          alt: heroImage.alt,
-          originEl: heroImage,
-        });
-        return;
-      }
-      const sphereVideo = heroSphere.querySelector('video');
-      if (sphereVideo) {
-        openLightbox({
-          type: 'video',
-          src: sphereVideo.currentSrc || sphereVideo.src,
-          originEl: sphereVideo,
-        });
-      }
-    }
-  });
-
-  if (lightbox && lightboxFrame) {
-    let dragStartY = 0;
-    let dragStartOffset = 0;
-    let isDragging = false;
-
-    const getDragOffset = () => {
-      const value = getComputedStyle(lightboxFrame).getPropertyValue('--lightbox-drag-y');
-      return parseFloat(value) || 0;
-    };
-
-    const onPointerDown = (event) => {
-      if (event.button === 2) return;
-      isDragging = true;
-      dragStartY = event.clientY;
-      dragStartOffset = getDragOffset();
-      lightbox.classList.add('is-dragging');
-      lightboxFrame.setPointerCapture(event.pointerId);
-      event.preventDefault();
-    };
-
-    const onPointerMove = (event) => {
-      if (!isDragging) return;
-      const next = dragStartOffset + (event.clientY - dragStartY);
-      lightboxFrame.style.setProperty('--lightbox-drag-y', `${next}px`);
-      event.preventDefault();
-    };
-
-    const onPointerUp = (event) => {
-      if (!isDragging) return;
-      isDragging = false;
-      lightbox.classList.remove('is-dragging');
-      lightboxFrame.releasePointerCapture(event.pointerId);
-    };
-
-    lightboxFrame.addEventListener('pointerdown', onPointerDown);
-    lightboxFrame.addEventListener('pointermove', onPointerMove);
-    lightboxFrame.addEventListener('pointerup', onPointerUp);
-    lightboxFrame.addEventListener('pointercancel', onPointerUp);
-
-    lightbox.addEventListener('click', (event) => {
-      if (event.target === lightbox) {
-        closeLightbox();
-      }
-    });
-  }
-
-  if (lightboxClose) {
-    lightboxClose.addEventListener('click', closeLightbox);
-  }
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeLightbox();
-    }
-  });
-
-  if (backButton) {
-    backButton.addEventListener('click', () => {
-      closeDetail();
-    });
-  }
-
-  const shareButton = detailView ? detailView.querySelector('.detail-share') : null;
-  if (shareButton) {
-    const shareLabel = shareButton.querySelector('.detail-share-label');
-    let shareTimer = null;
-    shareButton.addEventListener('click', async () => {
-      const url = `${location.origin}${location.pathname}#case/${CASE_SLUGS[activeIndex] || activeIndex + 1}`;
-      let copied = false;
-      try {
-        await navigator.clipboard.writeText(url);
-        copied = true;
-      } catch (err) {
-        const ta = document.createElement('textarea');
-        ta.value = url;
-        ta.setAttribute('readonly', '');
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try { copied = document.execCommand('copy'); } catch (err2) { copied = false; }
-        ta.remove();
-      }
-      if (!copied) return;
-      const t = (key, fallback) => (window.PortfolioI18n && window.PortfolioI18n.t(key)) || fallback;
-      shareButton.classList.add('is-copied');
-      if (shareLabel) shareLabel.textContent = t('projects.copied', 'Link copied');
-      window.clearTimeout(shareTimer);
-      shareTimer = window.setTimeout(() => {
-        shareButton.classList.remove('is-copied');
-        if (shareLabel) shareLabel.textContent = t('projects.copyLink', 'Copy case link');
-      }, 1800);
-    });
-  }
-
-  window.addEventListener('popstate', (event) => {
-    if (location.hash === `#case/${ARCHIVE_CASE_SLUG}`) {
-      closeDetail(true);
-      revealArchiveCase();
-      return;
-    }
-    if (event.state && event.state.detail) {
-      openDetail(event.state.index, true);
-      return;
-    }
-    closeDetail(true);
-  });
-
-  const parseCaseHash = () => {
-    const m = location.hash.match(/^#case\/([\w-]+)$/);
-    if (!m) return -1;
-    const bySlug = CASE_SLUGS.indexOf(m[1]);
-    if (bySlug !== -1) return bySlug;
-    const n = parseInt(m[1], 10);
-    return Number.isInteger(n) && n >= 1 && n <= copyItems.length ? n - 1 : -1;
-  };
-
-  const initialCase = parseCaseHash();
-  if (initialCase !== -1) {
-    // 直链进入：先垫一层展廊记录，返回站台时不会退出网站
-    history.replaceState({ detail: false }, '', `${location.pathname}${location.search}#projects`);
-    history.pushState({ detail: true, index: initialCase }, '', `#case/${CASE_SLUGS[initialCase] || initialCase + 1}`);
-    openDetail(initialCase, true);
-    // 开屏/展廊初始化会挪动布局，落稳后再对一次位
-    window.addEventListener('load', () => {
+  const lang = () => (window.PortfolioI18n && window.PortfolioI18n.getLanguage()) || 'en';
+  const reducedMotion = () =>
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouch = () => window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+  /* ==================================================================
+   * 开屏（仓鼠发电 · 系统上电）
+   * ================================================================== */
+  (function initSplash() {
+    const body = document.body;
+    const overlay = $('#loading-overlay');
+    if (!overlay) { body.classList.remove('splash-active'); return; }
+
+    let seen = false;
+    try { seen = sessionStorage.getItem('station-splash-seen') === '1'; } catch (e) { /* noop */ }
+
+    // boot 台词按语言轮播
+    const bootLine = $('#splash-boot-line');
+    const bootSeqEn = ['> POWER: HAMSTER ONLINE', '> SENSOR ARRAY... OK', '> STATION LIGHTS... ON'];
+    const bootSeqZh = ['> 电源：仓鼠就绪', '> 传感器阵列……正常', '> 站台灯光……点亮'];
+    let bootI = 0;
+    const bootTimer = window.setInterval(() => {
+      if (!bootLine) return;
+      const seq = lang() === 'zh' ? bootSeqZh : bootSeqEn;
+      bootLine.textContent = seq[Math.min(bootI, seq.length - 1)];
+      bootI += 1;
+    }, 520);
+
+    const finish = () => {
+      window.clearInterval(bootTimer);
+      body.classList.remove('splash-active');
+      body.classList.add('splash-exit');
+      try { sessionStorage.setItem('station-splash-seen', '1'); } catch (e) { /* noop */ }
       window.setTimeout(() => {
-        if (detailOpen) projectsSection.scrollIntoView({ behavior: 'auto', block: 'start' });
-      }, 400);
-    });
-  } else if (location.hash === `#case/${ARCHIVE_CASE_SLUG}`) {
-    revealArchiveCase();
-    window.addEventListener('load', () => window.setTimeout(() => revealArchiveCase(), 200), { once: true });
-  } else if (location.hash === '#projects-detail') {
-    openDetail(activeIndex, true);
-  }
+        overlay.remove();
+        body.classList.remove('splash-exit');
+      }, reducedMotion() ? 40 : 950);
+    };
 
-  window.addEventListener('hashchange', () => {
-    if (location.hash === `#case/${ARCHIVE_CASE_SLUG}`) revealArchiveCase();
-  });
-
-  updateProjectCopy();
-  updateClasses();
-  animateDistortion();
-
-  if (window.PortfolioI18n) {
-    window.PortfolioI18n.onChange(() => {
-      updateProjectCopy();
-      if (detailOpen) {
-        renderDetail(activeIndex);
-      }
-    });
-  }
-});
-
-// ========================================================================
-// ========================= 🗓️ Experience Timeline =======================
-// ========================================================================
-
-const experienceItems = [
-  {
-    id: 'tust-undergrad',
-    periodLabel: '2018–2021',
-    stageTag: 'Undergraduate',
-    orgName: 'Tianjin University of Science & Technology',
-    roleOrMajor: 'B.Eng. in Mechatronic Engineering',
-    summary: 'Completed undergraduate training in mechatronic engineering, building a foundation in mechanical systems, electronics, control fundamentals, and applied engineering coursework.',
-    highlights: [
-      'Studied mechanical design, electronics, control fundamentals, and engineering mathematics.',
-      'Developed early exposure to mathematical modeling and structured engineering problem solving.',
-      'Received university scholarship recognition and participated in academic competitions.',
-    ],
-    tags: ['Mechatronics', 'Control Fundamentals', 'Engineering Mathematics', 'Mechanical Systems'],
-    media: {
-      mode: 'single',
-      images: ['assets/experience/1.jpeg'],
-    },
-  },
-  {
-    id: 'foxconn-work',
-    periodLabel: '2023–2024',
-    stageTag: 'Work',
-    orgName: 'Foxconn',
-    roleOrMajor: 'Assistant Project Manager / Automation Engineering Support',
-    summary: 'Supported project management and manufacturing coordination activities for automated production line ramp-up in consumer electronics manufacturing.',
-    highlights: [
-      'Coordinated cross-functional project tasks, meeting follow-ups, and action tracking during production preparation.',
-      'Supported RFP preparation, DFM review, and project documentation for new product introduction activities.',
-      'Tracked MP-stage anomalies and followed up corrective actions with manufacturing teams.',
-      'Contributed to production ramp-up readiness through schedule alignment, documentation control, and issue tracking.',
-    ],
-    tags: ['Project Management', 'Automation', 'NPI', 'DFM', 'Manufacturing Coordination'],
-    media: {
-      mode: 'single',
-      images: ['assets/experience/2.jpeg'],
-    },
-  },
-  {
-    id: 'luxshare-work',
-    periodLabel: '2024–2025',
-    stageTag: 'Work',
-    orgName: 'Luxshare-ICT',
-    roleOrMajor: 'Assistant Product Design Engineer',
-    summary: 'Supported internal mechanical component design documentation, engineering change tracking, and NPI build documentation for consumer electronics products.',
-    highlights: [
-      'Managed engineering drawing and BOM documentation for NPI builds, supporting version accuracy and release readiness.',
-      'Prepared ECR/ECO comparison reports to track design changes, revision impact, and approval requirements.',
-      'Used Siemens NX and AutoCAD to review 3D/2D drawings, mark up changes, and support manufacturing communication.',
-      'Supported component design verification, installation documentation, and cross-functional engineering coordination.',
-    ],
-    tags: ['Product Design', 'NPI', 'Engineering Documentation', 'ECO/ECR', 'Siemens NX', 'AutoCAD'],
-    media: {
-      mode: 'single',
-      images: ['assets/experience/3.jpg'],
-    },
-  },
-  {
-    id: 'sutd-grad',
-    periodLabel: '2025–2026',
-    stageTag: 'Graduate',
-    orgName: 'Singapore University of Technology and Design (SUTD)',
-    roleOrMajor: 'MSc in Robotics & Automation',
-    summary: 'Completed an MSc in Robotics & Automation with hands-on coursework and projects covering mobile robotics, control, robot intelligence, soft robotics, and design project development.',
-    highlights: [
-      'Built and tested course projects involving TurtleBot3, ROS navigation, visual recognition, SLAM testing, and robotic arm control.',
-      'Completed a real-robot Autonomous Security Robot demo using Ubuntu laptop + TurtleBot3, ROS navigation, YOLO/CLIP-based visual recognition, and exploratory SLAM testing.',
-      'Completed a Robotic Arm Challenge involving 6-DOF arm control, calibration, object grasping, and task integration with a mobile robot.',
-      'Delivered RoboInspect, a multi-robot indoor inspection graduation project spanning ROS 2 simulation, field-tested TurtleBot3 workflows, anomaly reporting, and a standalone SO-ARM sorting station.',
-    ],
-    tags: ['ROS 2', 'Multi-Robot', 'TurtleBot3', 'Nav2', 'Computer Vision', 'SO-ARM101', 'System Integration'],
-    media: {
-      mode: 'single',
-      images: ['assets/experience/4.jpg'],
-    },
-  },
-];
-
-// 出发信息板：目的地短名（拉丁品牌名，不参与翻译）与在站状态
-const EXPERIENCE_ORG_SHORT = {
-  'sutd-grad': 'SUTD',
-  'luxshare-work': 'Luxshare-ICT',
-  'foxconn-work': 'Foxconn',
-  'tust-undergrad': 'TUST',
-};
-// 已毕业：既往站点均为已出发；「检票中」灯牌归 index.html 里的静态「下一站」行
-const EXPERIENCE_ONGOING_ID = null;
-
-const getExperienceItems = () => {
-  const translatedItems = (window.PortfolioI18n && window.PortfolioI18n.get('experience.items')) || [];
-  // 倒序展示：最新一站（SUTD）置顶
-  if (!translatedItems.length) return [...experienceItems].reverse();
-  return experienceItems.map((item, index) => ({
-    ...item,
-    ...(translatedItems[index] || {}),
-    media: item.media,
-  })).reverse();
-};
-
-const experienceSection = document.getElementById('experience');
-if (experienceSection) {
-  const timelineList = experienceSection.querySelector('.experience-timeline-list');
-  const card = experienceSection.querySelector('[data-experience-card]');
-  const mediaEl = experienceSection.querySelector('[data-experience-media]');
-  const orgEl = experienceSection.querySelector('[data-experience-org]');
-  const roleEl = experienceSection.querySelector('[data-experience-role]');
-  const summaryEl = experienceSection.querySelector('[data-experience-summary]');
-  const highlightsEl = experienceSection.querySelector('[data-experience-highlights]');
-  const tagsEl = experienceSection.querySelector('[data-experience-tags]');
-  const linksEl = experienceSection.querySelector('[data-experience-links]');
-
-  let activeIndex = 0;
-
-  const buildMedia = (media) => {
-    if (!mediaEl) return;
-    mediaEl.innerHTML = '';
-    mediaEl.classList.remove('is-collage', 'is-single', 'is-none');
-
-    if (media.mode === 'single' && media.images && media.images.length > 0) {
-      mediaEl.classList.add('is-single');
-      const img = document.createElement('img');
-      img.src = media.images[0];
-      img.alt = (window.PortfolioI18n && window.PortfolioI18n.t('experience.mediaAlt')) || 'Experience media';
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      mediaEl.appendChild(img);
+    if (seen || reducedMotion()) {
+      window.clearInterval(bootTimer);
+      overlay.remove();
+      body.classList.remove('splash-active');
       return;
     }
 
-    if (media.mode === 'collage' && media.images && media.images.length > 1) {
-      mediaEl.classList.add('is-collage');
-      const collage = document.createElement('div');
-      collage.className = 'experience-media-collage';
-      media.images.slice(0, 2).forEach((src) => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = (window.PortfolioI18n && window.PortfolioI18n.t('experience.mediaCollageAlt')) || 'Experience media collage';
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        collage.appendChild(img);
-      });
-      mediaEl.appendChild(collage);
-      return;
-    }
+    const HOLD = 1900;
+    const timer = window.setTimeout(finish, HOLD);
+    const skip = () => { window.clearTimeout(timer); finish(); };
+    overlay.addEventListener('click', skip, { once: true });
+    overlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') { e.preventDefault(); skip(); }
+    });
+  })();
 
-    mediaEl.classList.add('is-none');
-    const placeholder = document.createElement('div');
-    placeholder.className = 'experience-media-placeholder';
-    mediaEl.appendChild(placeholder);
-  };
+  /* ==================================================================
+   * 传感器点场（首屏）
+   * ================================================================== */
+  const heroField = (function initSensor() {
+    const canvas = $('#sensor-canvas');
+    if (!canvas || !window.SensorField) return null;
+    let field = null;
+    try {
+      field = new window.SensorField(canvas, { maxDPR: 1.6 });
+    } catch (e) { return null; }
+    if (field.mode === 'none') return null;
 
-  const renderDetail = (item) => {
-    if (!item || !card) return;
-    card.classList.remove('is-visible');
+    const hero = $('#home');
+    // ?static 或 reduced-motion：渲染单帧静态点场，不进入动画循环
+    const forceStatic = new URLSearchParams(window.location.search).has('static');
+    const reduced = reducedMotion() || forceStatic;
 
-    if (orgEl) orgEl.textContent = item.orgName;
-    if (roleEl) roleEl.textContent = item.roleOrMajor;
-    if (summaryEl) summaryEl.textContent = item.summary;
+    // 指针
+    window.addEventListener('pointermove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      field.setPointer(e.clientX - r.left, e.clientY - r.top);
+    }, { passive: true });
+    window.addEventListener('pointerdown', (e) => {
+      const r = canvas.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      if (y >= 0 && y <= r.height) field.pulse(x, y);
+    }, { passive: true });
+    // 触摸拖动即扫描
+    window.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      const r = canvas.getBoundingClientRect();
+      field.setPointer(touch.clientX - r.left, touch.clientY - r.top);
+    }, { passive: true });
 
-    if (highlightsEl) {
-      highlightsEl.innerHTML = '';
-      item.highlights.forEach((highlight) => {
-        const li = document.createElement('li');
-        li.textContent = highlight;
-        highlightsEl.appendChild(li);
-      });
-    }
+    // 滚动 → 流速（驶过的夜风景）
+    let lastY = window.scrollY;
+    let flow = 0;
+    window.addEventListener('scroll', () => {
+      const dy = window.scrollY - lastY;
+      lastY = window.scrollY;
+      flow = Math.max(-1.2, Math.min(1.2, flow * 0.86 + dy * 0.012));
+      field.setFlow(flow);
+    }, { passive: true });
+    window.setInterval(() => { flow *= 0.8; field.setFlow(flow); }, 260);
 
-    if (tagsEl) {
-      tagsEl.innerHTML = '';
-      item.tags.forEach((tag) => {
-        const span = document.createElement('span');
-        span.className = 'experience-tag';
-        span.textContent = tag;
-        tagsEl.appendChild(span);
-      });
-    }
-
-    if (linksEl) {
-      linksEl.innerHTML = '';
-      if (item.links && item.links.length > 0) {
-        linksEl.style.display = '';
-        item.links.forEach((link) => {
-          const a = document.createElement('a');
-          a.href = link.href;
-          a.textContent = link.label;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          linksEl.appendChild(a);
+    // 可见时才渲染
+    if ('IntersectionObserver' in window && hero) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (reduced) return; // 静态单帧
+          if (entry.isIntersecting) field.start();
+          else field.stop();
         });
-      } else {
-        linksEl.style.display = 'none';
-      }
+      }, { threshold: 0.05 });
+      io.observe(hero);
     }
-
-    buildMedia(item.media);
-
-    requestAnimationFrame(() => {
-      card.classList.add('is-visible');
-    });
-  };
-
-  const setActive = (index, { focus = false, force = false } = {}) => {
-    if (!timelineList) return;
-    const items = getExperienceItems();
-    const clampedIndex = Math.max(0, Math.min(items.length - 1, index));
-    if (!force && clampedIndex === activeIndex) return;
-    activeIndex = clampedIndex;
-
-    const buttons = Array.from(timelineList.querySelectorAll('.experience-timeline-item'));
-    buttons.forEach((button, idx) => {
-      const isActive = idx === activeIndex;
-      button.classList.toggle('is-active', isActive);
-      button.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      button.setAttribute('tabindex', isActive ? '0' : '-1');
-      if (isActive && focus) {
-        button.focus({ preventScroll: true });
-        button.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-      }
-    });
-
-    renderDetail(items[activeIndex]);
-  };
-
-  const buildTimeline = () => {
-    if (!timelineList) return;
-    const items = getExperienceItems();
-    activeIndex = Math.max(0, Math.min(items.length - 1, activeIndex));
-    timelineList.innerHTML = '';
-    items.forEach((item, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'experience-timeline-item';
-      button.setAttribute('role', 'tab');
-      button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-      button.setAttribute('tabindex', index === 0 ? '0' : '-1');
-      button.dataset.index = String(index);
-
-      const period = document.createElement('span');
-      period.className = 'experience-period';
-      period.textContent = item.periodLabel;
-
-      const dest = document.createElement('span');
-      dest.className = 'experience-dest';
-
-      const org = document.createElement('span');
-      org.className = 'experience-dest-org';
-      org.textContent = EXPERIENCE_ORG_SHORT[item.id] || item.orgName;
-
-      const stage = document.createElement('span');
-      stage.className = 'experience-stage-tag';
-      stage.textContent = item.stageTag;
-
-      dest.appendChild(org);
-      dest.appendChild(stage);
-
-      const isBoarding = item.id === EXPERIENCE_ONGOING_ID;
-      const status = document.createElement('span');
-      status.className = 'experience-status' + (isBoarding ? ' is-boarding' : '');
-      const statusKey = isBoarding ? 'experience.statusBoarding' : 'experience.statusDeparted';
-      const statusFallback = isBoarding ? 'Boarding' : 'Departed';
-      status.textContent = (window.PortfolioI18n && window.PortfolioI18n.t(statusKey)) || statusFallback;
-
-      if (index === 0) {
-        button.classList.add('is-active');
-      }
-
-      button.appendChild(period);
-      button.appendChild(dest);
-      button.appendChild(status);
-      button.addEventListener('click', () => setActive(index, { focus: true }));
-      timelineList.appendChild(button);
-    });
-  };
-
-  const nextStopBtn = experienceSection.querySelector('.experience-next-stop');
-  if (nextStopBtn) {
-    nextStopBtn.addEventListener('click', () => {
-      const contactSection = document.getElementById('contact');
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: 'smooth' });
-        history.replaceState(null, '', '#contact');
-      }
-    });
-  }
-
-  if (timelineList) {
-    buildTimeline();
-    timelineList.addEventListener('keydown', (event) => {
-      const keys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
-      if (!keys.includes(event.key)) return;
-      event.preventDefault();
-
-      let nextIndex = activeIndex;
-      if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-        nextIndex = activeIndex + 1;
-      } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-        nextIndex = activeIndex - 1;
-      } else if (event.key === 'Home') {
-        nextIndex = 0;
-      } else if (event.key === 'End') {
-        nextIndex = getExperienceItems().length - 1;
-      }
-
-      setActive(nextIndex, { focus: true });
-    });
-  }
-
-  setActive(0, { force: true });
-
-  if (window.PortfolioI18n) {
-    window.PortfolioI18n.onChange(() => {
-      buildTimeline();
-      setActive(activeIndex, { force: true });
-    });
-  }
-}
-
-// ========================================================================
-// ========================= 🌓 明暗主题切换逻辑 ===========================
-// ========================================================================
-
-const themeSwitch = document.querySelector('.theme-switch');
-const body = document.body;
-
-// 页面加载时检查并应用保存的主题
-function loadSavedTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'light-mode') {
-    body.classList.add('light-mode');
-
-    // 🎨 确保 Shader 背景同步
-    if (window.shaderBackground) {
-      window.shaderBackground.transitionProgress = 1;
-    }
-  }
-}
-
-// 切换主题
-function toggleTheme() {
-  body.classList.toggle('light-mode');
-
-  // 🎨 触发 Shader 背景过渡
-  if (window.shaderBackground) {
-    if (body.classList.contains('light-mode')) {
-      window.shaderBackground.transitionToLight(1500); // 1.5秒过渡
-    } else {
-      window.shaderBackground.transitionToDark(1500);
-    }
-  }
-
-  // 保存主题选择到 localStorage
-  if (body.classList.contains('light-mode')) {
-    localStorage.setItem('theme', 'light-mode');
-  } else {
-    localStorage.setItem('theme', 'dark-mode');
-  }
-}
-
-// 添加点击事件监听器
-if (themeSwitch) {
-  themeSwitch.addEventListener('click', toggleTheme);
-}
-
-// 页面加载时立即应用保存的主题
-loadSavedTheme();
-
-// ========================================================================
-// ========================= 🎵 音乐区域确认弹窗 ===========================
-// ========================================================================
-
-const musicTrigger = document.getElementById('music-trigger');
-const clubDoor = document.getElementById('club-door');
-const clubEnterBtn = document.getElementById('club-door-enter');
-const clubStayBtn = document.getElementById('club-door-stay');
-const clubReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-let clubDoorActive = false;
-let clubDoorEntering = false;
-let clubDoorLastFocus = null;
-
-const openClubDoor = () => {
-  if (!clubDoor || clubDoorActive) return;
-  clubDoorActive = true;
-  clubDoorLastFocus = document.activeElement;
-  clubDoor.classList.add('is-active');
-  clubDoor.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('club-door-lock');
-  if (clubEnterBtn) clubEnterBtn.focus();
-};
-
-const closeClubDoor = () => {
-  if (!clubDoor || !clubDoorActive || clubDoorEntering) return;
-  clubDoorActive = false;
-  clubDoor.classList.remove('is-active');
-  clubDoor.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('club-door-lock');
-  if (clubDoorLastFocus && clubDoorLastFocus.focus) clubDoorLastFocus.focus();
-};
-
-const enterClub = () => {
-  if (clubDoorEntering) return;
-  try { sessionStorage.setItem('b1-door', '1'); } catch (err) { /* 隐私模式忽略 */ }
-  if (!clubDoor || clubReducedMotion) {
-    window.location.href = 'music-player.html';
-    return;
-  }
-  clubDoorEntering = true;
-  clubDoor.classList.add('is-entering');
-  window.setTimeout(() => {
-    window.location.href = 'music-player.html';
-  }, 980);
-};
-
-if (musicTrigger) {
-  musicTrigger.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openClubDoor();
-  });
-}
-if (clubStayBtn) clubStayBtn.addEventListener('click', closeClubDoor);
-if (clubEnterBtn) clubEnterBtn.addEventListener('click', enterClub);
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && clubDoorActive) {
-    closeClubDoor();
-    return;
-  }
-  if (e.key !== 'Tab' || !clubDoorActive) return;
-  const focusables = [clubStayBtn, clubEnterBtn].filter(Boolean);
-  if (!focusables.length) return;
-  const first = focusables[0];
-  const last = focusables[focusables.length - 1];
-  if (e.shiftKey && document.activeElement === first) {
-    e.preventDefault();
-    last.focus();
-  } else if (!e.shiftKey && document.activeElement === last) {
-    e.preventDefault();
-    first.focus();
-  }
-});
-
-// ========================================================================
-// ====================== 📋 Contact Copy Buttons ==========================
-// ========================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-  const copyButtons = document.querySelectorAll('[data-copy]');
-  if (!copyButtons.length) return;
-
-  const statusEl = document.getElementById('copy-status');
-  let statusTimer = null;
-
-  const fallbackCopy = (text) => {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    textarea.setAttribute('readonly', '');
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    textarea.remove();
-  };
-
-  copyButtons.forEach((button) => {
-    button.addEventListener('click', async () => {
-      const text = button.getAttribute('data-copy');
-      if (!text) return;
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-        } else {
-          fallbackCopy(text);
-        }
-        const copiedLabel = (window.PortfolioI18n && window.PortfolioI18n.t('common.copied')) || 'Copied';
-        button.textContent = copiedLabel;
-        if (statusEl) {
-          statusEl.textContent = copiedLabel;
-          window.clearTimeout(statusTimer);
-          statusTimer = window.setTimeout(() => {
-            statusEl.textContent = '';
-          }, 1400);
-        }
-        button.disabled = true;
-        window.setTimeout(() => {
-          button.textContent = (window.PortfolioI18n && window.PortfolioI18n.t('common.copy')) || 'Copy';
-          button.disabled = false;
-        }, 1200);
-      } catch (error) {
-        console.warn('Copy failed', error);
-      }
-    });
-  });
-});
-
-// ========================================================================
-// ==================== 🌃 灯光工程 P0（proto/living-station） =============
-// 活的夜幕（尘埃粒子 + 远处列车灯）· 进站线 · 滚动进场编排 · Hero 视差
-// 设计约束：常驻动画预算=canvas 一项；reduced-motion 全部关闭；play-once reveal
-// ========================================================================
-
-(() => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ---------- 1. 活的夜幕：尘埃粒子 + 偶发列车灯掠过 ----------
-  const initAtmosphere = () => {
-    if (prefersReducedMotion) return;
-    const canvas = document.createElement('canvas');
-    canvas.id = 'atmosphere-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(canvas);
-    const ctx = canvas.getContext('2d');
-
-    let w = 0;
-    let h = 0;
-    let dpr = 1;
-    const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = window.innerWidth;
-      h = window.innerHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
-
-    const COUNT = window.innerWidth <= 720 ? 26 : 64;
-    const rand = (a, b) => a + Math.random() * (b - a);
-    const dust = Array.from({ length: COUNT }, () => ({
-      x: rand(0, 1),
-      y: rand(0, 1),
-      r: rand(0.6, 1.7),
-      vx: rand(-0.012, -0.003),
-      vy: rand(-0.008, -0.002),
-      phase: rand(0, Math.PI * 2),
-      speed: rand(0.15, 0.5),
-      amber: Math.random() < 0.12,
-    }));
-
-    // 远处列车灯：每 14–26s 一道光线横掠
-    let train = null;
-    let nextTrainAt = performance.now() + rand(6000, 14000);
-    const spawnTrain = (now) => {
-      train = {
-        start: now,
-        dur: rand(1100, 1600),
-        y: rand(0.12, 0.6),
-        dir: Math.random() < 0.5 ? 1 : -1,
-        len: rand(0.22, 0.38),
-      };
-      nextTrainAt = now + rand(14000, 26000);
-    };
-
-    let running = true;
+    // 标签页隐藏时暂停
     document.addEventListener('visibilitychange', () => {
-      running = !document.hidden;
-      if (running) requestAnimationFrame(tick);
+      if (reduced) return;
+      if (document.hidden) field.stop();
+      else if (hero && window.scrollY < window.innerHeight) field.start();
     });
-
-    let last = performance.now();
-    const tick = (now) => {
-      if (!running) return;
-      const dt = Math.min((now - last) / 1000, 0.05);
-      last = now;
-      ctx.clearRect(0, 0, w, h);
-
-      for (const p of dust) {
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        if (p.x < -0.02) p.x = 1.02;
-        if (p.y < -0.02) p.y = 1.02;
-        const tw = 0.5 + 0.5 * Math.sin(p.phase + now / 1000 * p.speed);
-        const alpha = 0.06 + tw * 0.2;
-        ctx.beginPath();
-        ctx.arc(p.x * w, p.y * h, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = p.amber
-          ? `rgba(217, 165, 84, ${alpha})`
-          : `rgba(234, 229, 214, ${alpha * 0.8})`;
-        ctx.fill();
-      }
-
-      if (!train && now >= nextTrainAt) spawnTrain(now);
-      if (train) {
-        const t = (now - train.start) / train.dur;
-        if (t >= 1) {
-          train = null;
-        } else {
-          const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-          const headX = train.dir === 1
-            ? (eased * (1 + train.len) - train.len) * w
-            : (1 - eased * (1 + train.len)) * w;
-          const y = train.y * h;
-          const lenPx = train.len * w;
-          const grad = train.dir === 1
-            ? ctx.createLinearGradient(headX - lenPx, y, headX, y)
-            : ctx.createLinearGradient(headX + lenPx, y, headX, y);
-          const fade = Math.sin(t * Math.PI);
-          grad.addColorStop(0, 'rgba(217, 165, 84, 0)');
-          grad.addColorStop(0.85, `rgba(217, 165, 84, ${0.16 * fade})`);
-          grad.addColorStop(1, `rgba(234, 229, 214, ${0.32 * fade})`);
-          ctx.fillStyle = grad;
-          const x0 = train.dir === 1 ? headX - lenPx : headX;
-          ctx.fillRect(x0, y - 1, lenPx, 2);
-          ctx.fillStyle = `rgba(234, 229, 214, ${0.4 * fade})`;
-          ctx.fillRect(headX - 2, y - 1.5, 4, 3);
-        }
-      }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  };
-
-  // ---------- 2. 进站线：滚动路线图（桌面） ----------
-  const initRouteLine = () => {
-    const ids = ['home', 'projects', 'about', 'experience', 'contact'];
-    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    if (sections.length !== ids.length) return;
-
-    const nav = document.createElement('div');
-    nav.className = 'route-line';
-    nav.setAttribute('aria-hidden', 'true');
-
-    const track = document.createElement('div');
-    track.className = 'route-track';
-    const progress = document.createElement('div');
-    progress.className = 'route-progress';
-    track.appendChild(progress);
-    nav.appendChild(track);
-
-    const marker = document.createElement('div');
-    marker.className = 'route-marker';
-    nav.appendChild(marker);
-
-    const getLabel = (id) => {
-      const link = document.querySelector(`.nav-links a[href="#${id}"]`);
-      return link ? link.textContent.trim() : id;
-    };
-
-    const stops = ids.map((id, i) => {
-      const stop = document.createElement('button');
-      stop.type = 'button';
-      stop.className = 'route-stop';
-      stop.tabIndex = -1;
-      stop.style.top = `${(i / (ids.length - 1)) * 100}%`;
-      const label = document.createElement('span');
-      label.className = 'route-stop-label';
-      label.textContent = getLabel(id);
-      stop.appendChild(label);
-      stop.addEventListener('click', () => {
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      });
-      nav.appendChild(stop);
-      return { el: stop, id, label };
-    });
-
-    document.body.appendChild(nav);
-
-    // 语言切换时刷新站名
-    if (window.PortfolioI18n) {
-      window.PortfolioI18n.onChange(() => {
-        stops.forEach((s) => { s.label.textContent = getLabel(s.id); });
-      });
-    }
-
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      const doc = document.documentElement;
-      const max = doc.scrollHeight - window.innerHeight;
-      const frac = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
-      progress.style.height = `${frac * 100}%`;
-      marker.style.top = `${frac * 100}%`;
-
-      const mid = window.scrollY + window.innerHeight * 0.45;
-      let activeIndex = 0;
-      sections.forEach((sec, i) => {
-        if (sec.offsetTop <= mid) activeIndex = i;
-      });
-      stops.forEach((s, i) => s.el.classList.toggle('is-active', i === activeIndex));
-    };
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    }, { passive: true });
-    update();
-  };
-
-  // ---------- 3. 滚动进场编排：统一 reveal（play-once） ----------
-  const initReveals = () => {
-    if (prefersReducedMotion) return;
-    const groups = [
-      '#projects .project-stats span',
-      '#about .about-description',
-      '#about .about-skills-label',
-      '#about .about-skill',
-      '#experience .experience-header h2',
-      '#experience .experience-header p',
-      '#experience .experience-timeline-inner',
-      '#experience .experience-next-stop',
-      '#experience .experience-timeline-item',
-      '#experience .experience-detail',
-      '#contact .contact-header h2',
-      '#contact .contact-header p',
-      '#contact .contact-item',
-    ];
-    const seen = new Set();
-    const targets = [];
-    groups.forEach((sel) => {
-      document.querySelectorAll(sel).forEach((el, i) => {
-        if (seen.has(el)) return;
-        seen.add(el);
-        el.classList.add('reveal');
-        el.style.setProperty('--reveal-i', String(Math.min(i, 6)));
-        targets.push(el);
-      });
-    });
-    if (!targets.length) return;
-
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-in');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.01, rootMargin: '0px 0px -8% 0px' });
-    targets.forEach((el) => io.observe(el));
-  };
-
-  // ---------- 4. Hero 插画视差（桌面指针设备） ----------
-  const initHeroParallax = () => {
-    if (prefersReducedMotion) return;
-    if (window.innerWidth < 1024 || !window.matchMedia('(pointer: fine)').matches) return;
-    const home = document.getElementById('home');
-    const bg = () => document.getElementById('shader-background');
-    if (!home) return;
-    let ticking = false;
-    let px = 0;
-    let py = 0;
-    home.addEventListener('pointermove', (e) => {
-      px = (e.clientX / window.innerWidth - 0.5) * -14;
-      py = (e.clientY / window.innerHeight - 0.5) * -8;
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          ticking = false;
-          const el = bg();
-          if (el) {
-            el.style.setProperty('--parallax-x', `${px.toFixed(1)}px`);
-            el.style.setProperty('--parallax-y', `${py.toFixed(1)}px`);
-          }
-        });
-      }
-    }, { passive: true });
-  };
-
-  window.addEventListener('DOMContentLoaded', () => {
-    initAtmosphere();
-    initRouteLine();
-    initReveals();
-    initHeroParallax();
-  });
-})();
-
-// ========================================================================
-// ==================== 🎆 视觉冲击包 v1（proto/living-station） ===========
-// 巨型幽灵字 · Hero 逐字母 + 打字机 · 磁吸按钮
-// ========================================================================
-
-(() => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // ---------- 1. 巨型幽灵字：区块背景的空心衬线大字，随滚动漂移 ----------
-  const initGhostWords = () => {
-    const WORDS = { projects: 'WORK', about: 'PROFILE', experience: 'JOURNEY', contact: 'SIGNAL' };
-    const ghosts = [];
-    Object.entries(WORDS).forEach(([id, word]) => {
-      const sec = document.getElementById(id);
-      if (!sec) return;
-      const clip = document.createElement('div');
-      clip.className = 'ghost-word-clip';
-      clip.setAttribute('aria-hidden', 'true');
-      const el = document.createElement('span');
-      el.className = 'ghost-word';
-      el.textContent = word;
-      clip.appendChild(el);
-      sec.insertBefore(clip, sec.firstChild);
-      ghosts.push({ el, sec });
-    });
-    if (prefersReducedMotion || !ghosts.length) return;
-
-    let ticking = false;
-    const drift = () => {
-      ticking = false;
-      const vh = window.innerHeight;
-      ghosts.forEach(({ el, sec }) => {
-        const rect = sec.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top > vh) return;
-        const p = (rect.top + rect.height / 2 - vh / 2) / vh; // -~1 .. ~1
-        el.style.transform = `translate3d(${(-p * 6).toFixed(2)}vw, ${(p * 30).toFixed(1)}px, 0)`;
-      });
-    };
-    window.addEventListener('scroll', () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(drift); }
-    }, { passive: true });
-    drift();
-  };
-
-  // ---------- 2. Hero 名字逐字母进场（i18n 重渲染后重切） ----------
-  const splitTitle = () => {
-    const title = document.querySelector('.hero-title');
-    if (!title || prefersReducedMotion) return;
-    const text = title.textContent;
-    title.textContent = '';
-    title.classList.add('is-split');
-    [...text].forEach((ch, i) => {
-      if (ch === ' ') {
-        title.appendChild(document.createTextNode(' '));
-        return;
-      }
-      const span = document.createElement('span');
-      span.className = 'char';
-      span.style.setProperty('--char-i', String(i));
-      span.textContent = ch;
-      title.appendChild(span);
-    });
-  };
-
-  // ---------- 3. Hero 眉标打字机（车站广播式） ----------
-  const typeEyebrow = () => {
-    const eyebrow = document.querySelector('.hero-eyebrow');
-    if (!eyebrow || prefersReducedMotion) return;
-    const full = eyebrow.textContent.trim();
-    const textNode = document.createTextNode('');
-    const caret = document.createElement('span');
-    caret.className = 'type-caret';
-    eyebrow.textContent = '';
-    eyebrow.appendChild(textNode);
-    eyebrow.appendChild(caret);
-
-    let started = false;
-    const start = () => {
-      if (started) return;
-      started = true;
-      let i = 0;
-      const step = () => {
-        i += 1;
-        textNode.textContent = full.slice(0, i);
-        if (i < full.length) {
-          setTimeout(step, 14 + Math.random() * 26);
-        } else {
-          caret.classList.add('is-done');
-        }
-      };
-      setTimeout(step, 260);
-    };
-
-    if (document.body.classList.contains('hero-reveal')) {
-      start();
+    if (reduced) {
+      field.renderFrame(0.001);
+      field.startedAt = 0;
     } else {
-      const mo = new MutationObserver(() => {
-        if (document.body.classList.contains('hero-reveal')) {
-          mo.disconnect();
-          start();
-        }
-      });
-      mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      field.start();
     }
-  };
 
-  // ---------- 4. 磁吸按钮 ----------
-  const initMagnetic = () => {
-    if (prefersReducedMotion || !window.matchMedia('(pointer: fine)').matches) return;
-    document.querySelectorAll('.hero-cta, .hero-cta-secondary, .contact-action').forEach((btn) => {
-      const strength = 7;
-      btn.addEventListener('pointermove', (e) => {
-        const r = btn.getBoundingClientRect();
-        const dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
-        const dy = (e.clientY - r.top - r.height / 2) / (r.height / 2);
-        btn.style.setProperty('--mag-x', `${(dx * strength).toFixed(1)}px`);
-        btn.style.setProperty('--mag-y', `${(dy * strength).toFixed(1)}px`);
-      });
-      btn.addEventListener('pointerleave', () => {
-        btn.style.setProperty('--mag-x', '0px');
-        btn.style.setProperty('--mag-y', '0px');
-      });
-    });
-  };
-
-  window.addEventListener('DOMContentLoaded', () => {
-    initGhostWords();
-    splitTitle();
-    typeEyebrow();
-    initMagnetic();
-
-    // 语言切换会重写 hero 文本 → 重新逐字母切分（打字机只演一次，切换后直接满文本）
-    if (window.PortfolioI18n) {
-      window.PortfolioI18n.onChange(() => {
-        const title = document.querySelector('.hero-title');
-        if (title && !prefersReducedMotion) {
-          title.classList.remove('is-split');
-          requestAnimationFrame(() => {
-            splitTitle();
-            title.querySelectorAll('.char').forEach((c) => {
-              c.style.transitionDelay = '0ms';
-            });
-          });
-        }
-      });
-    }
-  });
-})();
-
-// ========================================================================
-// ============ 🚉 灯光工程A：Projects 横向站台展廊（桌面 ≥1024） ==========
-// 滚动驱动整屏横移：灯箱月台（巨型编号 + 车窗媒体 + 文案 + 检票 CTA）
-// 移动端保持 T209 纵向面板；is-detail 期间展廊隐藏、由既有 detail 系统接管
-// ========================================================================
-
-(() => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const section = document.getElementById('projects');
-    const frame = section?.querySelector('.projects-frame');
-    const stage = section?.querySelector('.projects-stage');
-    const copyHost = section?.querySelector('.projects-copy');
-    const sphereLayer = section?.querySelector('.sphere-image-layer');
-    const copies = section ? [...section.querySelectorAll('.project-copy')] : [];
-    const mediaItems = section ? [...section.querySelectorAll('.sphere-image')] : [];
-    const progressNav = section?.querySelector('.projects-nav');
-    const progressCurrent = section?.querySelector('.project-progress-current');
-    if (!section || !frame || !stage || !copyHost || !sphereLayer || !copies.length || copies.length !== mediaItems.length) return;
-
-    const desktopQuery = window.matchMedia('(min-width: 1024px)');
-    let teardownGallery = null;
-
-    const buildGallery = () => {
-      if (teardownGallery || !desktopQuery.matches) return;
-
-      section.classList.add('gallery-mode');
-      section.style.setProperty('--gallery-scroll-height', `${(copies.length + 0.8) * 100}vh`);
-
-      const track = document.createElement('div');
-      track.className = 'gallery-track';
-      const t = (key, fallback) =>
-        (window.PortfolioI18n && window.PortfolioI18n.t(key)) || fallback;
-
-      copies.forEach((copy, i) => {
-        const panel = document.createElement('article');
-        panel.className = 'gallery-panel';
-
-        const num = document.createElement('span');
-        num.className = 'gallery-panel-num';
-        num.setAttribute('aria-hidden', 'true');
-        num.textContent = String(i + 1).padStart(2, '0');
-        panel.appendChild(num);
-
-        const left = document.createElement('div');
-        left.className = 'gallery-panel-copy';
-        left.appendChild(copy);
-
-        const cta = document.createElement('button');
-        cta.type = 'button';
-        cta.className = 'gallery-panel-cta';
-        cta.innerHTML = `<span data-i18n="projects.viewCase">${t('projects.viewCase', 'View case file')}</span><span class="cta-arrow" aria-hidden="true">→</span>`;
-        cta.addEventListener('click', () => {
-          const api = window.__stationGallery;
-          if (!api) return;
-          window.scrollTo({ top: section.offsetTop, behavior: 'auto' });
-          api.openDetail(i);
-        });
-        left.appendChild(cta);
-        panel.appendChild(left);
-
-        const windowEl = document.createElement('div');
-        windowEl.className = 'gallery-window';
-        windowEl.appendChild(mediaItems[i]);
-        panel.appendChild(windowEl);
-        track.appendChild(panel);
-      });
-
-      frame.appendChild(track);
-      if (progressNav) frame.appendChild(progressNav);
-
-      const N = copies.length;
-      let target = 0;
-      let current = 0;
-      let lastIdx = -1;
-      let raf = null;
-      let detailMediaIndex = -1;
-      const windowEls = [...track.querySelectorAll('.gallery-window')];
-
-      const setActivePanel = (activePanelIndex) => {
-        [...track.querySelectorAll('.gallery-panel')].forEach((panel, panelIndex) => {
-          const isCurrent = panelIndex === activePanelIndex;
-          panel.setAttribute('aria-hidden', isCurrent ? 'false' : 'true');
-          const cta = panel.querySelector('.gallery-panel-cta');
-          if (cta) cta.tabIndex = isCurrent ? 0 : -1;
-        });
-      };
-
-      const apply = () => {
-        raf = null;
-        current = prefersReducedMotion ? target : current + (target - current) * 0.14;
-        if (Math.abs(target - current) < 0.1) current = target;
-        track.style.transform = `translate3d(${-current}px, 0, 0)`;
-        if (Math.abs(target - current) >= 0.1) raf = requestAnimationFrame(apply);
-      };
-
-      const onScroll = () => {
-        if (section.classList.contains('is-detail')) {
-          frame.style.transform = '';
-          return;
-        }
-        const vw = window.innerWidth;
-        const total = section.offsetHeight - window.innerHeight;
-        const pinY = Math.min(Math.max(window.scrollY - section.offsetTop, 0), total);
-        frame.style.transform = `translate3d(0, ${pinY}px, 0)`;
-        const p = total > 0
-          ? Math.min(Math.max((window.scrollY - section.offsetTop) / total, 0), 1)
-          : 0;
-        target = p * (N - 1) * vw;
-        const idx = Math.min(N - 1, Math.max(0, Math.round(p * (N - 1))));
-        if (idx !== lastIdx) {
-          lastIdx = idx;
-          window.__stationGallery?.syncIndex(idx);
-          if (progressCurrent) progressCurrent.textContent = String(idx + 1).padStart(2, '0');
-          setActivePanel(idx);
-        }
-        if (!raf) raf = requestAnimationFrame(apply);
-      };
-
-      const syncDetailMedia = () => {
-        const inDetail = section.classList.contains('is-detail');
-        if (inDetail && detailMediaIndex === -1) {
-          const numEl = section.querySelector('.detail-case-num');
-          const idx = Math.min(N - 1, Math.max(0, (parseInt(numEl && numEl.textContent, 10) || 1) - 1));
-          detailMediaIndex = idx;
-          sphereLayer.appendChild(mediaItems[idx]);
-          if (mediaItems[idx].tagName === 'VIDEO') {
-            const playAttempt = mediaItems[idx].play();
-            if (playAttempt && playAttempt.catch) playAttempt.catch(() => {});
-          }
-        } else if (!inDetail && detailMediaIndex !== -1) {
-          windowEls[detailMediaIndex]?.appendChild(mediaItems[detailMediaIndex]);
-          detailMediaIndex = -1;
-        }
-      };
-
-      const classWatch = new MutationObserver(syncDetailMedia);
-      classWatch.observe(section, { attributes: true, attributeFilter: ['class'] });
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll, { passive: true });
-      syncDetailMedia();
-      onScroll();
-
-      teardownGallery = () => {
-        window.removeEventListener('scroll', onScroll);
-        window.removeEventListener('resize', onScroll);
-        classWatch.disconnect();
-        if (raf) cancelAnimationFrame(raf);
-        copies.forEach((copy) => copyHost.appendChild(copy));
-        mediaItems.forEach((media) => sphereLayer.appendChild(media));
-        if (progressNav) stage.appendChild(progressNav);
-        track.remove();
-        frame.style.transform = '';
-        section.classList.remove('gallery-mode');
-        section.style.removeProperty('--gallery-scroll-height');
-        teardownGallery = null;
-      };
-    };
-
-    const syncGalleryMode = () => {
-      if (desktopQuery.matches) buildGallery();
-      else if (teardownGallery) teardownGallery();
-    };
-
-    desktopQuery.addEventListener('change', syncGalleryMode);
-    syncGalleryMode();
-  });
-})();
-
-// ========================================================================
-// ============ 🛠 灯光工程B：站长档案卡 · 蓝图机械臂自绘触发 ==============
-// 滚到 About 档案卡时触发一次 is-drawn，工程图按阶段自己画出来
-// ========================================================================
-
-(() => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const blueprint = document.querySelector('.guild-blueprint');
-    if (!blueprint) return;
-    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-      blueprint.classList.add('is-drawn');
-      return;
-    }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          blueprint.classList.add('is-drawn');
-          io.disconnect();
-        }
-      });
-    }, { threshold: 0.35 });
-    io.observe(blueprint);
-  });
-})();
-
-// ========================================================================
-// ============ 🕐 灯光工程D：站台生活层（时钟/重翻牌/仓鼠/光标） ==========
-// ========================================================================
-
-(() => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = window.matchMedia('(pointer: fine)').matches;
-
-  // ---------- D1 站台时钟：新加坡时间 GMT+8，逢秒更新 ----------
-  const initStationClock = () => {
-    const el = document.querySelector('.station-clock-time');
-    if (!el) return;
-    const pad = (n) => String(n).padStart(2, '0');
-    const tick = () => {
-      const sg = new Date(Date.now() + (new Date().getTimezoneOffset() + 480) * 60000);
-      el.innerHTML = `${pad(sg.getHours())}<span class="clock-colon">:</span>${pad(sg.getMinutes())}<span class="clock-colon">:</span>${pad(sg.getSeconds())}`;
-    };
-    tick();
-    window.setInterval(tick, 1000);
-  };
-
-  // ---------- D2 出发板闲时重翻牌：可见时每 9-15s 随机一行 ----------
-  const initBoardReflap = () => {
-    if (prefersReducedMotion) return;
-    const section = document.getElementById('experience');
-    const rows = section ? [...section.querySelectorAll('.experience-timeline-item')] : [];
-    if (!section || !rows.length) return;
-    let visible = false;
-
-    const flap = (index) => {
-      const row = rows[typeof index === 'number' ? index : Math.floor(Math.random() * rows.length)];
-      if (!row) return;
-      row.classList.remove('is-reflap');
-      void row.offsetWidth;
-      row.classList.add('is-reflap');
-      row.addEventListener('animationend', () => row.classList.remove('is-reflap'), { once: true });
-    };
-
-    const schedule = () => {
-      window.setTimeout(() => {
-        if (visible && !document.hidden) flap();
-        schedule();
-      }, 9000 + Math.random() * 6000);
-    };
-
-    new IntersectionObserver((entries) => {
-      entries.forEach((entry) => { visible = entry.isIntersecting; });
-    }, { threshold: 0.2 }).observe(section);
-    schedule();
-    window.__stationLife = Object.assign(window.__stationLife || {}, { flap });
-  };
-
-  // ---------- D3 站台仓鼠：偶尔沿站台边缘跑过，点到会受惊小跳 ----------
-  const initStationMouse = () => {
-    if (prefersReducedMotion || !finePointer || window.innerWidth < 1024) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'station-mouse';
-    wrap.setAttribute('aria-hidden', 'true');
-    wrap.innerHTML = `<div class="hamster">
-      <div class="hamster__body">
-        <div class="hamster__head">
-          <div class="hamster__ear"></div>
-          <div class="hamster__eye"></div>
-          <div class="hamster__nose"></div>
-        </div>
-        <div class="hamster__limb hamster__limb--fr"></div>
-        <div class="hamster__limb hamster__limb--fl"></div>
-        <div class="hamster__limb hamster__limb--br"></div>
-        <div class="hamster__limb hamster__limb--bl"></div>
-        <div class="hamster__tail"></div>
-      </div>
-    </div>`;
-    document.body.appendChild(wrap);
-    let running = false;
-
-    const run = () => {
-      if (running || document.hidden) return;
-      running = true;
-      wrap.classList.add('is-running');
-    };
-    wrap.addEventListener('animationend', (e) => {
-      if (e.target === wrap && e.animationName === 'stationMouseRun') {
-        wrap.classList.remove('is-running', 'is-startled');
-        running = false;
-      }
-    });
-    wrap.addEventListener('click', () => {
-      wrap.classList.add('is-startled');
-      window.setTimeout(() => wrap.classList.remove('is-startled'), 460);
+    window.addEventListener('resize', () => {
+      window.clearTimeout(field._rz);
+      field._rz = window.setTimeout(() => field.resize(), 180);
     });
 
-    // 首跑 35s 后，此后每 2-3.5 分钟一趟
-    window.setTimeout(run, 35000);
-    window.setInterval(() => { if (Math.random() < 0.8) run(); }, 150000);
-    window.__stationLife = Object.assign(window.__stationLife || {}, { mouse: run });
-  };
+    return field;
+  })();
 
-  // ---------- D4 自定义光标：琥珀点即时跟随 + 拖尾环惯性趋近 ----------
-  const initCursor = () => {
-    if (prefersReducedMotion || !finePointer || window.innerWidth < 1024) return;
-    const dot = document.createElement('div');
-    dot.className = 'cursor-dot';
-    const ring = document.createElement('div');
-    ring.className = 'cursor-ring';
-    ring.innerHTML = '<div class="cursor-ring-i"></div>';
-    document.body.append(dot, ring);
-    document.body.classList.add('custom-cursor');
+  /* ==================================================================
+   * 准星光标（桌面）— 所有交互元素获得目标锁定
+   * ================================================================== */
+  (function initReticle() {
+    const reticle = $('#reticle');
+    const label = $('#reticle-label');
+    if (!reticle || isTouch() || reducedMotion()) return;
+    if (!window.matchMedia('(hover: hover)').matches) return;
+    if (new URLSearchParams(window.location.search).has('static')) return;
 
+    document.body.classList.add('has-reticle');
     let x = window.innerWidth / 2;
     let y = window.innerHeight / 2;
     let rx = x;
     let ry = y;
     let raf = null;
-    let shown = false;
 
     const loop = () => {
-      rx += (x - rx) * 0.16;
-      ry += (y - ry) * 0.16;
-      dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
-      if (Math.abs(x - rx) > 0.15 || Math.abs(y - ry) > 0.15) {
-        raf = requestAnimationFrame(loop);
-      } else {
+      // 位置收敛后暂停循环，指针移动时再唤醒（避免持续占用合成器）
+      if (Math.abs(x - rx) < 0.15 && Math.abs(y - ry) < 0.15) {
+        rx = x; ry = y;
+        reticle.style.transform = `translate(${rx - 22}px, ${ry - 22}px)`;
         raf = null;
+        return;
       }
+      rx += (x - rx) * 0.22;
+      ry += (y - ry) * 0.22;
+      reticle.style.transform = `translate(${rx - 22}px, ${ry - 22}px)`;
+      raf = requestAnimationFrame(loop);
     };
+    const wake = () => { if (raf === null) raf = requestAnimationFrame(loop); };
 
-    const INTERACTIVE = 'a, button, [role="button"], input, select, textarea, label, summary, .project-detail-hotspot, .detail-media, .gallery-window, .language-option, .theme-switch, .station-mouse';
     window.addEventListener('pointermove', (e) => {
       x = e.clientX;
       y = e.clientY;
-      if (!shown) {
-        shown = true;
-        rx = x;
-        ry = y;
-        document.body.classList.add('cursor-on');
+      wake();
+      const el = e.target instanceof Element ? e.target.closest('a, button, summary, [data-lockable]') : null;
+      if (el) {
+        reticle.classList.add('is-lock');
+        document.body.classList.add('reticle-target');
+        if (label) {
+          const name = el.getAttribute('data-lock-label') || el.getAttribute('aria-label') || el.textContent;
+          if (name) label.textContent = String(name).trim().slice(0, 26).toUpperCase();
+        }
+      } else {
+        reticle.classList.remove('is-lock');
+        document.body.classList.remove('reticle-target');
+        if (label) label.textContent = '';
       }
-      const hit = e.target && e.target.closest ? e.target.closest(INTERACTIVE) : null;
-      document.body.classList.toggle('cursor-hover', Boolean(hit));
-      if (!raf) raf = requestAnimationFrame(loop);
     }, { passive: true });
 
-    document.addEventListener('pointerdown', () => document.body.classList.add('cursor-down'));
-    document.addEventListener('pointerup', () => document.body.classList.remove('cursor-down'));
-    document.documentElement.addEventListener('mouseleave', () => {
-      shown = false;
-      document.body.classList.remove('cursor-on');
-    });
-  };
+    window.addEventListener('pointerdown', () => reticle.classList.add('is-fire'));
+    window.addEventListener('pointerup', () => reticle.classList.remove('is-fire'));
+  })();
 
-  window.addEventListener('DOMContentLoaded', () => {
-    initStationClock();
-    initBoardReflap();
-    initStationMouse();
-    initCursor();
-  });
+  /* ==================================================================
+   * 主题
+   * ================================================================== */
+  (function initTheme() {
+    const body = document.body;
+    const btn = $('#theme-toggle');
+    let stored = null;
+    try { stored = localStorage.getItem('theme'); } catch (e) { /* noop */ }
+
+    const apply = (light) => {
+      body.classList.toggle('light-mode', light);
+      if (btn) {
+        btn.setAttribute('aria-pressed', light ? 'true' : 'false');
+        btn.setAttribute('aria-label', t(light ? 'common.themeToDark' : 'common.themeToLight'));
+      }
+      if (heroField) heroField.setTheme(light);
+    };
+    apply(stored === 'light', false);
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const toLight = !body.classList.contains('light-mode');
+        try { localStorage.setItem('theme', toLight ? 'light' : 'dark'); } catch (e) { /* noop */ }
+        apply(toLight);
+      });
+    }
+  })();
+
+  /* ==================================================================
+   * 页内锚点导航 — 自实现平滑滚动（CSS smooth 在部分嵌入渲染器不可用）
+   * ================================================================== */
+  (function initSmoothNav() {
+    const reduced = reducedMotion();
+    const easeOutCubic = (p) => 1 - Math.pow(1 - p, 3);
+
+    const scrollToTarget = (target) => {
+      const startY = window.scrollY;
+      const rect = target.getBoundingClientRect();
+      const headerH = 72;
+      const endY = Math.max(0, startY + rect.top - headerH);
+      if (reduced) { window.scrollTo(0, endY); return; }
+      const dist = endY - startY;
+      if (Math.abs(dist) < 2) return;
+      const dur = Math.min(1100, 380 + Math.abs(dist) * 0.32);
+      const t0 = performance.now();
+      const step = (now) => {
+        const p = Math.min(1, (now - t0) / dur);
+        window.scrollTo(0, startY + dist * easeOutCubic(p));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    document.addEventListener('click', (e) => {
+      const a = e.target instanceof Element ? e.target.closest('a[href^="#"]') : null;
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      scrollToTarget(target);
+      history.pushState(null, '', href);
+    });
+
+    // 载入时已有 hash：直接就位（无动画，符合预期）
+    window.setTimeout(() => {
+      if (location.hash && location.hash !== '#') {
+        const target = document.querySelector(location.hash);
+        if (target) {
+          const endY = Math.max(0, target.getBoundingClientRect().top + window.scrollY - 72);
+          window.scrollTo(0, endY);
+        }
+      }
+    }, 60);
+  })();
+
+  /* ==================================================================
+   * 顶栏 + 滚动侦测 + 移动端菜单 + 到站信息条
+   * ================================================================== */
+  const LED = (function initLed() {
+    const strip = $('#led-strip');
+    const nowEl = $('#led-now');
+    const nextEl = $('#led-next');
+    const stopsEl = $('#led-stops');
+    const sectionIds = ['home', 'work', 'about', 'journey', 'contact'];
+    const names = () => sectionIds.map((id) => t(`led.stop.${id}`, id.toUpperCase()));
+
+    // 字符乱序翻牌
+    const scrambleTo = (el, text) => {
+      if (!el) return;
+      if (reducedMotion()) { el.textContent = text; return; }
+      const chars = '▚▞▛ABCDEFGHKMNPRSTUVWXYZ0123456789·';
+      const from = el.textContent || '';
+      const len = Math.max(from.length, text.length);
+      let frame = 0;
+      if (el._scr) cancelAnimationFrame(el._scr);
+      const step = () => {
+        frame += 1;
+        let out = '';
+        for (let i = 0; i < text.length; i++) {
+          const settled = frame > 4 + i * 1.4;
+          out += settled ? text[i] : chars[(Math.random() * chars.length) | 0];
+        }
+        el.textContent = out;
+        if (frame < 4 + text.length * 1.4 + 2) el._scr = requestAnimationFrame(step);
+        else el.textContent = text;
+      };
+      el._scr = requestAnimationFrame(step);
+    };
+
+    let current = -1;
+    const setStop = (idx) => {
+      if (idx === current) return;
+      current = idx;
+      const n = names();
+      scrambleTo(nowEl, n[idx]);
+      scrambleTo(nextEl, n[(idx + 1) % n.length]);
+      if (stopsEl) stopsEl.textContent = String(idx + 1).padStart(2, '0') + '/' + String(n.length).padStart(2, '0');
+      if (strip) strip.classList.remove('is-arriving'), strip.offsetWidth, strip.classList.add('is-arriving');
+    };
+
+    return { setStop, sectionIds, refresh: () => { current = -1; } };
+  })();
+
+  (function initHeaderAndSpy() {
+    const header = $('#site-header');
+    const menuBtn = $('#nav-menu-btn');
+    const navLinks = $('#nav-links');
+    const links = navLinks ? $$('a', navLinks) : [];
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        if (header) header.classList.toggle('is-scrolled', window.scrollY > 24);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    const closeMenu = () => {
+      if (!navLinks) return;
+      navLinks.classList.remove('is-menu-open');
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+    };
+    if (menuBtn && navLinks) {
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = navLinks.classList.toggle('is-menu-open');
+        menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      document.addEventListener('click', (e) => {
+        if (!navLinks.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
+      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+      links.forEach((a) => a.addEventListener('click', closeMenu));
+    }
+
+    const lis = navLinks ? $$('#nav-links li') : [];
+    const setActive = (id) => {
+      lis.forEach((li) => {
+        const a = li.querySelector('a');
+        const on = a && a.getAttribute('href') === '#' + id;
+        li.classList.toggle('is-active', Boolean(on));
+        if (a) a.setAttribute('aria-current', on ? 'true' : 'false');
+      });
+    };
+    const sections = LED.sectionIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    if ('IntersectionObserver' in window && sections.length) {
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+            const idx = LED.sectionIds.indexOf(entry.target.id);
+            if (idx >= 0) LED.setStop(idx);
+          }
+        });
+      }, { rootMargin: '-38% 0px -55% 0px', threshold: 0 });
+      sections.forEach((s) => spy.observe(s));
+    }
+  })();
+
+  /* ==================================================================
+   * 滚动显现
+   * ================================================================== */
+  function observeReveals() {
+    const fresh = $$('.reveal:not(.is-revealed)');
+    if (!fresh.length) return;
+    if (reducedMotion() || !('IntersectionObserver' in window)) {
+      fresh.forEach((el) => el.classList.add('is-revealed'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+    fresh.forEach((el) => io.observe(el));
+  }
+  observeReveals();
+
+  /* ==================================================================
+   * 车站时钟
+   * ================================================================== */
+  (function initClocks() {
+    const clocks = $$('.station-clock-time');
+    if (!clocks.length) return;
+    const fmt = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Singapore',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    const tick = () => {
+      const now = fmt.format(new Date());
+      clocks.forEach((c) => { c.textContent = now; });
+    };
+    tick();
+    window.setInterval(tick, 1000);
+  })();
+
+  /* ==================================================================
+   * 复制
+   * ================================================================== */
+  (function initCopy() {
+    const status = $('#copy-status');
+    $$('[data-copy]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const value = btn.getAttribute('data-copy');
+        let ok = false;
+        try {
+          await navigator.clipboard.writeText(value);
+          ok = true;
+        } catch (e) {
+          const ta = document.createElement('textarea');
+          ta.value = value;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+          document.body.appendChild(ta);
+          ta.select();
+          try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+          ta.remove();
+        }
+        if (status) status.textContent = ok ? t('common.copied') : '';
+        const original = btn.textContent;
+        if (ok) {
+          btn.textContent = t('common.copied');
+          window.setTimeout(() => { btn.textContent = original; }, 1600);
+        }
+      });
+    });
+  })();
+
+  /* ==================================================================
+   * 灯箱
+   * ================================================================== */
+  const Lightbox = (function () {
+    const root = $('#lightbox');
+    if (!root) return { open: () => {}, close: () => {} };
+    const img = $('#lightbox-image');
+    const video = $('#lightbox-video');
+    const caption = $('#lightbox-caption');
+    const closeBtn = $('#lightbox-close');
+    let lastFocus = null;
+
+    const close = () => {
+      root.classList.remove('is-open');
+      root.setAttribute('aria-hidden', 'true');
+      root.setAttribute('inert', '');
+      if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    };
+    const open = ({ type, src, alt }) => {
+      lastFocus = document.activeElement;
+      if (type === 'video') {
+        img.hidden = true;
+        video.hidden = false;
+        video.src = src;
+        video.play().catch(() => {});
+      } else {
+        video.hidden = true;
+        img.hidden = false;
+        img.src = src;
+        img.alt = alt || '';
+      }
+      if (caption) caption.textContent = alt || '';
+      root.classList.remove('is-open');
+      void root.offsetHeight;
+      root.classList.add('is-open');
+      root.removeAttribute('inert');
+      root.setAttribute('aria-hidden', 'false');
+      if (closeBtn) closeBtn.focus();
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    root.addEventListener('click', (e) => { if (e.target === root) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && root.classList.contains('is-open')) close();
+    });
+    return { open, close };
+  })();
+
+  /* ==================================================================
+   * 检测目标陈列 + 案例档案
+   * ================================================================== */
+  const Work = (function () {
+    const listEl = $('#work-list');
+    const caseView = $('#case-view');
+    const caseBody = $('#case-body');
+    const caseIndex = $('#case-index');
+    const caseClose = $('#case-close');
+    const casePrev = $('#case-prev');
+    const caseNext = $('#case-next');
+    const caseScroll = $('#case-scroll');
+    const caseTrackTag = $('#case-track-tag');
+    const projects = (window.SiteData && window.SiteData.projects) || [];
+    let current = 0;
+    let lastFocus = null;
+    let heroObserver = null;
+
+    const L = (project) => project[lang()] || project.en;
+
+    const makeMedia = (media, opts) => {
+      const o = opts || {};
+      if (media.type === 'video') {
+        const v = document.createElement('video');
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.preload = o.eager ? 'metadata' : 'none';
+        v.src = media.src;
+        if (media.poster) v.poster = media.poster;
+        if (media.alt) v.setAttribute('aria-label', media.alt);
+        return v;
+      }
+      const img = document.createElement('img');
+      img.src = media.src;
+      img.alt = media.alt || '';
+      img.loading = o.eager ? 'eager' : 'lazy';
+      img.decoding = 'async';
+      return img;
+    };
+
+    /* --- 检测卡片 --- */
+    const renderList = () => {
+      if (!listEl) return;
+      listEl.innerHTML = '';
+      projects.forEach((project, i) => {
+        const l = L(project);
+        const li = document.createElement('li');
+        li.className = 'detect-item reveal';
+        li.innerHTML = `
+          <button class="detect-card" type="button" data-lock-label="${l.title}" aria-label="${l.title} — ${t('work.viewCase', 'Open case file')}">
+            <span class="detect-media" data-detect-media></span>
+            <span class="detect-brackets" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span class="detect-tag" aria-hidden="true">${project.detId || 'DET-' + String(i + 1).padStart(2, '0')}</span>
+            <span class="detect-info">
+              <span class="detect-meta-row">
+                <span class="detect-class">${l.eyebrow}</span>
+                <span class="detect-year">${project.year}</span>
+              </span>
+              <span class="detect-name">${l.title}<span class="detect-arrow" aria-hidden="true">→</span></span>
+              <span class="detect-sub">${l.subtitle}</span>
+              <span class="detect-stats">${project.stats.map((s) => `<span>${s}</span>`).join('')}</span>
+              <span class="detect-cta">${t('work.viewCase', 'Open case file')}</span>
+            </span>
+            <span class="detect-lockflag" aria-hidden="true">◇ LOCK</span>
+          </button>`;
+        const mediaSlot = li.querySelector('[data-detect-media]');
+        const media = makeMedia(project.hero, { eager: i === 0 });
+        if (project.hero.type === 'video') media.setAttribute('tabindex', '-1');
+        mediaSlot.appendChild(media);
+
+        const card = li.querySelector('.detect-card');
+        card.addEventListener('click', () => openCase(i, card));
+
+        const video = mediaSlot.querySelector('video');
+        if (video && !reducedMotion()) {
+          card.addEventListener('mouseenter', () => video.play().catch(() => {}));
+          card.addEventListener('mouseleave', () => video.pause());
+        }
+        if (video) {
+          card.addEventListener('focus', () => video.play().catch(() => {}));
+          card.addEventListener('blur', () => video.pause());
+        }
+        listEl.appendChild(li);
+      });
+      observeReveals();
+    };
+
+    /* --- 案案渲染 --- */
+    const renderCase = (index) => {
+      if (!caseBody) return;
+      const project = projects[index];
+      const l = L(project);
+      current = index;
+      if (caseIndex) caseIndex.textContent = (project.detId || 'DET-' + String(index + 1).padStart(2, '0'))
+        + ' · ' + String(index + 1).padStart(2, '0') + '/' + String(projects.length).padStart(2, '0');
+
+      // TRACKING… → LOCKED 小序列
+      if (caseTrackTag && !reducedMotion()) {
+        caseTrackTag.textContent = 'TRACKING…';
+        caseTrackTag.classList.remove('is-locked');
+        window.clearTimeout(caseTrackTag._t);
+        caseTrackTag._t = window.setTimeout(() => {
+          caseTrackTag.textContent = '◉ LOCKED';
+          caseTrackTag.classList.add('is-locked');
+        }, 700);
+      } else if (caseTrackTag) {
+        caseTrackTag.textContent = '◉ LOCKED';
+        caseTrackTag.classList.add('is-locked');
+      }
+
+      const heroHtml = project.hero.type === 'video'
+        ? `<video class="case-hero-video" src="${project.hero.src}" poster="${project.hero.poster || ''}" muted loop playsinline preload="metadata" aria-label="${l.title}"></video>`
+        : `<img src="${project.hero.src}" alt="${l.title}" loading="eager" decoding="async">`;
+
+      const linksHtml = (project.links || []).map((link) => {
+        if (link.type === 'paper') {
+          return `<a href="${link.url}" target="_blank" rel="noopener"><svg width="14" height="14" aria-hidden="true"><use href="assets/icons.svg#icon-file-pdf"></use></svg>${t('work.paper', 'Read the paper')}</a>`;
+        }
+        if (link.type === 'github') {
+          return `<a href="${link.url}" target="_blank" rel="noopener">◈ ${t('work.github', 'Source on GitHub')}</a>`;
+        }
+        return '';
+      }).join('');
+
+      const sectionsHtml = l.sections.map((sec) => {
+        const mediaHtml = sec.media.map((m) => {
+          if (m.type === 'video') {
+            return `<video class="case-media" src="${m.src}" muted loop playsinline preload="metadata" data-lightbox-type="video" data-lightbox-src="${m.src}" data-lightbox-alt="${m.alt || ''}" aria-label="${m.alt || ''}"></video>`;
+          }
+          return `<img class="case-media" src="${m.src}" alt="${m.alt || ''}" loading="lazy" decoding="async" data-lightbox-type="image" data-lightbox-src="${m.src}" data-lightbox-alt="${m.alt || ''}">`;
+        }).join('');
+        return `
+          <section class="case-section">
+            <h3 class="case-section-title">${sec.title}</h3>
+            <p class="case-section-body">${sec.body}</p>
+            ${mediaHtml ? `<div class="case-media-grid">${mediaHtml}</div>` : ''}
+          </section>`;
+      }).join('');
+
+      caseBody.innerHTML = `
+        <div class="case-hero-media" data-case-hero>${heroHtml}</div>
+        <p class="case-kicker">${l.eyebrow}</p>
+        <h2 class="case-title" id="case-title">${l.title}</h2>
+        <p class="case-subtitle">${l.subtitle}</p>
+        <p class="case-summary">${l.summary}</p>
+        <div class="case-meta">
+          <div class="case-meta-cell"><span class="case-meta-label">${t('work.role', 'Role')}</span><span class="case-meta-value">${l.role}</span></div>
+          <div class="case-meta-cell"><span class="case-meta-label">${t('work.stack', 'Stack')}</span><span class="case-meta-value">${l.stack}</span></div>
+          <div class="case-meta-cell"><span class="case-meta-label">${t('work.year', 'Year')}</span><span class="case-meta-value">${project.year}</span></div>
+        </div>
+        ${linksHtml ? `<div class="case-links">${linksHtml}</div>` : ''}
+        ${sectionsHtml}`;
+
+      $$('.case-media', caseBody).forEach((el) => {
+        el.addEventListener('click', () => {
+          Lightbox.open({
+            type: el.getAttribute('data-lightbox-type'),
+            src: el.getAttribute('data-lightbox-src'),
+            alt: el.getAttribute('data-lightbox-alt'),
+          });
+        });
+      });
+      const heroVideo = caseBody.querySelector('[data-case-hero] video');
+      if (heroVideo) {
+        heroVideo.addEventListener('click', () => {
+          Lightbox.open({ type: 'video', src: heroVideo.currentSrc || heroVideo.src, alt: l.title });
+        });
+        if (heroObserver) heroObserver.disconnect();
+        if ('IntersectionObserver' in window) {
+          heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) heroVideo.play().catch(() => {});
+              else heroVideo.pause();
+            });
+          }, { threshold: 0.35 });
+          heroObserver.observe(heroVideo);
+        }
+      }
+      const heroImg = caseBody.querySelector('[data-case-hero] img');
+      if (heroImg) {
+        heroImg.style.cursor = 'zoom-in';
+        heroImg.addEventListener('click', () => {
+          Lightbox.open({ type: 'image', src: heroImg.src, alt: l.title });
+        });
+      }
+      if (caseScroll) caseScroll.scrollTop = 0;
+    };
+
+    const openCase = (index, trigger) => {
+      lastFocus = trigger || document.activeElement;
+      renderCase(index);
+      if (!caseView) return;
+      caseView.classList.add('is-open');
+      caseView.removeAttribute('inert');
+      caseView.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      if (caseClose) caseClose.focus();
+    };
+
+    const closeCase = () => {
+      if (!caseView || !caseView.classList.contains('is-open')) return;
+      caseView.classList.remove('is-open');
+      caseView.setAttribute('aria-hidden', 'true');
+      caseView.setAttribute('inert', '');
+      document.body.style.overflow = '';
+      $$('video', caseView).forEach((v) => v.pause());
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    };
+
+    if (caseClose) caseClose.addEventListener('click', closeCase);
+    if (casePrev) casePrev.addEventListener('click', () => renderCase((current - 1 + projects.length) % projects.length));
+    if (caseNext) caseNext.addEventListener('click', () => renderCase((current + 1) % projects.length));
+    document.addEventListener('keydown', (e) => {
+      if (!caseView || !caseView.classList.contains('is-open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeCase(); }
+    });
+
+    const renderArchive = () => {
+      const card = $('#archive-card');
+      const archive = window.SiteData && window.SiteData.archive;
+      if (!card || !archive) return;
+      const l = archive[lang()] || archive.en;
+      card.innerHTML = `
+        <div class="archive-media">
+          <img src="${archive.poster}" alt="${l.title}" loading="lazy" decoding="async">
+          <span class="archive-num" aria-hidden="true">${archive.index}</span>
+        </div>
+        <div class="archive-copy">
+          <p class="archive-eyebrow">${l.eyebrow}</p>
+          <h3>${l.title}</h3>
+          <p class="archive-desc">${l.description}</p>
+          <div class="archive-facts">${l.facts.map((f) => `<span>${f}</span>`).join('')}</div>
+          <a class="archive-link" href="${archive.video}" target="_blank" rel="noopener noreferrer">${l.cta} <span aria-hidden="true">↗</span></a>
+        </div>`;
+    };
+
+    return {
+      renderList,
+      renderArchive,
+      rerender: () => { renderList(); renderArchive(); },
+    };
+  })();
+
+  /* ==================================================================
+   * 关于卡片
+   * ================================================================== */
+  (function initAbout() {
+    const wrap = $('#about-cards');
+    const render = () => {
+      if (!wrap) return;
+      const cards = (window.PortfolioI18n && window.PortfolioI18n.get('about.cards')) || [];
+      wrap.innerHTML = cards.map((card) => `
+        <div class="about-card">
+          <h3>${card.title}</h3>
+          <p>${card.text}</p>
+        </div>`).join('');
+    };
+    render();
+    if (window.PortfolioI18n) window.PortfolioI18n.onChange(render);
+  })();
+
+  /* ==================================================================
+   * 蓝图自绘
+   * ================================================================== */
+  (function initBlueprint() {
+    const bp = $('.about-blueprint');
+    if (!bp) return;
+    if (reducedMotion() || !('IntersectionObserver' in window)) {
+      bp.classList.add('is-drawn');
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          bp.classList.add('is-drawn');
+          io.unobserve(bp);
+        }
+      });
+    }, { threshold: 0.3 });
+    io.observe(bp);
+  })();
+
+  /* ==================================================================
+   * 发车板
+   * ================================================================== */
+  (function initJourney() {
+    const wrap = $('#departures-list');
+    const data = (window.SiteData && window.SiteData.experience) || [];
+    const render = () => {
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      [...data].reverse().forEach((item) => {
+        const l = item[lang()] || item.en;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'departure';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('data-lock-label', item.org);
+        btn.innerHTML = `
+          <span class="departure-time">${item.period}</span>
+          <span class="departure-dest">
+            <span class="departure-org">${l.orgName || item.org}</span>
+            <span class="departure-hint">${l.role}</span>
+          </span>
+          <span class="departure-status is-departed">${t('journey.departed', 'Departed')}</span>`;
+
+        const detail = document.createElement('div');
+        detail.className = 'departure-detail';
+        detail.innerHTML = `
+          <div class="departure-detail-grid">
+            <div class="departure-detail-media">
+              <img src="${item.media}" alt="${t('journey.mediaAlt', 'Scene from this stop')}" loading="lazy" decoding="async">
+            </div>
+            <div>
+              <p class="departure-role">${l.role}</p>
+              <p class="departure-summary">${l.summary}</p>
+              <ul class="departure-highlights">${l.highlights.map((h) => `<li>${h}</li>`).join('')}</ul>
+              <div class="departure-tags">${l.tags.map((tag) => `<span>${tag}</span>`).join('')}</div>
+            </div>
+          </div>`;
+
+        btn.addEventListener('click', () => {
+          const open = btn.classList.toggle('is-open');
+          detail.classList.toggle('is-open', open);
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        wrap.appendChild(btn);
+        wrap.appendChild(detail);
+      });
+    };
+    render();
+    if (window.PortfolioI18n) window.PortfolioI18n.onChange(render);
+
+    const next = $('.departure-next');
+    if (next) {
+      next.addEventListener('click', () => {
+        const sel = next.getAttribute('data-scroll') || '#contact';
+        const a = document.querySelector('a[href="' + sel + '"]');
+        if (a) a.click();
+        else {
+          const target = document.querySelector(sel);
+          if (target) target.scrollIntoView({ behavior: 'auto' });
+        }
+      });
+    }
+  })();
+
+  /* ==================================================================
+   * 像素机器人 + 秘技
+   * ================================================================== */
+  (function initEasterEggs() {
+    const bot = $('#pixelbot');
+    const heartSvg = `<svg viewBox="0 0 7 6" width="14" height="12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#e85940" fill-rule="evenodd" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></svg>`;
+
+    const spawnHearts = (x, y, count) => {
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('span');
+        el.className = 'pixel-spark';
+        el.innerHTML = heartSvg;
+        el.style.left = (x + (Math.random() * 60 - 30)) + 'px';
+        el.style.top = (y - 10) + 'px';
+        el.style.setProperty('--spark-x', (Math.random() * 90 - 45) + 'px');
+        el.style.setProperty('--spark-r', (Math.random() * 300 - 150) + 'deg');
+        el.style.setProperty('--spark-t', (900 + Math.random() * 900) + 'ms');
+        document.body.appendChild(el);
+        window.setTimeout(() => el.remove(), 2000);
+      }
+    };
+
+    if (bot) {
+      bot.addEventListener('click', (e) => {
+        bot.classList.remove('is-happy');
+        void bot.offsetWidth;
+        bot.classList.add('is-happy');
+        const rect = bot.getBoundingClientRect();
+        spawnHearts(rect.left + rect.width / 2, rect.top, reducedMotion() ? 1 : 7);
+        if (heroField) heroField.pulse(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      });
+    }
+
+    const seq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let pos = 0;
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (key === seq[pos] || key.toLowerCase() === String(seq[pos]).toLowerCase()) {
+        pos += 1;
+        if (pos === seq.length) {
+          pos = 0;
+          if (!reducedMotion()) {
+            for (let i = 0; i < 5; i++) {
+              window.setTimeout(() => spawnHearts(Math.random() * window.innerWidth, Math.random() * window.innerHeight * 0.7 + 60, 6), i * 180);
+            }
+          }
+          const note = document.createElement('p');
+          note.className = 'konami-note';
+          note.textContent = t('easter.hint', '…the hamster approves.');
+          note.style.cssText = 'position:fixed;bottom:64px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:12px;color:var(--accent);z-index:260;pointer-events:none;';
+          document.body.appendChild(note);
+          window.setTimeout(() => note.remove(), 3200);
+        }
+      } else {
+        pos = key === seq[0] ? 1 : 0;
+      }
+    });
+  })();
+
+  /* ==================================================================
+   * 终点站翻牌词
+   * ================================================================== */
+  (function initTerminus() {
+    const word = $('#terminus-word');
+    if (!word) return;
+    const setWord = () => { word.textContent = t('contact.terminusWord', 'TERMINUS'); };
+    setWord();
+    if (window.PortfolioI18n) window.PortfolioI18n.onChange(setWord);
+  })();
+
+  /* ==================================================================
+   * 音乐区入口
+   * ================================================================== */
+  (function initMusicDoor() {
+    const trigger = $('#music-trigger');
+    const door = $('#club-door');
+    const stay = $('#club-door-stay');
+    const enter = $('#club-door-enter');
+    if (!trigger || !door || !stay || !enter) return;
+
+    let lastFocus = null;
+    const open = () => {
+      lastFocus = document.activeElement;
+      door.classList.add('is-open');
+      door.setAttribute('aria-hidden', 'false');
+      stay.focus();
+    };
+    const close = () => {
+      door.classList.remove('is-open');
+      door.setAttribute('aria-hidden', 'true');
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    };
+    trigger.addEventListener('click', open);
+    stay.addEventListener('click', close);
+    enter.addEventListener('click', () => { window.location.href = 'music-player.html'; });
+    door.addEventListener('click', (e) => { if (e.target === door) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && door.classList.contains('is-open')) close();
+    });
+  })();
+
+  /* ==================================================================
+   * 启动 + 语言切换重渲染
+   * ================================================================== */
+  Work.renderList();
+  Work.renderArchive();
+  LED.setStop(0);
+  if (window.PortfolioI18n) {
+    window.PortfolioI18n.onChange(() => {
+      Work.rerender();
+      LED.refresh();
+      LED.setStop(0);
+    });
+  }
 })();

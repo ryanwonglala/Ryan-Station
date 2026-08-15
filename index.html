@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Ryan Wong's robotics portfolio: multi-robot inspection, ROS 2 autonomy, AI vision, soft robotics, and real-hardware control.">
-  <title>Ryan Wong | Robotics &amp; Automation Portfolio</title>
+  <meta name="description" content="Ryan Wong's personal station — multi-robot inspection, ROS 2 autonomy, AI vision, soft robotics, and the manufacturing discipline behind them.">
+  <title>Ryan Wong | Robotics &amp; Automation Engineer</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preload" href="assets/Dark-BG.webp" as="image" fetchpriority="high">
   <link rel="canonical" href="https://ryan-station.vercel.app/">
   <meta name="theme-color" content="#0c0e15" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#ede8da" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#efe9db" media="(prefers-color-scheme: light)">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Ryan's Station">
   <meta property="og:url" content="https://ryan-station.vercel.app/">
-  <meta property="og:title" content="Ryan Wong | Robotics &amp; Automation Portfolio">
+  <meta property="og:title" content="Ryan Wong | Robotics & Automation Engineer">
   <meta property="og:description" content="Multi-robot inspection, ROS 2 autonomy, AI vision, soft robotics, and real-hardware control — MSc @ SUTD, Singapore.">
   <!-- 社交抓取器按 OG 规范要求绝对 URL，相对路径会导致预览图不渲染 -->
   <meta property="og:image" content="https://ryan-station.vercel.app/assets/og.jpg">
@@ -26,7 +25,8 @@
 </head>
 <body class="splash-active" data-page="portfolio">
   <a class="skip-link" href="#main" data-i18n="common.skipToContent">Skip to content</a>
-  <!-- Loading Animation Overlay -->
+
+  <!-- ============ 开屏：仓鼠发电 · 系统上电 ============ -->
   <div id="loading-overlay" class="loading-overlay" role="button" tabindex="0" aria-label="Skip intro">
     <div class="splash-logo">Ryan's Station</div>
     <div class="gearbox">
@@ -77,8 +77,10 @@
         </div>
       </div>
     </div>
-
-    <div class="loader">
+    <div class="splash-boot" aria-hidden="true">
+      <span id="splash-boot-line">&gt; POWER: HAMSTER ONLINE</span>
+    </div>
+    <div class="loader" aria-hidden="true">
       <div class="text"><span data-i18n="common.loading">Loading</span></div>
       <div class="text"><span data-i18n="common.loading">Loading</span></div>
       <div class="text"><span data-i18n="common.loading">Loading</span></div>
@@ -92,269 +94,160 @@
     </div>
   </div>
 
+  <!-- ============ 准星光标（桌面增强） ============ -->
+  <div class="reticle" id="reticle" aria-hidden="true">
+    <svg width="44" height="44" viewBox="0 0 44 44">
+      <circle class="reticle-ring" cx="22" cy="22" r="15" fill="none" stroke="currentColor" stroke-width="1" opacity="0.55"/>
+      <line class="reticle-tick" x1="22" y1="2" x2="22" y2="8" stroke="currentColor" stroke-width="1"/>
+      <line class="reticle-tick" x1="22" y1="36" x2="22" y2="42" stroke="currentColor" stroke-width="1"/>
+      <line class="reticle-tick" x1="2" y1="22" x2="8" y2="22" stroke="currentColor" stroke-width="1"/>
+      <line class="reticle-tick" x1="36" y1="22" x2="42" y2="22" stroke="currentColor" stroke-width="1"/>
+      <circle class="reticle-dot" cx="22" cy="22" r="1.6" fill="currentColor"/>
+    </svg>
+    <span class="reticle-label" id="reticle-label"></span>
+  </div>
+
   <div id="page-content" class="page-content">
-    <nav class="glass-capsule-nav" aria-label="Primary" data-i18n-aria-label="nav.primaryLabel">
-      <a class="nav-brand" href="#home" aria-label="Ryan's Station — back to top" data-i18n-aria-label="nav.brandAria">
-        <svg class="nav-brand-mark" width="18" height="18" aria-hidden="true"><use href="assets/icons.svg#icon-cog"></use></svg>
-        <span class="nav-brand-name">Ryan's Station</span>
-      </a>
-      <ul class="nav-links">
-        <li class="active">
-          <a href="#home" data-i18n="nav.home" aria-current="true">Home</a>
-        </li>
-        <li>
-          <a href="#projects" data-i18n="nav.projects">Projects</a>
-        </li>
-        <li>
-          <a href="#about" data-i18n="nav.about">About</a>
-        </li>
-        <li>
-          <a href="#experience" data-i18n="nav.experience">Experience</a>
-        </li>
-        <li>
-          <a href="#contact" data-i18n="nav.contact">Contact</a>
-        </li>
-      </ul>
-      <div id="nav-cursor" class="nav-cursor"></div>
 
-      <button type="button" class="music-cta" id="music-trigger" data-i18n="nav.music">
-        Music Zone
-      </button>
-
-      <div class="language-switcher" role="group" aria-label="Switch language" data-i18n-aria-label="common.switchLanguage">
-        <button class="language-option is-active" type="button" data-lang="en" aria-pressed="true">EN</button>
-        <button class="language-option" type="button" data-lang="zh" aria-pressed="false">中文</button>
-      </div>
-
-      <div class="theme-switch-li">
-        <div class="theme-switch-wrapper">
-          <div class="theme-switch">
-            <div class="gorgeous-switch-track">
-              <div class="stars">
-                <div class="star" style="--star-delay: 0s; --star-top: 10px; --star-left: 25px; --star-size: 3px;"></div>
-                <div class="star" style="--star-delay: 0.2s; --star-top: 5px; --star-left: 15px; --star-size: 2px;"></div>
-                <div class="star" style="--star-delay: 0.4s; --star-top: 18px; --star-left: 20px; --star-size: 2px;"></div>
-                <div class="star" style="--star-delay: 0.6s; --star-top: 15px; --star-left: 35px; --star-size: 2px;"></div>
-                <div class="star" style="--star-delay: 0.8s; --star-top: 8px; --star-left: 45px; --star-size: 3px;"></div>
-                <div class="star" style="--star-delay: 1s; --star-top: 20px; --star-left: 50px; --star-size: 2px;"></div>
-              </div>
-              <div class="clouds">
-                <div class="cloud" style="--cloud-delay: 0s; --cloud-top: 18px; --cloud-left: 10px; --cloud-scale: 0.8;"></div>
-                <div class="cloud" style="--cloud-delay: 0.3s; --cloud-top: 10px; --cloud-left: 30px; --cloud-scale: 1;"></div>
-              </div>
-            </div>
-            <div class="gorgeous-switch-thumb">
-              <div class="thumb-sun"></div>
-              <div class="thumb-moon">
-                <div class="crater" style="--crater-top: 4px; --crater-left: 15px; --crater-size: 6px;"></div>
-                <div class="crater" style="--crater-top: 10px; --crater-left: 5px; --crater-size: 8px;"></div>
-                <div class="crater" style="--crater-top: 18px; --crater-left: 12px; --crater-size: 4px;"></div>
-              </div>
-            </div>
+    <!-- ============ 顶栏 ============ -->
+    <header class="site-header" id="site-header">
+      <nav class="site-nav" aria-label="Primary" data-i18n-aria-label="nav.primaryLabel">
+        <a class="nav-brand" href="#home" aria-label="Ryan's Station — back to top" data-i18n-aria-label="nav.brandAria">
+          <svg class="nav-brand-mark" width="20" height="20" aria-hidden="true" viewBox="0 0 20 20"><use href="assets/icons.svg#icon-cog"></use></svg>
+          <span class="nav-brand-name">Ryan's Station</span>
+        </a>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#home" data-i18n="nav.home">Home</a></li>
+          <li><a href="#work" data-i18n="nav.work">Work</a></li>
+          <li><a href="#about" data-i18n="nav.about">About</a></li>
+          <li><a href="#journey" data-i18n="nav.journey">Journey</a></li>
+          <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+        <div class="nav-controls">
+          <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-expanded="false" aria-controls="nav-links" aria-label="Menu" data-i18n-aria-label="common.menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="language-switcher" role="group" aria-label="Switch language" data-i18n-aria-label="common.switchLanguage">
+            <button class="language-option is-active" type="button" data-lang="en" aria-pressed="true">EN</button>
+            <button class="language-option" type="button" data-lang="zh" aria-pressed="false">中</button>
           </div>
+          <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false" aria-label="Switch to light theme" data-i18n-aria-label="common.themeToLight">
+            <svg class="theme-icon theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.6" y1="4.6" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.4" y2="19.4"/><line x1="4.6" y1="19.4" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.4" y2="4.6"/></g></svg>
+            <svg class="theme-icon theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 14.6A8.8 8.8 0 0 1 9.4 3.4a8.8 8.8 0 1 0 11.2 11.2Z" fill="currentColor"/></svg>
+          </button>
         </div>
-        <div class="text" data-i18n="nav.theme">Theme</div>
-      </div>
-    </nav>
+      </nav>
+    </header>
 
     <main id="main">
-    <section id="home">
-      <div class="hero">
-        <p class="hero-eyebrow" data-i18n="home.eyebrow">Robotics &amp; Automation Engineer · MSc, SUTD</p>
-        <h1 class="hero-title" data-i18n="home.heroTitle">Ryan Wong</h1>
-        <p class="hero-subtitle" data-i18n="home.heroSubtitle">I build robots that navigate, see, and act — ROS navigation, AI vision, and the manufacturing discipline to ship them into the real world.</p>
-        <div class="hero-actions">
-          <a class="hero-cta" href="#projects" data-i18n="home.cta">View Selected Work</a>
-          <a class="hero-cta-secondary" href="https://github.com/ryanwonglala" target="_blank" rel="noopener" data-i18n="home.ctaGithub">GitHub</a>
-        </div>
-      </div>
-    </section>
-    <section id="projects" class="projects-section">
-      <div class="projects-frame">
-        <div class="projects-stage" aria-label="Project showcase" data-i18n-aria-label="projects.showcaseAria">
-          <div class="projects-ambient"></div>
-          <div class="projects-axis" aria-hidden="true"></div>
-          <div class="projects-axis-horizontal" aria-hidden="true">
-            <span class="axis-diamond"></span>
-          </div>
 
-          <div class="project-sphere" role="img" aria-label="Project preview sphere" data-i18n-aria-label="projects.sphereAria">
-            <div class="sphere-image-layer">
-              <img class="sphere-image is-active" src="assets/projects/roboinspect/hero.svg" loading="lazy" decoding="async" alt="RoboInspect system map with two mobile robots, anomaly markers, and a response arm" data-i18n-alt="projects.mediaAlt.0">
-              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project4/human%20detector.mp4" preload="none" poster="assets/posters/p4.jpg" muted loop playsinline aria-label="Autonomous Security Robot hero video" data-i18n-aria-label="projects.videoAria.1"></video>
-              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/project3/%E5%AE%9E%E7%89%A9%E6%BC%94%E7%A4%BA.mp4" preload="none" poster="assets/posters/p3.jpg" muted loop playsinline aria-label="FlexiLock hero video" data-i18n-aria-label="projects.videoAria.2"></video>
-              <video class="sphere-image sphere-video" src="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/pic1.MP4" preload="none" poster="assets/posters/p1.jpg" muted loop playsinline aria-label="Robotic Arm Challenge hero video" data-i18n-aria-label="projects.videoAria.3"></video>
-            </div>
-            <div class="sphere-specular"></div>
-            <div class="sphere-shadow"></div>
-          </div>
-          <button class="project-detail-hotspot" type="button" aria-label="View project detail" data-i18n-aria-label="projects.viewDetails"></button>
-
-          <div class="projects-copy">
-            <article class="project-copy is-active" data-index="0">
-              <div class="project-centerline">
-                <div class="project-left">
-                  <p class="project-eyebrow">Project 01 · Graduation Project</p>
-                  <h2 class="project-title">RoboInspect</h2>
-                </div>
-                <div class="project-right">
-                  <p class="project-subtitle">A simulation-to-real ROS 2 inspection platform for multi-robot task allocation, autonomous navigation, vision-based anomaly mapping, and bilingual evidence reporting.</p>
-                  <p class="project-stats"><span>SIM E2E</span><span>TB3 FIELD</span><span>ROS 2</span></p>
-                </div>
-              </div>
-            </article>
-            <article class="project-copy" data-index="1">
-              <div class="project-centerline">
-                <div class="project-left">
-                  <p class="project-eyebrow">Project 02 · ROS2 Autonomy</p>
-                  <h2 class="project-title">Autonomous Security Robot</h2>
-                </div>
-                <div class="project-right">
-                  <p class="project-subtitle">An autonomous patrol robot for the SUTD Robotics Lab — frontier-based SLAM mapping, Nav2 patrol, and YOLOv8 + CLIP classification fused with Lidar.</p>
-                  <p class="project-stats"><span>&lt;20 CM</span><span>YOLOV8+CLIP</span><span>NAV2</span></p>
-                </div>
-              </div>
-            </article>
-            <article class="project-copy" data-index="2">
-              <div class="project-centerline">
-                <div class="project-left">
-                  <p class="project-eyebrow">Project 03 · Soft Robotics</p>
-                  <h2 class="project-title">FlexiLock</h2>
-                </div>
-                <div class="project-right">
-                  <p class="project-subtitle">10 kg load at −60 kPa with a 5.88 N·m bending moment — a pangolin-inspired vacuum scale-jamming sleeve for MAS grade 3–4 spasticity rehab, soft at rest and rigid on demand. My part: mechanism and soft-robotics design.</p>
-                  <p class="project-stats"><span>10 KG</span><span>−60 KPA</span><span>5.88 N·M</span></p>
-                </div>
-              </div>
-            </article>
-            <article class="project-copy" data-index="3">
-              <div class="project-centerline">
-                <div class="project-left">
-                  <p class="project-eyebrow">Project 04 · Competition</p>
-                  <h2 class="project-title">Robotic Arm Challenge</h2>
-                </div>
-                <div class="project-right">
-                  <p class="project-subtitle">4th place in a final live competition — a one-week team build where a 6-DOF arm grasps objects, loads a mobile vehicle, and triggers its run through a color-coded maze.</p>
-                  <p class="project-stats"><span>4TH PLACE</span><span>6-DOF</span><span>1 WEEK</span></p>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="projects-nav">
-            <div class="project-progress">
-              <span class="project-progress-current">01</span>
-              <span class="project-progress-divider">/</span>
-              <span class="project-progress-total">04</span>
+      <!-- ============ 首屏 · 夜行站台（传感器点场） ============ -->
+      <section id="home">
+        <div class="hero">
+          <canvas id="sensor-canvas" aria-hidden="true"></canvas>
+          <div class="hero-veil" aria-hidden="true"></div>
+          <div class="hero-inner">
+            <p class="hero-eyebrow"><span class="hero-eyebrow-dot" aria-hidden="true"></span><span data-i18n="hero.eyebrow">Robotics &amp; Automation Engineer · Singapore</span></p>
+            <h1 class="hero-title" data-i18n="hero.title">Ryan Wong</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">I build robots that navigate, see, and act. This is how they see at night.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#work" data-i18n="hero.ctaWork">View selected work</a>
+              <a class="btn btn-ghost" href="https://github.com/ryanwonglala" target="_blank" rel="noopener" data-i18n="hero.ctaGithub">GitHub</a>
             </div>
           </div>
-
-          <svg class="projects-filters" aria-hidden="true" width="0" height="0">
-            <filter id="sphere-distortion" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="8" result="noise" />
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="16" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
-          </svg>
-        </div>
-        <div class="project-detail-view" aria-hidden="true" inert>
-          <div class="project-detail-header">
-            <span class="detail-case-num" aria-hidden="true">01</span>
-            <div class="project-detail-panel">
-              <p class="detail-kicker" data-detail="kicker">Project 01</p>
-              <h3 class="detail-title" data-detail="title">RoboInspect — Multi-Robot Indoor Inspection System</h3>
-              <p class="detail-subtitle" data-detail="subtitle">End-to-end simulation; physical prototype field-tested.</p>
-              <p class="detail-description" data-detail="description">A ROS 2 multi-robot inspection system for route allocation, autonomous navigation, anomaly mapping, and bilingual evidence reporting.</p>
-              <div class="detail-meta">
-                <span data-detail="meta1">Status: Completed academic prototype</span>
-                <span data-detail="meta2">Stack: ROS 2, Nav2, Gazebo, RViz</span>
-              </div>
-              <button class="detail-share" type="button">
-                <span class="detail-share-label" data-i18n="projects.copyLink">Copy case link</span>
-              </button>
-            </div>
+          <div class="hero-meta" aria-label="Hero meta">
+            <span class="hero-meta-item"><span data-i18n="hero.location">Singapore · GMT+8</span></span>
+            <span class="hero-meta-sep" aria-hidden="true">·</span>
+            <span class="hero-meta-item station-clock" role="timer" aria-label="Singapore time, GMT+8" data-i18n-aria-label="hero.clockLabel">
+              <span class="station-clock-time">--:--:--</span> SGT
+            </span>
+            <span class="hero-meta-sep" aria-hidden="true">·</span>
+            <span class="hero-meta-item hero-status"><span class="hero-status-dot" aria-hidden="true"></span><span data-i18n="hero.status">Open to robotics &amp; automation roles</span></span>
           </div>
-          <div class="project-detail-sections">
+          <div class="hero-scroll" aria-hidden="true">
+            <span class="hero-scroll-label" data-i18n="hero.scroll">Scroll</span>
+            <span class="hero-scroll-line"></span>
           </div>
+          <p class="hero-sensor-hint" aria-hidden="true" data-i18n="hero.sensorHint">move — you are the sensor</p>
+          <button type="button" class="pixelbot" id="pixelbot" aria-label="A tiny pixel robot — say hi">
+            <svg viewBox="0 0 16 16" width="56" height="56" aria-hidden="true" shape-rendering="crispEdges">
+              <g class="pixelbot-body">
+                <rect x="5" y="2" width="1" height="1" fill="currentColor"/>
+                <rect x="10" y="2" width="1" height="1" fill="currentColor"/>
+                <rect x="4" y="3" width="8" height="1" fill="currentColor"/>
+                <rect x="3" y="4" width="10" height="6" fill="currentColor"/>
+                <rect x="5" y="5" width="2" height="2" fill="#0c0e15"/>
+                <rect x="9" y="5" width="2" height="2" fill="#0c0e15"/>
+                <rect x="4" y="10" width="8" height="1" fill="currentColor"/>
+                <rect x="4" y="11" width="2" height="2" fill="currentColor"/>
+                <rect x="10" y="11" width="2" height="2" fill="currentColor"/>
+              </g>
+              <rect class="pixelbot-heart" x="7" y="7" width="2" height="2" fill="#e85940"/>
+            </svg>
+          </button>
         </div>
-      </div>
-      <button class="project-back" type="button" tabindex="-1" aria-hidden="true" data-i18n="projects.backToShowroom">Back to showroom</button>
-      <div class="detail-lightbox" aria-hidden="true" inert>
-        <div class="lightbox-frame" role="dialog" aria-label="Media preview" data-i18n-aria-label="projects.mediaPreview">
-          <button class="lightbox-close" type="button" aria-label="Close preview" data-i18n="common.close" data-i18n-aria-label="common.closePreview">Close</button>
-          <img class="lightbox-media lightbox-image" alt="">
-          <video class="lightbox-media lightbox-video" muted loop playsinline controls></video>
-        </div>
-      </div>
+      </section>
 
-    </section>
-    <aside id="project-archive" class="project-archive" aria-labelledby="project-archive-title">
-      <div class="project-archive-inner">
-        <details class="project-archive-folder">
+      <!-- ============ 精选作品 · 检测目标 ============ -->
+      <section id="work" class="work-section" aria-labelledby="work-title">
+        <header class="section-head reveal">
+          <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="work.label">Selected Work</span></p>
+          <h2 class="section-title" id="work-title" data-i18n="work.title">Four projects, four kinds of hard.</h2>
+          <p class="section-intro" data-i18n="work.intro">Simulation to real hardware, mechanism design to system integration. Every claim here survived a demo, a test rig, or a live competition.</p>
+        </header>
+        <ol class="detect-list" id="work-list" aria-label="Selected projects"></ol>
+
+        <details class="work-archive reveal" id="work-archive">
           <summary>
             <span class="archive-tab" aria-hidden="true"></span>
             <span class="archive-summary-copy">
-              <span class="archive-kicker" data-i18n="projects.archive.kicker">Other Work · 1 file</span>
-              <span id="project-archive-title" class="archive-title" data-i18n="projects.archive.title">Open the project archive</span>
-              <span class="archive-summary-note" data-i18n="projects.archive.note">Non-core projects stay available without competing with the robotics showcase.</span>
+              <span class="archive-kicker" data-i18n="work.archiveLabel">Archive · 1 file</span>
+              <span class="archive-title" data-i18n="work.archiveTitle">One more thing in the archive</span>
+              <span class="archive-summary-note" data-i18n="work.archiveNote">Non-robotics work lives here.</span>
             </span>
             <span class="archive-toggle" aria-hidden="true"></span>
           </summary>
-          <article id="archive-hango" class="archive-project-card">
-            <div class="archive-project-media">
-              <img src="assets/posters/p2.jpg" loading="lazy" decoding="async" alt="Hango exhibition project poster" data-i18n-alt="projects.archive.item.mediaAlt">
-              <span class="archive-project-index" aria-hidden="true">A-01</span>
-            </div>
-            <div class="archive-project-copy">
-              <p class="archive-project-eyebrow" data-i18n="projects.archive.item.eyebrow">Archived · Interdisciplinary Design</p>
-              <h3 data-i18n="projects.archive.item.title">Hango</h3>
-              <p data-i18n="projects.archive.item.description">A semester-long design project by a five-person interdisciplinary team, developed through four staged reviews from research to an exhibited prototype. My contribution focused on visual communication, presentation structure, and the final exhibition video.</p>
-              <div class="archive-project-tags" aria-label="Project facts" data-i18n-aria-label="projects.archive.item.factsAria">
-                <span data-i18n="projects.archive.item.facts.0">5-person team</span>
-                <span data-i18n="projects.archive.item.facts.1">4 reviews</span>
-                <span data-i18n="projects.archive.item.facts.2">Exhibited</span>
-              </div>
-              <a class="archive-project-link" href="https://pub-f9f31997afdc468aa605212042ed5ac3.r2.dev/Project/Hango%20V1.1.mp4" target="_blank" rel="noopener noreferrer">
-                <span data-i18n="projects.archive.item.cta">Watch exhibition video</span>
-                <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </article>
+          <article class="archive-card" id="archive-card"></article>
         </details>
-      </div>
-    </aside>
-    <section id="about">
-      <div class="about-inner">
-        <div class="guild-card">
-          <p class="guild-ribbon"><span data-i18n="about.fileLabel">Station Master · Personnel File</span></p>
-          <i class="guild-corner guild-corner-tr" aria-hidden="true"></i>
-          <i class="guild-corner guild-corner-bl" aria-hidden="true"></i>
-          <div class="about-content">
-            <div class="guild-portrait">
-              <div class="about-photo" role="img" aria-label="Portrait placeholder"></div>
-              <div class="guild-nameplate">
-                <p class="guild-name" data-i18n="about.name">Ryan Wong</p>
-                <p class="guild-class" data-i18n="about.class">Robotics &amp; Automation Engineer</p>
-                <p class="guild-affil" data-i18n="about.affil">MSc, SUTD · Class of 2026</p>
-              </div>
-            </div>
-            <div class="about-text">
-              <h2 class="about-title" data-i18n="about.title">Engineering in Motion</h2>
-              <p class="about-description" data-i18n="about.intro">Robotics &amp; Automation engineer with an MSc from SUTD. Before robotics I worked in consumer-electronics manufacturing — NPI, DFM, and engineering documentation at Foxconn and Luxshare-ICT. Current focus: mobile robotics, ROS-based system integration, navigation, visual recognition, and practical automation workflows.</p>
+      </section>
+
+      <!-- ============ 关于 · 系统内部 ============ -->
+      <section id="about" class="about-section" aria-labelledby="about-title">
+        <div class="about-inner">
+          <header class="section-head reveal">
+            <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="about.label">About</span></p>
+            <h2 class="section-title" id="about-title" data-i18n="about.title">The person behind the workbench.</h2>
+          </header>
+          <div class="about-grid">
+            <figure class="about-portrait reveal">
+              <span class="idc-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <img src="assets/avatar.jpg" alt="Portrait of Ryan Wong" data-i18n-alt="about.portraitAlt" loading="lazy" decoding="async" width="440" height="440">
+              <figcaption class="about-nameplate">
+                <span class="about-name">Ryan Wong</span>
+                <span class="about-role" data-i18n="about.role">Robotics &amp; Automation Engineer</span>
+                <span class="about-affil">MSc, SUTD · Class of 2026</span>
+              </figcaption>
+            </figure>
+            <div class="about-body">
+              <p class="about-intro reveal" data-i18n="about.intro">Robotics &amp; automation engineer with an MSc from SUTD.</p>
+              <p class="about-capabilities-label reveal" data-i18n="about.capabilitiesLabel">Capabilities</p>
+              <div class="about-cards reveal" id="about-cards"></div>
             </div>
           </div>
-          <div class="guild-desk">
-            <div class="guild-blueprint" role="img" aria-label="Self-drawing blueprint of a 6-DOF robotic arm" data-i18n-aria-label="about.blueprintAria">
+
+          <div class="about-blueprint reveal" role="img" aria-label="Self-drawing blueprint of a 6-DOF robotic arm" data-i18n-aria-label="about.blueprintAria">
+            <span class="idc-corners idc-corners-outer" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
             <svg class="bp-svg" viewBox="0 0 760 540" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 <defs>
   <pattern id="bp-grid-minor" width="20" height="20" patternUnits="userSpaceOnUse">
-    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(234,229,214,0.045)" stroke-width="1"/>
+    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(212,190,140,0.05)" stroke-width="1"/>
   </pattern>
   <pattern id="bp-grid-major" width="100" height="100" patternUnits="userSpaceOnUse">
-    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(234,229,214,0.09)" stroke-width="1"/>
+    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(212,190,140,0.10)" stroke-width="1"/>
   </pattern>
 </defs>
 <g class="bp-paper" style="--d:0">
-  <rect x="0" y="0" width="760" height="540" fill="rgba(12,15,23,0.55)"/>
+  <rect x="0" y="0" width="760" height="540" fill="rgba(10,12,18,0.35)"/>
   <rect x="0" y="0" width="760" height="540" fill="url(#bp-grid-minor)"/>
   <rect x="0" y="0" width="760" height="540" fill="url(#bp-grid-major)"/>
   <rect class="bp-frame" x="14" y="14" width="732" height="512"/>
@@ -396,19 +289,18 @@
 <g class="bp-joint" style="--d:8">
     <circle class="bp-joint-outer" cx="480" cy="255" r="14" pathLength="1"/>
     <circle class="bp-joint-inner" cx="480" cy="255" r="5.88" pathLength="1"/>
-    <path class="bp-cross" pathLength="1" d="M 476.08 255 H 483.92 M 480 251.08 V 258.92"/>
+    <path class="bp-cross" pathLength="1" d="M 476.08 255 H 483.92 M 480 251.08 V 258.28"/>
     <circle class="bp-bolt" cx="486.73" cy="261.73" r="1.7"/><circle class="bp-bolt" cx="473.27" cy="261.73" r="1.7"/><circle class="bp-bolt" cx="473.27" cy="248.27" r="1.7"/><circle class="bp-bolt" cx="486.73" cy="248.27" r="1.7"/>
   </g>
 <g class="bp-joint" style="--d:10">
     <circle class="bp-joint-outer" cx="550" cy="240" r="10" pathLength="1"/>
     <circle class="bp-joint-inner" cx="550" cy="240" r="4.2" pathLength="1"/>
     <path class="bp-cross" pathLength="1" d="M 547.2 240 H 552.8 M 550 237.2 V 242.8"/>
-    
   </g>
 <g class="bp-gripper" style="--grip-origin:575.42px 234.55px">
   <path class="bp-outline" style="--d:11" pathLength="1" d="M 571.23 215 L 579.61 254.11 L 591.35 251.59 L 582.97 212.48 Z"/>
-  <g class="bp-finger-wrap bp-finger-top"><path class="bp-outline bp-finger" style="--d:11" pathLength="1" d="M 583.05 212.87 L 611.76 203.65 L 637.92 207.56 A 3.2199999999999998 3.2199999999999998 0 0 0 639.27 213.86 L 613.68 212.65 L 584.98 221.87 Z"/></g>
-  <g class="bp-finger-wrap bp-finger-bot"><path class="bp-outline bp-finger" style="--d:11" pathLength="1" d="M 591.26 251.2 L 621.23 247.85 L 643.49 233.56 A 3.2199999999999998 3.2199999999999998 0 0 1 642.14 227.27 L 619.3 238.85 L 589.34 242.21 Z"/></g>
+  <g class="bp-finger-wrap bp-finger-top"><path class="bp-outline bp-finger" style="--d:11" pathLength="1" d="M 583.05 212.87 L 611.76 203.65 L 637.92 207.56 A 3.22 3.22 0 0 0 639.27 213.86 L 613.68 212.65 L 584.98 221.87 Z"/></g>
+  <g class="bp-finger-wrap bp-finger-bot"><path class="bp-outline bp-finger" style="--d:11" pathLength="1" d="M 591.26 251.2 L 621.23 247.85 L 643.49 233.56 A 3.22 3.22 0 0 1 642.14 227.27 L 619.3 238.85 L 589.34 242.21 Z"/></g>
 </g>
 <g class="bp-dim" style="--d:12">
   <path class="bp-dim-ext" pathLength="1" d="M 168 415 H 132 M 172 320 H 132"/>
@@ -433,194 +325,231 @@
   <path class="bp-tb-rule" pathLength="1" d="M 470 492 H 742 M 588 492 V 526 M 666 492 V 526"/>
   <circle class="bp-status-dot" cx="484" cy="477" r="3"/>
   <text class="bp-tb-title" x="496" y="482">RA-01 · 6-DOF MANIPULATOR</text>
-  <text class="bp-tb-cell" x="480" y="512">REF: PROJECT 01</text>
+  <text class="bp-tb-cell" x="480" y="512">REF: STATION</text>
   <text class="bp-tb-cell" x="598" y="512">SCALE 1:1</text>
   <text class="bp-tb-cell" x="676" y="512">SHEET 1/1</text>
 </g>
-</svg>
+            </svg>
           </div>
-            <div class="guild-notes">
-              <p class="about-skills-label" data-i18n="about.capabilitiesLabel">Capabilities</p>
-          <div class="about-skills">
-            <div class="about-skill">
-              <h3 class="about-skill-title" data-i18n="about.cards.0.title">Robotics &amp; Automation</h3>
-              <p class="about-skill-text" data-i18n="about.cards.0.text">Hands-on experience with TurtleBot3, ROS navigation workflows, SLAM testing, sensor integration, and real-robot course demos.</p>
-            </div>
-            <div class="about-skill">
-              <h3 class="about-skill-title" data-i18n="about.cards.1.title">Mechanical &amp; Manufacturing Engineering</h3>
-              <p class="about-skill-text" data-i18n="about.cards.1.text">Background in NPI, engineering drawings, BOM documentation, ECO/ECR tracking, DFM support, and cross-functional manufacturing coordination.</p>
-            </div>
-            <div class="about-skill">
-              <h3 class="about-skill-title" data-i18n="about.cards.2.title">Code, AI Vision &amp; Documentation</h3>
-              <p class="about-skill-text" data-i18n="about.cards.2.text">Exploring Python, ROS, Git/GitHub, YOLO/CLIP-based visual recognition, and portfolio-style technical documentation to communicate engineering work clearly.</p>
-            </div>
+
+          <div class="about-offduty reveal">
+            <img class="offduty-mascot" src="assets/mascot/station-master.webp" alt="Station mascot illustration" data-i18n-alt="about.mascotAlt" loading="lazy" decoding="async" width="708" height="798">
+            <div class="offduty-copy">
+              <p class="offduty-label" data-i18n="about.offDutyLabel">Off duty</p>
+              <h3 class="offduty-title" data-i18n="about.offDutyTitle">When the robots are parked.</h3>
+              <p class="offduty-text" data-i18n="about.offDuty">Pixel art and old games, anime and manga, the occasional philosophy book.</p>
             </div>
           </div>
         </div>
-      </div>
-      </div>
-    </section>
-    <section id="experience" class="experience-section">
-      <div class="experience-inner">
-        <header class="experience-header">
-          <div class="experience-header-copy">
-            <h2 data-i18n="experience.title">Experience</h2>
-            <p data-i18n="experience.subtitle">Highlights over the years</p>
-          </div>
-          <div class="station-clock" role="timer" aria-label="Singapore time, GMT+8">
-            <span class="station-clock-label">SGT</span>
-            <span class="station-clock-time">--:--:--</span>
-            <span class="station-clock-tz">GMT+8</span>
-          </div>
-        </header>
-        <div class="experience-shell">
-          <div class="experience-timeline" aria-label="Experience timeline" data-i18n-aria-label="experience.timelineAria">
-            <div class="experience-timeline-inner">
-              <div class="experience-board-head" aria-hidden="true">
-                <span data-i18n="experience.boardTitle">Departures</span>
-                <span class="experience-board-code">RS·04</span>
-              </div>
-              <div class="experience-board-cols" aria-hidden="true">
-                <span data-i18n="experience.colTime">Time</span>
-                <span data-i18n="experience.colDest">Destination</span>
-                <span data-i18n="experience.colStatus">Status</span>
-              </div>
-              <button class="experience-timeline-item experience-next-stop" type="button" aria-label="Next destination — contact me" data-i18n-aria-label="experience.nextAria">
-                <span class="experience-period" data-i18n="experience.nextPeriod">2026—</span>
-                <span class="experience-dest">
-                  <span class="experience-dest-org" data-i18n="experience.nextDest">Next Destination</span>
-                  <span class="experience-stage-tag" data-i18n="experience.nextHint">Open to Robotics &amp; Automation roles</span>
-                </span>
-                <span class="experience-status is-boarding" data-i18n="experience.statusBoarding">Boarding</span>
-              </button>
-              <div class="experience-timeline-list" role="tablist"></div>
+      </section>
+
+      <!-- ============ 旅程 · 到发信息屏 ============ -->
+      <section id="journey" class="journey-section" aria-labelledby="journey-title">
+        <div class="journey-inner">
+          <header class="section-head reveal">
+            <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="journey.label">Journey</span></p>
+            <h2 class="section-title" id="journey-title" data-i18n="journey.title">Departures.</h2>
+            <p class="section-intro" data-i18n="journey.intro">Where I have been, newest first.</p>
+            <div class="station-clock station-clock-lg" role="timer" aria-label="Singapore time, GMT+8" data-i18n-aria-label="journey.clockLabel">
+              <span class="station-clock-label">SGT</span>
+              <span class="station-clock-time">--:--:--</span>
+              <span class="station-clock-tz">GMT+8</span>
             </div>
-          </div>
-          <div class="experience-detail" aria-live="polite">
-            <article class="experience-card is-visible" data-experience-card>
-              <div class="experience-card-media" data-experience-media></div>
-              <div class="experience-card-content">
-                <h3 class="experience-org" data-experience-org></h3>
-                <p class="experience-role" data-experience-role></p>
-                <p class="experience-summary" data-experience-summary></p>
-                <ul class="experience-highlights" data-experience-highlights></ul>
-                <div class="experience-tags" data-experience-tags></div>
-                <div class="experience-links" data-experience-links></div>
-              </div>
-            </article>
+          </header>
+          <div class="departures reveal" aria-label="Experience departures board">
+            <div class="departures-head" aria-hidden="true">
+              <span data-i18n="journey.label">Journey</span>
+              <span class="departures-code">RS·04</span>
+            </div>
+            <button class="departure departure-next" type="button" data-scroll="#contact">
+              <span class="departure-time">2026—</span>
+              <span class="departure-dest">
+                <span class="departure-org" data-i18n="journey.next">Next destination</span>
+                <span class="departure-hint" data-i18n="journey.nextHint">Open to Robotics &amp; Automation roles</span>
+              </span>
+              <span class="departure-status is-boarding" data-i18n="journey.boarding">Boarding</span>
+            </button>
+            <div class="departures-list" id="departures-list"></div>
           </div>
         </div>
-      </div>
-    </section>
-    <section id="contact" class="contact-section">
-      <div class="contact-inner">
-        <header class="contact-header">
-          <h2 data-i18n="contact.title">Contact</h2>
-          <p data-i18n="contact.subtitle">Let's connect</p>
-        </header>
-        <div class="contact-list">
-          <div class="contact-item">
-            <div class="contact-card-media">
-              <img class="contact-card-image" src="assets/contact/prop-phonebooth.webp" alt="" aria-hidden="true" loading="lazy" width="676" height="369">
-            </div>
-            <div class="contact-card-body">
-              <div class="contact-row">
-                <div class="contact-label" data-i18n="contact.phoneSg">Phone · SG</div>
-                <div class="contact-info">+65 8737 2213</div>
-                <button class="contact-action" type="button" data-copy="+65 8737 2213" aria-label="Copy Singapore phone number" data-i18n="common.copy" data-i18n-aria-label="contact.copySingaporePhone">Copy</button>
-              </div>
-              <div class="contact-row">
-                <div class="contact-label" data-i18n="contact.phoneCn">Phone · CN</div>
-                <div class="contact-info">+86 185 7415 3704</div>
-                <button class="contact-action" type="button" data-copy="+86 185 7415 3704" aria-label="Copy China phone number" data-i18n="common.copy" data-i18n-aria-label="contact.copyChinaPhone">Copy</button>
-              </div>
-              <p class="contact-note" data-i18n="contact.phoneNote">Available on WhatsApp / WeChat</p>
-            </div>
+      </section>
+
+      <!-- ============ 联系 · 终点站 ============ -->
+      <section id="contact" class="contact-section" aria-labelledby="contact-title">
+        <div class="contact-headlight" aria-hidden="true"></div>
+        <div class="contact-inner">
+          <div class="terminus reveal" aria-hidden="true">
+            <span class="terminus-flap terminus-flap-a">RS·00</span>
+            <span class="terminus-word" id="terminus-word">TERMINUS</span>
+            <span class="terminus-flap terminus-flap-b">终点站</span>
           </div>
-          <div class="contact-item">
-            <div class="contact-card-media">
-              <img class="contact-card-image" src="assets/contact/prop-mailbox.webp" alt="" aria-hidden="true" loading="lazy" width="676" height="369">
+          <header class="section-head reveal contact-head">
+            <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="contact.label">Contact</span></p>
+            <h2 class="section-title" id="contact-title" data-i18n="contact.title">End of the line.</h2>
+            <p class="section-intro" data-i18n="contact.subtitle">The station master has clocked out — but the mailbox never closes.</p>
+          </header>
+
+          <div class="contact-grid">
+            <div class="contact-row contact-row-primary reveal">
+              <span class="contact-label" data-i18n="contact.email">Email</span>
+              <span class="contact-value contact-email">demonlover1379@outlook.com</span>
+              <span class="contact-actions">
+                <a class="btn btn-primary btn-sm" href="mailto:demonlover1379@outlook.com" data-i18n="contact.sendEmail">Send an email</a>
+                <button class="contact-action" type="button" data-copy="demonlover1379@outlook.com" aria-label="Copy email address" data-i18n="common.copy" data-i18n-aria-label="contact.copy163">Copy</button>
+              </span>
             </div>
-            <div class="contact-card-body">
-              <div class="contact-row">
-                <div class="contact-label" data-i18n="contact.email">Email</div>
-                <div class="contact-info contact-email">demonlover1379@outlook.com</div>
-                <a class="contact-action primary" href="mailto:demonlover1379@outlook.com" data-i18n="contact.sendEmail">Send an email</a>
-              </div>
-              <div class="contact-row">
-                <div class="contact-label" data-i18n="contact.email">Email</div>
-                <div class="contact-info contact-email">zhemeng1379@163.com</div>
-                <a class="contact-action" href="mailto:zhemeng1379@163.com" data-i18n="contact.sendEmail">Send an email</a>
-                <button class="contact-action" type="button" data-copy="zhemeng1379@163.com" aria-label="Copy 163 email address" data-i18n="common.copy" data-i18n-aria-label="contact.copy163">Copy</button>
-              </div>
+            <div class="contact-row reveal">
+              <span class="contact-label" data-i18n="contact.phoneSg">Phone · SG</span>
+              <span class="contact-value">+65 8737 2213</span>
+              <span class="contact-actions">
+                <button class="contact-action" type="button" data-copy="+65 8737 2213" aria-label="Copy Singapore phone number" data-i18n="common.copy" data-i18n-aria-label="contact.copySg">Copy</button>
+              </span>
             </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-card-media">
-              <img class="contact-card-image" src="assets/contact/prop-paper.webp" alt="" aria-hidden="true" loading="lazy" width="676" height="369">
+            <div class="contact-row reveal">
+              <span class="contact-label" data-i18n="contact.phoneCn">Phone · CN</span>
+              <span class="contact-value">+86 185 7415 3704</span>
+              <span class="contact-actions">
+                <button class="contact-action" type="button" data-copy="+86 185 7415 3704" aria-label="Copy China phone number" data-i18n="common.copy" data-i18n-aria-label="contact.copyCn">Copy</button>
+              </span>
             </div>
-            <div class="contact-card-body">
-              <div class="contact-row">
-                <div class="contact-label" data-i18n="contact.location">Location</div>
-                <div class="contact-info" data-i18n="contact.locationValue">Singapore / Hougang</div>
-              </div>
+            <p class="contact-note reveal" data-i18n="contact.phoneNote">Available on WhatsApp / WeChat</p>
+            <div class="contact-row reveal">
+              <span class="contact-label" data-i18n="contact.location">Location</span>
+              <span class="contact-value" data-i18n="contact.locationValue">Singapore · Hougang</span>
             </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-card-media">
-              <img class="contact-card-image" src="assets/contact/prop-dove.webp" alt="" aria-hidden="true" loading="lazy" width="676" height="369">
-            </div>
-            <div class="contact-card-body">
-              <div class="contact-row">
-                <div class="contact-label">LinkedIn</div>
-                <a class="contact-info contact-link" href="https://www.linkedin.com/in/wong-ryan-9b51b6384/" target="_blank" rel="noopener">linkedin.com/in/wong-ryan-9b51b6384</a>
+            <div class="contact-row reveal">
+              <span class="contact-label">LinkedIn</span>
+              <a class="contact-value contact-link" href="https://www.linkedin.com/in/wong-ryan-9b51b6384/" target="_blank" rel="noopener">linkedin.com/in/wong-ryan-9b51b6384</a>
+              <span class="contact-actions">
                 <a class="contact-action" href="https://www.linkedin.com/in/wong-ryan-9b51b6384/" target="_blank" rel="noopener" data-i18n="contact.viewLinkedIn">View LinkedIn profile</a>
-              </div>
+              </span>
             </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-card-media">
-              <img class="contact-card-image" src="assets/contact/prop-typewriter.webp" alt="" aria-hidden="true" loading="lazy" width="676" height="369">
-            </div>
-            <div class="contact-card-body">
-              <div class="contact-row">
-                <div class="contact-label">GitHub</div>
-                <a class="contact-info contact-link" href="https://github.com/ryanwonglala" target="_blank" rel="noopener">github.com/ryanwonglala</a>
+            <div class="contact-row reveal">
+              <span class="contact-label">GitHub</span>
+              <a class="contact-value contact-link" href="https://github.com/ryanwonglala" target="_blank" rel="noopener">github.com/ryanwonglala</a>
+              <span class="contact-actions">
                 <a class="contact-action" href="https://github.com/ryanwonglala" target="_blank" rel="noopener" data-i18n="contact.viewGitHub">View GitHub profile</a>
-              </div>
+              </span>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-    <p class="visually-hidden" id="copy-status" role="status"></p>
+      </section>
+
+      <p class="visually-hidden" id="copy-status" role="status"></p>
     </main>
 
-    <!-- 音乐区域确认弹窗 -->
-    <div id="club-door" class="club-door" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Music Zone" data-i18n-aria-label="musicModal.subtitle">
-      <div class="club-door-glow" aria-hidden="true"></div>
-      <div class="club-door-panel club-door-left" aria-hidden="true">
-        <span class="club-porthole"></span>
-        <span class="club-plate">B1 · MUSIC ZONE</span>
+    <!-- ============ 页脚：仓鼠下班 ============ -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-hamster" aria-hidden="true">
+          <div class="footer-lamp"></div>
+          <div class="station-mouse-footer">
+            <div class="hamster">
+              <div class="hamster__body">
+                <div class="hamster__head">
+                  <div class="hamster__ear"></div>
+                  <div class="hamster__eye"></div>
+                  <div class="hamster__nose"></div>
+                </div>
+                <div class="hamster__limb hamster__limb--fr"></div>
+                <div class="hamster__limb hamster__limb--fl"></div>
+                <div class="hamster__limb hamster__limb--br"></div>
+                <div class="hamster__limb hamster__limb--bl"></div>
+                <div class="hamster__tail"></div>
+              </div>
+            </div>
+          </div>
+          <span class="footer-closed">Zzz…</span>
+        </div>
+        <div class="footer-columns">
+          <div class="footer-col footer-brand">
+            <p class="footer-station">Ryan's Station</p>
+            <p class="footer-tagline" data-i18n="footer.tagline">Built by hand — no templates were harmed.</p>
+            <p class="footer-clock station-clock" role="timer" aria-label="Singapore time, GMT+8" data-i18n-aria-label="footer.clockLabel">
+              <span class="station-clock-time">--:--:--</span> SGT
+            </p>
+          </div>
+          <div class="footer-col">
+            <p class="footer-col-label" data-i18n="footer.music">Music Zone</p>
+            <button class="footer-music" type="button" id="music-trigger">
+              <svg width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-music"></use></svg>
+              <span data-i18n="footer.musicNote">B1 · The player stays open late.</span>
+            </button>
+          </div>
+          <div class="footer-col footer-nav-col">
+            <p class="footer-col-label" data-i18n="nav.primaryLabel">Navigation</p>
+            <ul class="footer-nav">
+              <li><a href="#work" data-i18n="nav.work">Work</a></li>
+              <li><a href="#about" data-i18n="nav.about">About</a></li>
+              <li><a href="#journey" data-i18n="nav.journey">Journey</a></li>
+              <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-col footer-top-col">
+            <a class="footer-top" href="#home">
+              <span data-i18n="footer.backToTop">Back to top</span>
+              <span aria-hidden="true">↑</span>
+            </a>
+          </div>
+        </div>
+        <p class="footer-rights"><span data-i18n="footer.rights">Ryan Wong · Ryan’s Station</span> · 2026</p>
       </div>
-      <div class="club-door-panel club-door-right" aria-hidden="true">
-        <span class="club-porthole"></span>
-      </div>
-      <div class="club-sign">
-        <p class="club-neon" aria-hidden="true">AFTER HOURS</p>
-        <p class="club-sub" data-i18n="musicModal.body">You are about to enter the leisure zone</p>
-        <p class="club-sub2" data-i18n="musicModal.bodySecond">Continue to the music player?</p>
-      </div>
-      <div class="club-actions">
-        <button id="club-door-stay" class="club-btn club-btn-stay" type="button"><span data-i18n="musicModal.stay">Not now</span></button>
-        <button id="club-door-enter" class="club-btn club-btn-enter" type="button"><span data-i18n="musicModal.enter">Step in</span><span class="club-btn-arrow" aria-hidden="true">→</span></button>
-      </div>
-    </div>
-
+    </footer>
   </div>
 
-  <!-- CSS 双图昼夜溶解背景系统（three.js 已退役） -->
-  <script src="background_shader.js"></script>
+  <!-- ============ 到站信息条（固定底部） ============ -->
+  <div class="led-strip" id="led-strip" aria-hidden="true">
+    <span class="led-cell led-rec"></span>
+    <span class="led-cell led-now"><span class="led-key" data-i18n="led.now">NOW</span> <span class="led-val" id="led-now">HOME</span></span>
+    <span class="led-cell led-next"><span class="led-key" data-i18n="led.next">NEXT</span> <span class="led-val" id="led-next">WORK</span></span>
+    <span class="led-cell led-stops" id="led-stops">01/05</span>
+    <span class="led-cell led-clock"><span class="station-clock-time">--:--:--</span></span>
+  </div>
+
+  <!-- ============ 案例档案（全屏） ============ -->
+  <div class="case-view" id="case-view" role="dialog" aria-modal="true" aria-labelledby="case-title" aria-hidden="true" inert>
+    <div class="case-scanline" aria-hidden="true"></div>
+    <div class="case-scroll" id="case-scroll">
+      <div class="case-topbar">
+        <span class="case-index" id="case-index">01</span>
+        <span class="case-track-tag" id="case-track-tag" aria-hidden="true">TRACKING…</span>
+        <button class="case-close" type="button" id="case-close" aria-label="Close case file" data-i18n="work.closeCase" data-i18n-aria-label="work.closeCase">Close</button>
+      </div>
+      <div class="case-body" id="case-body"></div>
+      <div class="case-footnav">
+        <button class="case-nav-btn" type="button" id="case-prev"><span aria-hidden="true">←</span> <span data-i18n="work.prev">Previous project</span></button>
+        <button class="case-nav-btn" type="button" id="case-next"><span data-i18n="work.next">Next project</span> <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 媒体灯箱 ============ -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Media preview" data-i18n-aria-label="work.lightbox" aria-hidden="true" inert>
+    <button class="lightbox-close" type="button" id="lightbox-close" aria-label="Close preview" data-i18n="work.lightboxClose" data-i18n-aria-label="work.lightboxClose">Close</button>
+    <figure class="lightbox-frame">
+      <span class="idc-corners idc-corners-lb" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <img class="lightbox-media" id="lightbox-image" alt="">
+      <video class="lightbox-media" id="lightbox-video" muted loop playsinline controls></video>
+      <figcaption class="lightbox-caption" id="lightbox-caption"></figcaption>
+    </figure>
+  </div>
+
+  <!-- ============ 音乐区入口 ============ -->
+  <div id="club-door" class="club-door" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Music Zone" data-i18n-aria-label="musicModal.title">
+    <div class="club-door-backdrop"></div>
+    <div class="club-door-panel">
+      <p class="club-sign">B1 · MUSIC ZONE</p>
+      <p class="club-sub" data-i18n="musicModal.body">You are about to enter the leisure zone.</p>
+      <p class="club-sub2" data-i18n="musicModal.bodySecond">Continue to the music player?</p>
+      <div class="club-actions">
+        <button id="club-door-stay" class="btn btn-ghost btn-sm" type="button" data-i18n="musicModal.stay">Not now</button>
+        <button id="club-door-enter" class="btn btn-primary btn-sm" type="button"><span data-i18n="musicModal.enter">Step in</span><span class="club-btn-arrow" aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="sensor.js"></script>
+  <script src="data.js"></script>
   <script src="i18n.js"></script>
   <script src="script.js"></script>
 </body>
