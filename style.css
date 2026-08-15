@@ -1780,15 +1780,21 @@ body.light-mode .footer-pixelbot { color: #a87420; filter: drop-shadow(0 4px 8px
 }
 .footer-closed {
   position: absolute;
-  right: max(24px, calc(50% - 200px));
-  bottom: 8px;
+  left: calc(50% + 28px);
+  top: 30px;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-muted);
   border: 1px dashed var(--line-strong);
   padding: 3px 9px;
   border-radius: 5px;
-  transform: rotate(-4deg);
+  transform: translate(-12%, -100%) rotate(-4deg);
+  transform-origin: left bottom;
+  animation: footer-zzz-breathe 3.6s ease-in-out infinite;
+}
+@keyframes footer-zzz-breathe {
+  0%, 100% { opacity: 0.42; transform: translate(-12%, -100%) rotate(-4deg) scale(0.94); }
+  50% { opacity: 1; transform: translate(-12%, -100%) rotate(-4deg) scale(1.04); }
 }
 
 /* ============ 到站信息条（底部固定） ============ */
