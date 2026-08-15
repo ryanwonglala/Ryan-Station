@@ -31,9 +31,9 @@
       },
       hero: {
         eyebrow: 'Robotics & Automation Engineer · Singapore',
-        title: 'Ryan Wong',
+        title: 'Welcome to Ryan’s Station.',
         subtitle:
-          'I build robots that navigate, see, and act. This is how they see at night.',
+          'I build robots that navigate, see, and act — from simulation to real hardware.',
         ctaWork: 'View selected work',
         ctaGithub: 'GitHub',
         scroll: 'Scroll',
@@ -230,9 +230,9 @@
       },
       hero: {
         eyebrow: '机器人与自动化工程师 · 新加坡',
-        title: 'Ryan Wong',
+        title: '欢迎来到 Ryan’s Station',
         subtitle:
-          '我造能导航、能看、能动的机器人。这是它们在夜里看见的世界。',
+          '我造能导航、能看、能行动的机器人——从仿真走向真实硬件。',
         ctaWork: '查看精选作品',
         ctaGithub: 'GitHub',
         scroll: '向下',

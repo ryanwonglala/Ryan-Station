@@ -655,7 +655,7 @@ body.light-mode .hero {
     radial-gradient(ellipse 120% 74% at 50% 44%, transparent 24%, color-mix(in srgb, var(--bg) 46%, transparent) 100%),
     linear-gradient(to bottom, color-mix(in srgb, var(--bg) 42%, transparent), transparent 26%, transparent 64%, color-mix(in srgb, var(--bg) 88%, transparent));
 }
-.hero-inner { max-width: 780px; position: relative; z-index: 2; }
+.hero-inner { width: min(1040px, 92vw); max-width: 1040px; position: relative; z-index: 2; }
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -677,9 +677,10 @@ body.light-mode .hero {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(64px, 11vw, 136px);
-  line-height: 0.98;
+  font-size: clamp(46px, 6.6vw, 88px);
+  line-height: 1.02;
   letter-spacing: 0.015em;
+  text-wrap: balance;
   color: var(--text);
   text-shadow: 0 2px 44px rgba(8, 2, 29, 0.5);
 }
