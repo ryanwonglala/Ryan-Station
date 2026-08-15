@@ -47,6 +47,7 @@
       window.setTimeout(() => {
         overlay.remove();
         body.classList.remove('splash-exit');
+        window.dispatchEvent(new CustomEvent('station:splash-ready'));
       }, reducedMotion() ? 40 : 950);
     };
 
@@ -67,6 +68,21 @@
   })();
 
   /* ==================================================================
+   * 会呼吸的昼/夜工坊场景
+   * ================================================================== */
+  const stationScene = (function initStationScene() {
+    if (!window.StationScene) return null;
+    const hero = $('#home');
+    if (!hero) return null;
+    const forceStatic = new URLSearchParams(window.location.search).has('static');
+    const scene = window.StationScene.init(hero, { static: forceStatic });
+    const reveal = () => window.setTimeout(() => scene.start(), 200);
+    window.addEventListener('station:splash-ready', reveal, { once: true });
+    if (!document.body.classList.contains('splash-active') && !document.body.classList.contains('splash-exit')) reveal();
+    return scene;
+  })();
+
+  /* ==================================================================
    * 传感器点场（首屏）
    * ================================================================== */
   const heroField = (function initSensor() {
@@ -77,6 +93,7 @@
       field = new window.SensorField(canvas, { maxDPR: 1.6 });
     } catch (e) { return null; }
     if (field.mode === 'none') return null;
+    if (stationScene) stationScene.attachSensor(field);
 
     const hero = $('#home');
     // ?static 或 reduced-motion：渲染单帧静态点场，不进入动画循环
@@ -92,7 +109,10 @@
       const r = canvas.getBoundingClientRect();
       const x = e.clientX - r.left;
       const y = e.clientY - r.top;
-      if (y >= 0 && y <= r.height) field.pulse(x, y);
+      if (y >= 0 && y <= r.height) {
+        field.pulse(x, y);
+        if (stationScene) stationScene.pulse(x, y);
+      }
     }, { passive: true });
     // 触摸拖动即扫描
     window.addEventListener('touchmove', (e) => {
@@ -110,6 +130,7 @@
       lastY = window.scrollY;
       flow = Math.max(-1.2, Math.min(1.2, flow * 0.86 + dy * 0.012));
       field.setFlow(flow);
+      if (stationScene) stationScene.setFlow(flow);
     }, { passive: true });
     window.setInterval(() => { flow *= 0.8; field.setFlow(flow); }, 260);
 
@@ -206,8 +227,45 @@
   (function initTheme() {
     const body = document.body;
     const btn = $('#theme-toggle');
-    let stored = null;
-    try { stored = localStorage.getItem('theme'); } catch (e) { /* noop */ }
+    const modeBtn = $('#led-theme-mode');
+    const DAY_START = 7 * 60;
+    const NIGHT_START = 18 * 60 + 30;
+
+    const sgtState = () => {
+      const shifted = new Date(Date.now() + 8 * 60 * 60 * 1000);
+      const mins = shifted.getUTCHours() * 60 + shifted.getUTCMinutes();
+      const dayStartUtc = Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate()) - 8 * 60 * 60 * 1000;
+      let next;
+      if (mins < DAY_START) next = dayStartUtc + DAY_START * 60000;
+      else if (mins < NIGHT_START) next = dayStartUtc + NIGHT_START * 60000;
+      else next = dayStartUtc + 86400000 + DAY_START * 60000;
+      return { light: mins >= DAY_START && mins < NIGHT_START, next };
+    };
+
+    const readStored = () => {
+      let raw = null;
+      try { raw = localStorage.getItem('theme'); } catch (e) { /* noop */ }
+      if (!raw) return null;
+      if (raw === 'light' || raw === 'dark') return { mode: raw, expires: sgtState().next };
+      try {
+        const parsed = JSON.parse(raw);
+        if ((parsed.mode === 'light' || parsed.mode === 'dark') && Number(parsed.expires) > Date.now()) return parsed;
+      } catch (e) { /* noop */ }
+      try { localStorage.removeItem('theme'); } catch (e) { /* noop */ }
+      return null;
+    };
+
+    let stored = readStored();
+    let auto = !stored;
+    let boundaryTimer = null;
+
+    const updateIndicator = () => {
+      if (!modeBtn) return;
+      modeBtn.textContent = auto ? 'AUTO' : 'MANUAL';
+      modeBtn.dataset.mode = auto ? 'auto' : 'manual';
+      modeBtn.title = auto ? 'Theme follows Singapore time' : 'Return theme to Singapore time';
+      modeBtn.setAttribute('aria-label', modeBtn.title);
+    };
 
     const apply = (light) => {
       body.classList.toggle('light-mode', light);
@@ -216,14 +274,47 @@
         btn.setAttribute('aria-label', t(light ? 'common.themeToDark' : 'common.themeToLight'));
       }
       if (heroField) heroField.setTheme(light);
+      if (stationScene) {
+        stationScene.setMode(light ? 'day' : 'night');
+        stationScene.setAuto(auto);
+      }
+      updateIndicator();
     };
-    apply(stored === 'light', false);
+
+    const scheduleBoundary = () => {
+      window.clearTimeout(boundaryTimer);
+      const state = sgtState();
+      boundaryTimer = window.setTimeout(() => {
+        auto = true;
+        stored = null;
+        try { localStorage.removeItem('theme'); } catch (e) { /* noop */ }
+        apply(sgtState().light);
+        scheduleBoundary();
+      }, Math.max(1000, state.next - Date.now() + 250));
+    };
+
+    const returnToAuto = () => {
+      auto = true;
+      stored = null;
+      try { localStorage.removeItem('theme'); } catch (e) { /* noop */ }
+      apply(sgtState().light);
+      scheduleBoundary();
+    };
+
+    apply(stored ? stored.mode === 'light' : sgtState().light);
+    scheduleBoundary();
     if (btn) {
       btn.addEventListener('click', () => {
         const toLight = !body.classList.contains('light-mode');
-        try { localStorage.setItem('theme', toLight ? 'light' : 'dark'); } catch (e) { /* noop */ }
+        auto = false;
+        stored = { mode: toLight ? 'light' : 'dark', setAt: Date.now(), expires: sgtState().next };
+        try { localStorage.setItem('theme', JSON.stringify(stored)); } catch (e) { /* noop */ }
         apply(toLight);
       });
+    }
+    if (modeBtn) modeBtn.addEventListener('click', returnToAuto);
+    if (window.PortfolioI18n) {
+      window.PortfolioI18n.onChange(() => apply(body.classList.contains('light-mode')));
     }
   })();
 

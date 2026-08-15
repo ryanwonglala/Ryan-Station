@@ -14,10 +14,13 @@ uniform vec2 u_mouse;
 uniform float u_time;
 uniform float u_flow;      // 滚动驱动的整体流速
 uniform vec3 u_pulse;      // x, y, t0
+uniform vec3 u_light;      // nearest scene light x, y, excitation
 uniform float u_theme;     // 0 night / 1 day
+uniform float u_mobile;
 varying float v_glow;
 varying float v_tint;
 varying float v_alpha;
+varying float v_layer;
 
 void main() {
   float seed = a_meta.x;
@@ -26,9 +29,9 @@ void main() {
 
   vec2 p = a_pos;
   // 层漂移：地面层横移最快（驶过的风景），中层慢，天空近乎静止
-  float driftSpeed = layer == 2.0 ? 26.0 : (layer == 1.0 ? 9.0 : 2.2);
+  float driftSpeed = layer == 3.0 ? 1.2 : (layer == 2.0 ? 26.0 : (layer == 1.0 ? 9.0 : 2.2));
   p.x += u_time * driftSpeed * (0.35 + u_flow * 3.0) * (fract(seed * 3.7) > 0.5 ? 1.0 : -1.0) * (layer == 2.0 ? 1.0 : 0.35);
-  p.y += sin(t + seed * 6.2831) * (layer == 2.0 ? 2.0 : 7.0);
+  p.y += sin(t * (layer == 3.0 ? 0.6 : 1.0) + seed * 6.2831) * (layer == 3.0 ? 11.0 : (layer == 2.0 ? 2.0 : 7.0));
   // 环绕
   vec2 res = u_res;
   p = mod(p + res, res);
@@ -37,6 +40,7 @@ void main() {
   vec2 d = p - u_mouse;
   float dist = length(d);
   float excite = smoothstep(190.0, 0.0, dist);
+  float lightExcite = smoothstep(130.0, 0.0, length(p - u_light.xy)) * u_light.z;
 
   // 脉冲涟漪
   float ring = 0.0;
@@ -51,13 +55,14 @@ void main() {
   float sweepAng = mod(u_time * 1.1, 6.2831);
   float sweep = smoothstep(0.30, 0.0, abs(ang - sweepAng)) * smoothstep(320.0, 90.0, dist) * 0.5;
 
-  v_glow = clamp(excite + ring + sweep, 0.0, 1.0);
+  v_glow = layer == 3.0 ? 0.0 : clamp(excite + lightExcite * 0.72 + ring + sweep, 0.0, 1.0);
   v_tint = a_meta.z;
-  v_alpha = layer == 0.0 ? 0.55 : (layer == 1.0 ? 0.8 : 0.9);
+  v_layer = layer;
+  v_alpha = layer == 3.0 ? (u_mobile > 0.5 ? 0.24 : 0.32) : (layer == 0.0 ? (u_theme < 0.5 ? 0.62 : 0.40) : (layer == 1.0 ? 0.8 : 0.9));
 
   vec2 clip = (p / res) * 2.0 - 1.0;
   gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
-  float size = (layer == 2.0 ? 2.0 : 1.6) + v_glow * 2.6 + fract(seed * 5.13) * 1.4;
+  float size = (layer == 3.0 ? (u_mobile > 0.5 ? 2.6 : 3.2) : (layer == 2.0 ? 2.0 : 1.6)) + v_glow * 2.6 + fract(seed * 5.13) * (layer == 3.0 ? 0.6 : 1.4);
   gl_PointSize = size * __DPR__;
 }
 `;
@@ -67,25 +72,34 @@ precision mediump float;
 varying float v_glow;
 varying float v_tint;
 varying float v_alpha;
+varying float v_layer;
 uniform float u_theme;
 
 void main() {
   vec2 uv = gl_PointCoord - 0.5;
   float d = length(uv);
   if (d > 0.5) discard;
-  float soft = smoothstep(0.5, 0.12, d);
-
-  vec3 amber = vec3(0.851, 0.647, 0.329);
-  vec3 paper = vec3(0.918, 0.898, 0.839);
-  vec3 cyan  = vec3(0.455, 0.843, 0.910);
-  vec3 ink   = vec3(0.180, 0.170, 0.140);
-
-  vec3 base = u_theme < 0.5
-    ? mix(mix(paper, amber, 0.55), cyan, step(0.93, v_tint))
-    : mix(mix(ink, vec3(0.659, 0.455, 0.125), 0.5), vec3(0.055, 0.486, 0.580), step(0.93, v_tint));
-
+  float soft = v_layer > 2.5 ? smoothstep(0.5, 0.34, d) : smoothstep(0.5, 0.12, d);
+  vec3 base;
+  float gain;
+  if (v_layer > 2.5) {
+    base = u_theme < 0.5 ? vec3(0.78,0.80,0.86) : vec3(0.953,0.863,0.682);
+    gain = 0.55;
+  } else if (v_tint < 0.30) {
+    base = u_theme < 0.5 ? vec3(1.0,0.933,0.769) : vec3(0.788,0.659,0.416);
+    gain = 1.25;
+  } else if (v_tint < 0.62) {
+    base = u_theme < 0.5 ? vec3(0.851,0.647,0.329) : vec3(0.227,0.208,0.173);
+    gain = 0.85;
+  } else if (v_tint < 0.86) {
+    base = u_theme < 0.5 ? vec3(0.561,0.659,0.910) : vec3(0.486,0.518,0.588);
+    gain = 1.0;
+  } else {
+    base = u_theme < 0.5 ? vec3(0.455,0.843,0.910) : vec3(0.055,0.486,0.580);
+    gain = 1.15;
+  }
   float alpha = soft * v_alpha * (u_theme < 0.5 ? (0.34 + v_glow * 0.66) : (0.30 + v_glow * 0.55));
-  gl_FragColor = vec4(base * (0.85 + v_glow * 0.9), alpha);
+  gl_FragColor = vec4(base * gain * (0.85 + v_glow * 0.9), alpha);
 }
 `;
 
@@ -97,6 +111,9 @@ void main() {
     this.pulseData = { x: 0, y: 0, t0: -10 };
     this.flow = 0;
     this.theme = 0;
+    this.lightExcite = { x: -9999, y: -9999, strength: 0 };
+    this.attractors = [];
+    this.mobileAttractors = false;
     this.running = false;
     this.startedAt = 0;
     this.mode = 'none';
@@ -112,7 +129,7 @@ void main() {
   };
 
   SensorField.prototype._generatePoints = function (n) {
-    // 三层分布：天空稀疏 / 中层结构（灯柱、桁架）/ 地面密集带
+    // 四层分布：天空 / 中层真实光源 / 地面 / 近景浮尘。
     const w = window.innerWidth;
     const h = window.innerHeight;
     const pos = new Float32Array(n * 2);
@@ -122,27 +139,41 @@ void main() {
       let layer;
       let x = Math.random() * w;
       let y;
-      if (r1 < 0.30) {
+      const skyCut = this.theme < 0.5 ? 0.34 : 0.22;
+      const midCut = skyCut + 0.30;
+      const dustCount = this.mobileAttractors ? 18 : Math.round(n * 0.12);
+      if (i >= n - dustCount) {
+        layer = 3;
+        y = h * (0.40 + Math.random() * 0.45);
+      } else if (r1 < skyCut) {
         layer = 0; // sky
-        y = Math.random() * h * 0.52;
-      } else if (r1 < 0.66) {
-        layer = 1; // mid structures
-        y = h * (0.42 + Math.random() * 0.28);
-        // 灯柱簇
-        if (Math.random() < 0.42) {
-          const lampX = (Math.round(Math.random() * 6) / 6) * w;
-          x = lampX + (Math.random() - 0.5) * 30;
-          y = h * (0.38 + Math.random() * 0.3);
+        y = h * (0.04 + Math.random() * 0.42);
+      } else if (r1 < midCut) {
+        layer = 1;
+        y = h * (0.40 + Math.random() * 0.26);
+        if (this.attractors.length && Math.random() < 0.72) {
+          const active = this.mobileAttractors
+            ? this.attractors.filter((a) => a.name === 'lamp' || a.name === 'floor' || a.name === 'rack')
+            : this.attractors;
+          const target = active[Math.floor(Math.random() * active.length)];
+          if (target) {
+            x = target.x + (Math.random() + Math.random() - 1) * Math.max(26, target.radius);
+            y = target.y + (Math.random() + Math.random() - 1) * Math.max(24, target.radius * 0.72);
+          }
         }
       } else {
         layer = 2; // floor
-        y = h * (0.74 + Math.random() * 0.24);
+        y = h * (0.72 + Math.random() * 0.26);
       }
       pos[i * 2] = x;
       pos[i * 2 + 1] = y;
       meta[i * 3] = Math.random();
       meta[i * 3 + 1] = layer;
-      meta[i * 3 + 2] = Math.random();
+      if (layer === 3) meta[i * 3 + 2] = 0.5;
+      else if (layer === 2) meta[i * 3 + 2] = 0.30 + Math.random() * 0.32;
+      else if (x < w * 0.38) meta[i * 3 + 2] = 0.62 + Math.random() * 0.24;
+      else if (x > w * 0.76) meta[i * 3 + 2] = 0.86 + Math.random() * 0.14;
+      else meta[i * 3 + 2] = Math.random() * 0.62;
     }
     return { pos, meta };
   };
@@ -174,7 +205,9 @@ void main() {
         time: gl.getUniformLocation(prog, 'u_time'),
         flow: gl.getUniformLocation(prog, 'u_flow'),
         pulse: gl.getUniformLocation(prog, 'u_pulse'),
+        light: gl.getUniformLocation(prog, 'u_light'),
         theme: gl.getUniformLocation(prog, 'u_theme'),
+        mobile: gl.getUniformLocation(prog, 'u_mobile'),
       };
       this.mode = 'webgl';
       gl.enable(gl.BLEND);
@@ -237,8 +270,34 @@ void main() {
     this.flow = Math.max(-1.5, Math.min(1.5, f));
   };
 
+  SensorField.prototype.setAttractors = function (attractors, mobile) {
+    this.attractors = Array.isArray(attractors) ? attractors : [];
+    this.mobileAttractors = Boolean(mobile);
+    if (this.w && this.h) {
+      const data = this._generatePoints(this.n || this._density());
+      this.points = data;
+      if (this.mode === 'webgl' && this.gl) {
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufPos);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, data.pos, this.gl.DYNAMIC_DRAW);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufMeta);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, data.meta, this.gl.DYNAMIC_DRAW);
+      }
+    }
+  };
+
+  SensorField.prototype.exciteLight = function (x, y, strength) {
+    this.lightExcite = { x: x, y: y, strength: Math.max(0, Math.min(1, strength || 0)) };
+  };
+
+  SensorField.prototype.setPalette = function (mode) {
+    this.setTheme(mode === 'day' || mode === true);
+  };
+
   SensorField.prototype.setTheme = function (light) {
-    this.theme = light ? 1 : 0;
+    const next = light ? 1 : 0;
+    if (this.theme === next) return;
+    this.theme = next;
+    if (this.w && this.h && this.n) this.setAttractors(this.attractors, this.mobileAttractors);
   };
 
   function perfNow() {
@@ -259,7 +318,9 @@ void main() {
       gl.uniform1f(this.u.time, Math.max(0, t));
       gl.uniform1f(this.u.flow, this.flow);
       gl.uniform3f(this.u.pulse, this.pulseData.x, this.pulseData.y, this.pulseData.t0);
+      gl.uniform3f(this.u.light, this.lightExcite.x, this.lightExcite.y, this.lightExcite.strength);
       gl.uniform1f(this.u.theme, this.theme);
+      gl.uniform1f(this.u.mobile, this.mobileAttractors ? 1 : 0);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufPos);
       gl.enableVertexAttribArray(this.aPos);
       gl.vertexAttribPointer(this.aPos, 2, gl.FLOAT, false, 0, 0);
@@ -286,15 +347,15 @@ void main() {
     const pts = [];
     for (let i = 0; i < n; i++) {
       const layer = meta[i * 3 + 1];
-      const drift = layer === 2 ? 18 : (layer === 1 ? 6 : 1.5);
+      const drift = layer === 3 ? 1.2 : (layer === 2 ? 18 : (layer === 1 ? 6 : 1.5));
       let x = (pos[i * 2] + t * drift * (0.4 + this.flow * 2.5) + w * 4) % w;
-      let y = pos[i * 2 + 1] + Math.sin(t * 0.7 + meta[i * 3] * 6.28) * 3;
+      let y = pos[i * 2 + 1] + Math.sin(t * (layer === 3 ? 0.42 : 0.7) + meta[i * 3] * 6.28) * (layer === 3 ? 11 : 3);
       pts.push({ x, y, layer, seed: meta[i * 3] });
       const d = Math.hypot(x - this.pointer.x, y - this.pointer.y);
       const glow = Math.max(0, 1 - d / 190);
-      const size = (layer === 2 ? 1.8 : 1.3) + glow * 2;
-      ctx.globalAlpha = (layer === 0 ? 0.5 : 0.8) * (light ? 0.5 : 0.6) + glow * 0.4;
-      ctx.fillStyle = glow > 0.25 ? (light ? '#a87420' : '#d9a554') : (light ? '#3a352c' : '#cfc9b8');
+      const size = (layer === 3 ? (this.mobileAttractors ? 2.6 : 3.2) : (layer === 2 ? 1.8 : 1.3)) + glow * 2;
+      ctx.globalAlpha = layer === 3 ? (this.mobileAttractors ? 0.18 : 0.24) : ((layer === 0 ? 0.5 : 0.8) * (light ? 0.5 : 0.6) + glow * 0.4);
+      ctx.fillStyle = layer === 3 ? (light ? '#f3dcae' : '#c7ccd9') : (glow > 0.25 ? (light ? '#a87420' : '#d9a554') : (light ? '#3a352c' : '#cfc9b8'));
       ctx.fillRect(x - size / 2, y - size / 2, size, size);
     }
     // 近邻连线
@@ -380,6 +441,7 @@ void main() {
       this.stop();
       this.renderFrame(perfNow());
     }
+    if (typeof this.onDegrade === 'function') this.onDegrade(this._degrades);
   };
 
   SensorField.prototype.stop = function () {
