@@ -684,13 +684,13 @@ body.light-mode .hero {
   text-shadow: 0 2px 44px rgba(8, 2, 29, 0.5);
 }
 .hero-subtitle {
-  margin: 26px auto 0;
+  margin: clamp(34px, 4.5vh, 46px) auto 0;
   max-width: 560px;
   font-size: clamp(16px, 2vw, 19px);
   line-height: 1.7;
   color: color-mix(in srgb, var(--text) 86%, transparent);
 }
-.hero-actions { margin-top: 40px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.hero-actions { margin-top: clamp(44px, 5.5vh, 56px); display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .hero-meta {
   position: absolute;
   bottom: calc(96px + var(--led-h));
@@ -770,18 +770,26 @@ body.light-mode .hero {
   position: absolute;
   right: clamp(18px, 6vw, 90px);
   bottom: calc(150px + var(--led-h));
-  width: 64px;
+  width: 88px;
   border: 0;
   padding: 6px;
   background: transparent;
-  color: var(--accent);
+  color: #ecbd6e;
   cursor: pointer;
-  opacity: 0.9;
-  transition: transform 200ms var(--ease-out);
+  opacity: 0.96;
+  filter: drop-shadow(0 0 14px rgba(217, 165, 84, 0.35)) drop-shadow(0 6px 10px rgba(8, 2, 29, 0.5));
+  transition: transform 200ms var(--ease-out), filter 200ms ease;
   animation: pixelbot-float 4.5s ease-in-out infinite;
   z-index: 2;
 }
-.pixelbot:hover { transform: translateY(-4px) scale(1.06); }
+body.light-mode .pixelbot { color: #a87420; filter: drop-shadow(0 4px 8px rgba(35, 32, 26, 0.3)); }
+.pixelbot:hover { transform: translateY(-4px) scale(1.06); filter: drop-shadow(0 0 20px rgba(217, 165, 84, 0.55)) drop-shadow(0 6px 10px rgba(8, 2, 29, 0.5)); }
+.pixelbot svg { width: 100%; height: auto; display: block; }
+.pixelbot-eye { animation: pixelbot-blink 5.2s ease-in-out infinite; }
+@keyframes pixelbot-blink {
+  0%, 92%, 100% { opacity: 1; }
+  95%, 97% { opacity: 0; }
+}
 .pixelbot.is-happy { animation: pixelbot-hop 620ms var(--ease-out); }
 .pixelbot-heart { opacity: 0; }
 .pixelbot.is-happy .pixelbot-heart { animation: heart-blink 1.6s ease infinite; }
@@ -1922,7 +1930,7 @@ body.light-mode .led-strip { background: color-mix(in srgb, #241f16 88%, transpa
   .offduty-copy { text-align: center; }
   .footer-columns { grid-template-columns: 1fr; }
   .hero-meta { bottom: calc(84px + var(--led-h)); gap: 8px; }
-  .pixelbot { right: 18px; bottom: calc(190px + var(--led-h)); width: 46px; }
+  .pixelbot { right: 14px; bottom: calc(196px + var(--led-h)); width: 64px; }
   .terminus { gap: 10px; }
   .terminus-flap { display: none; }
   .hero-actions .btn { width: min(320px, 86vw); justify-content: center; }
