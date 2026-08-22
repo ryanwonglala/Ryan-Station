@@ -6,16 +6,69 @@
   <meta name="description" content="Ryan Station music player with a resident station DJ.">
   <title>Music Zone - Acid Glitch Hub</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="stylesheet" href="music-player.css">
+  <link rel="stylesheet" href="music-player.css?v=20260822-7">
 </head>
 <body data-page="music">
+  <!-- Inline sprite: Chrome blocks <use href="assets/icons.svg#…"> on file:// -->
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="icon-sprite">
+    <symbol id="icon-music" viewBox="0 0 16 16">
+      <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13s1.12-2 2.5-2 2.5.896 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/>
+      <path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/>
+      <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/>
+    </symbol>
+    <symbol id="icon-home" viewBox="0 0 16 16">
+      <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/>
+      <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z"/>
+    </symbol>
+    <symbol id="icon-chevron-up" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+    </symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+    </symbol>
+    <symbol id="icon-list-ul" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+    </symbol>
+    <symbol id="icon-backward" viewBox="0 0 16 16">
+      <path d="M.5 3.5A.5.5 0 0 0 0 4v8a.5.5 0 0 0 1 0V8.753l6.267 3.636c.54.313 1.233-.066 1.233-.697v-2.94l6.267 3.636c.54.314 1.233-.065 1.233-.696V4.308c0-.63-.693-1.01-1.233-.696L8.5 7.248v-2.94c0-.63-.692-1.01-1.233-.696L1 7.248V4a.5.5 0 0 0-.5-.5"/>
+    </symbol>
+    <symbol id="icon-play" viewBox="0 0 16 16">
+      <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
+    </symbol>
+    <symbol id="icon-pause" viewBox="0 0 16 16">
+      <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/>
+    </symbol>
+    <symbol id="icon-forward" viewBox="0 0 16 16">
+      <path d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5"/>
+    </symbol>
+    <symbol id="icon-volume-up" viewBox="0 0 16 16">
+      <path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"/>
+      <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"/>
+      <path d="M8.707 11.182A4.5 4.5 0 0 0 10.025 8a4.5 4.5 0 0 0-1.318-3.182L8 5.525A3.5 3.5 0 0 1 9.025 8 3.5 3.5 0 0 1 8 10.475zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06"/>
+    </symbol>
+    <symbol id="icon-volume-mute" viewBox="0 0 16 16">
+      <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06m7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"/>
+    </symbol>
+    <symbol id="icon-volume-down" viewBox="0 0 16 16">
+      <path d="M9 4a.5.5 0 0 0-.812-.39L5.825 5.5H3.5A.5.5 0 0 0 3 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 9 12zm3.025 4a4.5 4.5 0 0 1-1.318 3.182L10 10.475A3.5 3.5 0 0 0 11.025 8 3.5 3.5 0 0 0 10 5.525l.707-.707A4.5 4.5 0 0 1 12.025 8"/>
+    </symbol>
+    <symbol id="icon-shuffle" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+      <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+    </symbol>
+    <symbol id="icon-repeat-1" viewBox="0 0 16 16">
+      <path d="M11 4v1.466a.25.25 0 0 0 .41.192l2.36-1.966a.25.25 0 0 0 0-.384l-2.36-1.966a.25.25 0 0 0-.41.192V3H5a5 5 0 0 0-4.48 7.223.5.5 0 0 0 .896-.446A4 4 0 0 1 5 4zm4.48 1.777a.5.5 0 0 0-.896.446A4 4 0 0 1 11 12H5.001v-1.466a.25.25 0 0 0-.41-.192l-2.36 1.966a.25.25 0 0 0 0 .384l2.36 1.966a.25.25 0 0 0 .41-.192V13h6a5 5 0 0 0 4.48-7.223Z"/>
+      <path d="M9 5.5a.5.5 0 0 0-.854-.354l-1.75 1.75a.5.5 0 1 0 .708.708L8 6.707V10.5a.5.5 0 0 0 1 0z"/>
+    </symbol>
+  </svg>
+
   <div class="grid-warp" aria-hidden="true"></div>
   <div class="scanlines" aria-hidden="true"></div>
 
   <aside class="playlist-sidebar" id="playlistSidebar">
     <button class="playlist-tab" id="playlistTab" aria-label="Toggle Playlist" data-i18n-aria-label="musicPlayer.playlistToggle">
       <span data-i18n="musicPlayer.playlist">Playlist</span>
-      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-music"></use></svg>
+      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-music"></use></svg>
     </button>
     <div class="playlist-shell">
       <header>
@@ -55,7 +108,7 @@
   </aside>
 
   <a href="index.html" class="back-home-btn" title="Back to Home" data-i18n-title="musicPlayer.home">
-    <svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-home"></use></svg>
+    <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-home"></use></svg>
     <span data-i18n="musicPlayer.home">Home</span>
   </a>
 
@@ -87,7 +140,7 @@ DURATION: <span class="track-duration">0:00</span>
         <div class="ai-terminal-header">
           <span class="ai-terminal-label" data-i18n="musicPlayer.terminal">STATION DJ</span>
           <button id="terminal-toggle" class="terminal-toggle" type="button" aria-expanded="true" aria-controls="terminal-log" title="Collapse terminal log" data-i18n-title="musicPlayer.collapseTerminal">
-            <svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-chevron-up"></use></svg>
+            <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-chevron-up"></use></svg>
           </button>
         </div>
         <div class="mood-presets" id="moodPresets" role="group" aria-label="Quick mood picks" data-i18n-aria-label="musicPlayer.moodPresetsAria"></div>
@@ -113,11 +166,11 @@ DURATION: <span class="track-duration">0:00</span>
         <label for="seekBar" class="seek-label" data-i18n="musicPlayer.signalTracking">SIGNAL TRACKING</label>
         <input type="range" id="seekBar" min="0" max="100" value="0">
         <div class="button-grid">
-          <button class="glitch-btn" id="modeBtnPlayer" title="Sequential play" aria-label="Sequential play"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-list-ul"></use></svg></button>
-          <button class="glitch-btn" id="prevBtnPlayer" title="Previous track" data-i18n-title="musicPlayer.controls.previous"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-backward"></use></svg></button>
-          <button class="glitch-btn play-btn" id="playBtnPlayer" title="Play / Pause" data-i18n-title="musicPlayer.controls.playPause"><svg class="icon" width="16" height="16" aria-hidden="true"><use id="playIconPlayer" href="assets/icons.svg#icon-play"></use></svg></button>
-          <button class="glitch-btn" id="nextBtnPlayer" title="Next track" data-i18n-title="musicPlayer.controls.next"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-forward"></use></svg></button>
-          <button class="glitch-btn" id="volumeBtn" title="Volume" data-i18n-title="musicPlayer.controls.volume"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#icon-volume-up"></use></svg></button>
+          <button class="glitch-btn" id="modeBtnPlayer" title="Sequential play" aria-label="Sequential play"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-list-ul"></use></svg></button>
+          <button class="glitch-btn" id="prevBtnPlayer" title="Previous track" data-i18n-title="musicPlayer.controls.previous"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-backward"></use></svg></button>
+          <button class="glitch-btn play-btn" id="playBtnPlayer" title="Play / Pause" data-i18n-title="musicPlayer.controls.playPause"><svg class="icon" width="16" height="16" aria-hidden="true"><use id="playIconPlayer" href="#icon-play"></use></svg></button>
+          <button class="glitch-btn" id="nextBtnPlayer" title="Next track" data-i18n-title="musicPlayer.controls.next"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-forward"></use></svg></button>
+          <button class="glitch-btn" id="volumeBtn" title="Volume" data-i18n-title="musicPlayer.controls.volume"><svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-volume-up"></use></svg></button>
         </div>
         <div class="volume-control" id="volumeControl">
           <input type="range" min="0" max="100" value="100" id="volumeSlider">
@@ -134,6 +187,6 @@ DURATION: <span class="track-duration">0:00</span>
   <script src="playlist-data.js"></script>
   <script src="dj-lines-data.js"></script>
   <script src="i18n.js"></script>
-  <script src="music-player.js"></script>
+  <script src="music-player.js?v=20260822-7"></script>
 </body>
 </html>

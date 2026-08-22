@@ -46,6 +46,10 @@ let sidebarOpen = false;
 let terminalCollapsed = false;
 let playlistQuery = '';
 
+function iconMarkup(iconId) {
+  return `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="#${iconId}"></use></svg>`;
+}
+
 const PLAY_MODE_ICONS = {
   sequential: 'icon-list-ul',
   random: 'icon-shuffle',
@@ -100,7 +104,7 @@ function updateTerminalToggleUI() {
   if (!terminalToggle) return;
   const expanded = !terminalCollapsed;
   const iconId = expanded ? 'icon-chevron-up' : 'icon-chevron-down';
-  terminalToggle.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>`;
+  terminalToggle.innerHTML = iconMarkup(iconId);
   terminalToggle.setAttribute('aria-expanded', expanded.toString());
   const label = expanded ? mpT('collapseTerminal', 'Collapse terminal log') : mpT('expandTerminal', 'Expand terminal log');
   terminalToggle.setAttribute('aria-label', label);
@@ -379,7 +383,7 @@ function updatePlayModeUI() {
   const isSingle = playMode === 'single';
 
   const badge = isSingle ? '<span class="mode-badge">1</span>' : '';
-  modeBtnPlayer.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>${badge}`;
+  modeBtnPlayer.innerHTML = `${iconMarkup(iconId)}${badge}`;
   modeBtnPlayer.title = label;
   modeBtnPlayer.setAttribute('aria-label', label);
   modeBtnPlayer.classList.toggle('random', playMode === 'random');
@@ -414,7 +418,7 @@ function updatePlaybackState(playing) {
     vinylDisc.classList.toggle('playing', playing);
   }
   if (playIconPlayer) {
-    playIconPlayer.setAttribute('href', playing ? 'assets/icons.svg#icon-pause' : 'assets/icons.svg#icon-play');
+    playIconPlayer.setAttribute('href', playing ? '#icon-pause' : '#icon-play');
   }
   updateMascotState(playing);
   updateTvState(playing);
@@ -661,7 +665,7 @@ function updateVolume() {
 
   if (volumeBtn) {
     const iconId = volume <= 0 ? 'icon-volume-mute' : volume < 0.5 ? 'icon-volume-down' : 'icon-volume-up';
-    volumeBtn.innerHTML = `<svg class="icon" width="16" height="16" aria-hidden="true"><use href="assets/icons.svg#${iconId}"></use></svg>`;
+    volumeBtn.innerHTML = iconMarkup(iconId);
   }
 }
 
