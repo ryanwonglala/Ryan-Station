@@ -23,78 +23,19 @@
   <meta name="twitter:image" content="https://ryan-station.vercel.app/assets/og.jpg">
   <link rel="preload" as="image" href="assets/Dark-BG.webp" fetchpriority="high">
   <link rel="preload" as="image" href="assets/Light-BG.webp">
-  <link rel="stylesheet" href="style.css?v=20260816-6">
+  <link rel="stylesheet" href="style.css?v=20260822-6">
 </head>
 <body class="splash-active" data-page="portfolio">
   <a class="skip-link" href="#main" data-i18n="common.skipToContent">Skip to content</a>
 
-  <!-- ============ 开屏：仓鼠发电 · 系统上电 ============ -->
+  <!-- ============ 开屏：工坊亮灯 ============ -->
   <div id="loading-overlay" class="loading-overlay" role="button" tabindex="0" aria-label="Skip intro">
-    <div class="splash-logo">Ryan's Station</div>
-    <div class="gearbox">
-      <div class="overlay"></div>
-      <div class="gear one">
-        <div class="gear-inner">
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-        </div>
-      </div>
-      <div class="gear two">
-        <div class="gear-inner">
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-        </div>
-      </div>
-      <div class="gear three">
-        <div class="gear-inner">
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-        </div>
-      </div>
-      <div class="gear four large">
-        <div class="gear-inner">
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-        </div>
-        <div class="hamster">
-          <div class="hamster__body">
-            <div class="hamster__head">
-              <div class="hamster__ear"></div>
-              <div class="hamster__eye"></div>
-              <div class="hamster__nose"></div>
-            </div>
-            <div class="hamster__limb hamster__limb--fr"></div>
-            <div class="hamster__limb hamster__limb--fl"></div>
-            <div class="hamster__limb hamster__limb--br"></div>
-            <div class="hamster__limb hamster__limb--bl"></div>
-            <div class="hamster__tail"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="splash-boot" aria-hidden="true">
-      <span id="splash-boot-line">&gt; POWER: HAMSTER ONLINE</span>
-    </div>
-    <div class="loader" aria-hidden="true">
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="text"><span data-i18n="common.loading">Loading</span></div>
-      <div class="line"></div>
-    </div>
+    <img class="splash-room" src="assets/Dark-BG.webp" alt="" width="1536" height="1024">
+    <div class="splash-dark" aria-hidden="true"></div>
+    <div class="splash-lamp" aria-hidden="true"></div>
+    <p class="splash-logo">Ryan's Station</p>
   </div>
+  <div id="light-veil" class="light-veil" aria-hidden="true"></div>
 
   <!-- ============ 准星光标（桌面增强） ============ -->
   <div class="reticle" id="reticle" aria-hidden="true">
@@ -186,6 +127,23 @@
               <a class="btn btn-primary" href="#work" data-i18n="hero.ctaWork">View selected work</a>
               <a class="btn btn-ghost" href="https://github.com/ryanwonglala" target="_blank" rel="noopener" data-i18n="hero.ctaGithub">GitHub</a>
             </div>
+            <nav class="bench-index" id="bench-index" aria-label="Workbench index" data-i18n-aria-label="bench.indexLabel">
+              <button type="button" class="bench-index-chip" data-bench="arm" data-lockable>
+                <span data-bench-name>6-DOF arm</span>
+              </button>
+              <button type="button" class="bench-index-chip" data-bench="laptop" data-lockable>
+                <span data-bench-name>RoboInspect</span>
+              </button>
+              <button type="button" class="bench-index-chip" data-bench="tools" data-lockable>
+                <span data-bench-name>FlexiLock</span>
+              </button>
+              <button type="button" class="bench-index-chip" data-bench="rack" data-lockable>
+                <span data-bench-name>Security robot</span>
+              </button>
+              <button type="button" class="bench-index-chip" data-bench="neon" data-lockable>
+                <span data-bench-name>About</span>
+              </button>
+            </nav>
           </div>
           <div class="hero-meta" aria-label="Hero meta">
             <span class="hero-meta-item"><span data-i18n="hero.location">Singapore · GMT+8</span></span>
@@ -194,40 +152,60 @@
               <span class="station-clock-time">--:--:--</span> SGT
             </span>
             <span class="hero-meta-sep" aria-hidden="true">·</span>
-            <span class="hero-meta-item hero-status"><span class="hero-status-dot" aria-hidden="true"></span><span data-i18n="hero.status">Open to robotics &amp; automation roles</span></span>
+            <span class="hero-meta-item hero-status"><span class="hero-status-dot" aria-hidden="true"></span><span data-i18n="hero.status">The lights are on.</span></span>
           </div>
           <div class="hero-scroll" aria-hidden="true">
             <span class="hero-scroll-label" data-i18n="hero.scroll">Scroll</span>
             <span class="hero-scroll-line"></span>
           </div>
-          <p class="hero-sensor-hint" aria-hidden="true" data-i18n="hero.sensorHint">move — you are the sensor</p>
-          <button type="button" class="pixelbot" id="pixelbot" aria-label="A tiny pixel robot — say hi">
-            <svg viewBox="0 0 16 16" width="88" height="88" aria-hidden="true" shape-rendering="crispEdges">
-              <g class="pixelbot-body">
-                <rect x="5" y="1" width="1" height="2" fill="#74d7e8"/>
-                <rect x="10" y="1" width="1" height="2" fill="#74d7e8"/>
-                <rect x="4" y="3" width="8" height="1" fill="currentColor"/>
-                <rect x="3" y="4" width="10" height="6" fill="currentColor"/>
-                <rect x="4" y="5" width="1" height="4" fill="rgba(12,14,21,0.28)"/>
-                <rect x="11" y="5" width="1" height="4" fill="rgba(12,14,21,0.28)"/>
-                <rect class="pixelbot-eye" x="4.5" y="5" width="2.5" height="2.5" fill="#0c0e15"/>
-                <rect class="pixelbot-eye" x="9" y="5" width="2.5" height="2.5" fill="#0c0e15"/>
-                <rect x="4" y="10" width="8" height="1" fill="currentColor"/>
-                <rect x="4" y="11" width="2" height="2.5" fill="currentColor"/>
-                <rect x="10" y="11" width="2" height="2.5" fill="currentColor"/>
-              </g>
-              <rect class="pixelbot-heart" x="7" y="8" width="2" height="1.5" fill="#e85940"/>
-            </svg>
-          </button>
+          <div class="bench-hotspots" id="bench-hotspots" aria-label="Workbench" data-i18n-aria-label="bench.indexLabel">
+            <button type="button" class="bench-hotspot bench-hotspot-window" data-bench="window" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>Departures</span><span data-bench-tel>JOURNEY</span></span>
+            </button>
+            <button type="button" class="bench-hotspot bench-hotspot-tools" data-bench="tools" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>FlexiLock</span><span data-bench-tel>10 KG · −60 KPA</span></span>
+            </button>
+            <button type="button" class="bench-hotspot bench-hotspot-laptop" data-bench="laptop" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>RoboInspect</span><span data-bench-tel>ROS 2 · NAV2</span></span>
+            </button>
+            <button type="button" class="bench-hotspot bench-hotspot-arm" data-bench="arm" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>6-DOF arm</span><span data-bench-tel>4TH PLACE · 1 WEEK</span></span>
+            </button>
+            <button type="button" class="bench-hotspot bench-hotspot-lamp" data-bench="lamp" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>Station lights</span><span data-bench-tel>DAY / NIGHT</span></span>
+            </button>
+            <button type="button" class="bench-hotspot bench-hotspot-neon" data-bench="neon" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>Station interior</span><span data-bench-tel>ABOUT</span></span>
+            </button>
+            <button type="button" class="bench-hotspot bench-hotspot-rack" data-bench="rack" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>Security robot</span><span data-bench-tel>&lt;20 CM · YOLOV8+CLIP</span></span>
+            </button>
+            <button type="button" class="bench-hotspot bench-hotspot-crate" data-bench="crate" data-lockable>
+              <span class="bench-mark" aria-hidden="true"></span>
+              <span class="bench-chip"><span data-bench-name>Music Zone</span><span data-bench-tel>B1 · AFTER HOURS</span></span>
+            </button>
+          </div>
+          <p class="hero-sensor-hint" aria-hidden="true" data-i18n="hero.sensorHint">move — the bench is live</p>
         </div>
       </section>
 
       <!-- ============ 精选作品 · 检测目标 ============ -->
       <section id="work" class="work-section" aria-labelledby="work-title">
+        <div class="section-air" aria-hidden="true">
+          <img class="air-night" src="assets/scene/work-night.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+          <img class="air-day" src="assets/scene/work-day.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+        </div>
         <header class="section-head reveal">
-          <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="work.label">Selected Work</span></p>
-          <h2 class="section-title" id="work-title" data-i18n="work.title">Four projects, four kinds of hard.</h2>
-          <p class="section-intro" data-i18n="work.intro">Simulation to real hardware, mechanism design to system integration. Every claim here survived a demo, a test rig, or a live competition.</p>
+          <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="work.label">On the bench</span></p>
+          <h2 class="section-title" id="work-title" data-i18n="work.title">Things that sat on this bench.</h2>
+          <p class="section-intro" data-i18n="work.intro">Simulation to hardware, mechanisms to systems. A few things I actually built and touched.</p>
         </header>
         <ol class="detect-list" id="work-list" aria-label="Selected projects"></ol>
 
@@ -247,6 +225,10 @@
 
       <!-- ============ 关于 · 系统内部 ============ -->
       <section id="about" class="about-section" aria-labelledby="about-title">
+        <div class="section-air" aria-hidden="true">
+          <img class="air-night" src="assets/scene/about-night.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+          <img class="air-day" src="assets/scene/about-day.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+        </div>
         <div class="about-inner">
           <header class="section-head reveal">
             <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="about.label">About</span></p>
@@ -269,7 +251,7 @@
             </div>
           </div>
 
-          <div class="about-blueprint reveal" role="img" aria-label="Self-drawing blueprint of a 6-DOF robotic arm" data-i18n-aria-label="about.blueprintAria">
+          <div class="about-blueprint reveal" role="application" aria-label="Self-drawing blueprint of a 6-DOF robotic arm — drag the gripper" data-i18n-aria-label="about.blueprintAria">
             <span class="idc-corners idc-corners-outer" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
             <svg class="bp-svg" viewBox="0 0 760 540" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
 <defs>
@@ -371,7 +353,7 @@
             <div class="offduty-copy">
               <p class="offduty-label" data-i18n="about.offDutyLabel">Off duty</p>
               <h3 class="offduty-title" data-i18n="about.offDutyTitle">When the robots are parked.</h3>
-              <p class="offduty-text" data-i18n="about.offDuty">Pixel art and old games, anime and manga, the occasional philosophy book.</p>
+              <p class="offduty-text" data-i18n="about.offDuty">Old games, manga, a book on the night stand. Same person who built the arm — just holding a wrench now.</p>
             </div>
           </div>
         </div>
@@ -379,6 +361,10 @@
 
       <!-- ============ 旅程 · 到发信息屏 ============ -->
       <section id="journey" class="journey-section" aria-labelledby="journey-title">
+        <div class="section-air" aria-hidden="true">
+          <img class="air-night" src="assets/scene/journey-night.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+          <img class="air-day" src="assets/scene/journey-day.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+        </div>
         <div class="journey-inner">
           <header class="section-head reveal">
             <p class="section-label"><span class="section-label-rec" aria-hidden="true"></span><span data-i18n="journey.label">Journey</span></p>
@@ -398,10 +384,10 @@
             <button class="departure departure-next" type="button" data-scroll="#contact">
               <span class="departure-time">2026—</span>
               <span class="departure-dest">
-                <span class="departure-org" data-i18n="journey.next">Next destination</span>
-                <span class="departure-hint" data-i18n="journey.nextHint">Open to Robotics &amp; Automation roles</span>
+                <span class="departure-org" data-i18n="journey.next">This platform</span>
+                <span class="departure-hint" data-i18n="journey.nextHint">The next page is still being written.</span>
               </span>
-              <span class="departure-status is-boarding" data-i18n="journey.boarding">Boarding</span>
+              <span class="departure-status is-boarding" data-i18n="journey.boarding">Here</span>
             </button>
             <div class="departures-list" id="departures-list"></div>
           </div>
@@ -410,6 +396,10 @@
 
       <!-- ============ 联系 · 终点站 ============ -->
       <section id="contact" class="contact-section" aria-labelledby="contact-title">
+        <div class="section-air" aria-hidden="true">
+          <img class="air-night" src="assets/scene/contact-night.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+          <img class="air-day" src="assets/scene/contact-day.webp" alt="" width="1248" height="832" loading="lazy" decoding="async">
+        </div>
         <div class="contact-headlight" aria-hidden="true"></div>
         <div class="contact-inner">
           <div class="terminus reveal" aria-hidden="true">
@@ -531,6 +521,26 @@
     </footer>
   </div>
 
+  <button type="button" class="pixelbot" id="pixelbot" aria-label="A tiny pixel robot. It lives here." data-i18n-aria-label="companion.aria">
+    <svg viewBox="0 0 16 16" width="88" height="88" aria-hidden="true" shape-rendering="crispEdges">
+      <g class="pixelbot-body">
+        <rect x="5" y="1" width="1" height="2" fill="#74d7e8"/>
+        <rect x="10" y="1" width="1" height="2" fill="#74d7e8"/>
+        <rect x="4" y="3" width="8" height="1" fill="currentColor"/>
+        <rect x="3" y="4" width="10" height="6" fill="currentColor"/>
+        <rect x="4" y="5" width="1" height="4" fill="rgba(12,14,21,0.28)"/>
+        <rect x="11" y="5" width="1" height="4" fill="rgba(12,14,21,0.28)"/>
+        <rect class="pixelbot-eye" x="4.5" y="5" width="2.5" height="2.5" fill="#0c0e15"/>
+        <rect class="pixelbot-eye" x="9" y="5" width="2.5" height="2.5" fill="#0c0e15"/>
+        <rect x="4" y="10" width="8" height="1" fill="currentColor"/>
+        <rect x="4" y="11" width="2" height="2.5" fill="currentColor"/>
+        <rect x="10" y="11" width="2" height="2.5" fill="currentColor"/>
+      </g>
+      <rect class="pixelbot-heart" x="7" y="8" width="2" height="1.5" fill="#e85940"/>
+    </svg>
+    <span class="pixelbot-zzz" aria-hidden="true">z</span>
+  </button>
+
   <!-- ============ 到站信息条（固定底部） ============ -->
   <div class="led-strip" id="led-strip">
     <span class="led-cell led-rec"></span>
@@ -586,7 +596,11 @@
   <script src="sensor.js?v=20260816-6"></script>
   <script src="scene.js?v=20260816-6"></script>
   <script src="data.js"></script>
-  <script src="i18n.js?v=20260816-4"></script>
-  <script src="script.js?v=20260816-6"></script>
+  <script src="i18n.js?v=20260822-3"></script>
+  <script src="bench.js?v=20260822-1"></script>
+  <script src="companion.js?v=20260822-2"></script>
+  <script src="rigs/arm-ik.js?v=20260822-3"></script>
+  <script src="rigs/flexilock.js?v=20260822-2"></script>
+  <script src="script.js?v=20260822-4"></script>
 </body>
 </html>

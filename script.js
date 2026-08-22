@@ -26,21 +26,9 @@
 
     let seen = false;
     try { seen = sessionStorage.getItem('station-splash-seen') === '1'; } catch (e) { /* noop */ }
-
-    // boot 台词按语言轮播
-    const bootLine = $('#splash-boot-line');
-    const bootSeqEn = ['> POWER: HAMSTER ONLINE', '> SENSOR ARRAY... OK', '> STATION LIGHTS... ON'];
-    const bootSeqZh = ['> 电源：仓鼠就绪', '> 传感器阵列……正常', '> 站台灯光……点亮'];
-    let bootI = 0;
-    const bootTimer = window.setInterval(() => {
-      if (!bootLine) return;
-      const seq = lang() === 'zh' ? bootSeqZh : bootSeqEn;
-      bootLine.textContent = seq[Math.min(bootI, seq.length - 1)];
-      bootI += 1;
-    }, 520);
+    const forceStatic = new URLSearchParams(window.location.search).has('static');
 
     const finish = () => {
-      window.clearInterval(bootTimer);
       body.classList.remove('splash-active');
       body.classList.add('splash-exit');
       try { sessionStorage.setItem('station-splash-seen', '1'); } catch (e) { /* noop */ }
@@ -48,17 +36,17 @@
         overlay.remove();
         body.classList.remove('splash-exit');
         window.dispatchEvent(new CustomEvent('station:splash-ready'));
-      }, reducedMotion() ? 40 : 950);
+      }, reducedMotion() ? 40 : 620);
     };
 
-    if (seen || reducedMotion()) {
-      window.clearInterval(bootTimer);
+    if (seen || reducedMotion() || forceStatic) {
       overlay.remove();
       body.classList.remove('splash-active');
+      window.dispatchEvent(new CustomEvent('station:splash-ready'));
       return;
     }
 
-    const HOLD = 1900;
+    const HOLD = 1380;
     const timer = window.setTimeout(finish, HOLD);
     const skip = () => { window.clearTimeout(timer); finish(); };
     overlay.addEventListener('click', skip, { once: true });
@@ -163,6 +151,7 @@
       field._rz = window.setTimeout(() => field.resize(), 180);
     });
 
+    window.heroField = field;
     return field;
   })();
 
@@ -281,6 +270,17 @@
       updateIndicator();
     };
 
+    const playTheme = (toLight) => {
+      if (body.classList.contains('light-mode') === toLight) { apply(toLight); return; }
+      apply(toLight);
+      const veil = $('#light-veil');
+      if (!veil || reducedMotion()) return;
+      veil.classList.remove('is-playing', 'is-to-day', 'is-to-night');
+      void veil.offsetWidth;
+      veil.classList.add('is-playing', toLight ? 'is-to-day' : 'is-to-night');
+      window.setTimeout(() => veil.classList.remove('is-playing', 'is-to-day', 'is-to-night'), 1200);
+    };
+
     const scheduleBoundary = () => {
       window.clearTimeout(boundaryTimer);
       const state = sgtState();
@@ -288,7 +288,7 @@
         auto = true;
         stored = null;
         try { localStorage.removeItem('theme'); } catch (e) { /* noop */ }
-        apply(sgtState().light);
+        playTheme(sgtState().light);
         scheduleBoundary();
       }, Math.max(1000, state.next - Date.now() + 250));
     };
@@ -297,7 +297,7 @@
       auto = true;
       stored = null;
       try { localStorage.removeItem('theme'); } catch (e) { /* noop */ }
-      apply(sgtState().light);
+      playTheme(sgtState().light);
       scheduleBoundary();
     };
 
@@ -309,7 +309,7 @@
         auto = false;
         stored = { mode: toLight ? 'light' : 'dark', setAt: Date.now(), expires: sgtState().next };
         try { localStorage.setItem('theme', JSON.stringify(stored)); } catch (e) { /* noop */ }
-        apply(toLight);
+        playTheme(toLight);
       });
     }
     if (modeBtn) modeBtn.addEventListener('click', returnToAuto);
@@ -402,17 +402,40 @@
     };
 
     let current = -1;
+    let peeking = false;
     const setStop = (idx) => {
       if (idx === current) return;
       current = idx;
       const n = names();
-      scrambleTo(nowEl, n[idx]);
+      if (!peeking) scrambleTo(nowEl, n[idx]);
       scrambleTo(nextEl, n[(idx + 1) % n.length]);
       if (stopsEl) stopsEl.textContent = String(idx + 1).padStart(2, '0') + '/' + String(n.length).padStart(2, '0');
       if (strip) strip.classList.remove('is-arriving'), strip.offsetWidth, strip.classList.add('is-arriving');
+      window.dispatchEvent(new CustomEvent('station:stop', { detail: { id: sectionIds[idx], idx } }));
+    };
+    const restore = () => {
+      const n = names();
+      if (current >= 0) scrambleTo(nowEl, n[current]);
+    };
+    const announce = (text, ms) => {
+      peeking = false;
+      scrambleTo(nowEl, text);
+      window.clearTimeout(announce._t);
+      announce._t = window.setTimeout(restore, ms || 1600);
+    };
+    const peek = (text) => {
+      peeking = true;
+      if (nowEl) nowEl.textContent = text;
+    };
+    const unpeek = () => {
+      peeking = false;
+      const n = names();
+      if (nowEl && current >= 0) nowEl.textContent = n[current];
     };
 
-    return { setStop, sectionIds, refresh: () => { current = -1; } };
+    const api = { setStop, sectionIds, refresh: () => { current = -1; }, announce, peek, unpeek };
+    window.StationLED = api;
+    return api;
   })();
 
   (function initHeaderAndSpy() {
@@ -692,6 +715,8 @@
     /* --- 案案渲染 --- */
     const renderCase = (index) => {
       if (!caseBody) return;
+      if (window.ArmIK) window.ArmIK.unmount(caseBody);
+      if (window.FlexiLock) window.FlexiLock.unmount(caseBody);
       const project = projects[index];
       const l = L(project);
       current = index;
@@ -741,8 +766,20 @@
           </section>`;
       }).join('');
 
+      const rigKind = project.id === 'arm-challenge' ? 'arm-ik' : project.id === 'flexilock' ? 'flexilock' : '';
+      const rigHtml = rigKind === 'arm-ik' ? `
+        <section class="case-section case-rig-section">
+          <h3 class="case-section-title">${t('rigs.armTitle', 'Take the controls')}</h3>
+          <p class="case-section-body">${t('rigs.armCaseHint', 'This is the hand from that week. Tucking it away is home pose.')}</p>
+          <div class="case-rig" data-rig="arm-ik"></div>
+        </section>` : rigKind === 'flexilock' ? `
+        <section class="case-section case-rig-section">
+          <h3 class="case-section-title">${t('rigs.flexiTitle', 'Press until it holds.')}</h3>
+          <p class="case-section-body">${t('rigs.flexiCaption', 'Toy of the scale-jamming idea.')}</p>
+          <div class="case-rig" data-rig="flexilock"></div>
+        </section>` : '';
+
       caseBody.innerHTML = `
-        <div class="case-hero-media" data-case-hero>${heroHtml}</div>
         <p class="case-kicker">${l.eyebrow}</p>
         <h2 class="case-title" id="case-title">${l.title}</h2>
         <p class="case-subtitle">${l.subtitle}</p>
@@ -753,6 +790,8 @@
           <div class="case-meta-cell"><span class="case-meta-label">${t('work.year', 'Year')}</span><span class="case-meta-value">${project.year}</span></div>
         </div>
         ${linksHtml ? `<div class="case-links">${linksHtml}</div>` : ''}
+        ${rigHtml}
+        <div class="case-hero-media" data-case-hero>${heroHtml}</div>
         ${sectionsHtml}`;
 
       $$('.case-media', caseBody).forEach((el) => {
@@ -788,9 +827,13 @@
         });
       }
       if (caseScroll) caseScroll.scrollTop = 0;
+      const armRig = caseBody.querySelector('[data-rig="arm-ik"]');
+      if (armRig && window.ArmIK) window.ArmIK.mount(armRig, { variant: 'case' });
+      const flexiRig = caseBody.querySelector('[data-rig="flexilock"]');
+      if (flexiRig && window.FlexiLock) window.FlexiLock.mount(flexiRig);
     };
 
-    const openCase = (index, trigger) => {
+    const openCase = (index, trigger, opts) => {
       lastFocus = trigger || document.activeElement;
       renderCase(index);
       if (!caseView) return;
@@ -799,16 +842,40 @@
       caseView.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
       if (caseClose) caseClose.focus();
+      const id = projects[index] && projects[index].id;
+      if (id && !(opts && opts.silentHash) && location.hash !== '#case/' + id) {
+        history.pushState({ case: id }, '', '#case/' + id);
+      }
     };
 
     const closeCase = () => {
       if (!caseView || !caseView.classList.contains('is-open')) return;
+      if (window.ArmIK) window.ArmIK.unmount(caseBody);
+      if (window.FlexiLock) window.FlexiLock.unmount(caseBody);
       caseView.classList.remove('is-open');
       caseView.setAttribute('aria-hidden', 'true');
       caseView.setAttribute('inert', '');
       document.body.style.overflow = '';
       $$('video', caseView).forEach((v) => v.pause());
       if (lastFocus && lastFocus.focus) lastFocus.focus();
+      if ((location.hash || '').indexOf('#case/') === 0) {
+        history.pushState(null, '', '#work');
+      }
+    };
+
+    const openById = (id, trigger) => {
+      const i = projects.findIndex((p) => p.id === id);
+      if (i >= 0) openCase(i, trigger);
+    };
+
+    const applyCaseHash = () => {
+      const m = (location.hash || '').match(/^#case\/([a-z0-9-]+)/i);
+      if (!m) {
+        if (caseView && caseView.classList.contains('is-open')) closeCase();
+        return;
+      }
+      const i = projects.findIndex((p) => p.id === m[1]);
+      if (i >= 0) openCase(i, null, { silentHash: true });
     };
 
     if (caseClose) caseClose.addEventListener('click', closeCase);
@@ -818,6 +885,7 @@
       if (!caseView || !caseView.classList.contains('is-open')) return;
       if (e.key === 'Escape') { e.preventDefault(); closeCase(); }
     });
+    window.addEventListener('popstate', applyCaseHash);
 
     const renderArchive = () => {
       const card = $('#archive-card');
@@ -838,11 +906,17 @@
         </div>`;
     };
 
-    return {
+    const api = {
       renderList,
       renderArchive,
       rerender: () => { renderList(); renderArchive(); },
+      openById,
+      openCase,
+      closeCase,
+      applyCaseHash,
     };
+    window.StationWork = api;
+    return api;
   })();
 
   /* ==================================================================
@@ -869,18 +943,23 @@
   (function initBlueprint() {
     const bp = $('.about-blueprint');
     if (!bp) return;
+    const enableIk = () => {
+      if (window.ArmIK) window.ArmIK.mount(bp, { variant: 'blueprint' });
+    };
     if (reducedMotion() || !('IntersectionObserver' in window)) {
       bp.classList.add('is-drawn');
+      enableIk();
       return;
     }
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           bp.classList.add('is-drawn');
+          window.setTimeout(enableIk, 1400);
           io.unobserve(bp);
         }
       });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.18, rootMargin: '0px 0px -10% 0px' });
     io.observe(bp);
   })();
 
@@ -953,9 +1032,7 @@
    * 像素机器人 + 秘技
    * ================================================================== */
   (function initEasterEggs() {
-    const bot = $('#pixelbot');
     const heartSvg = `<svg viewBox="0 0 7 6" width="14" height="12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#e85940" fill-rule="evenodd" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></svg>`;
-
     const spawnHearts = (x, y, count) => {
       for (let i = 0; i < count; i++) {
         const el = document.createElement('span');
@@ -970,17 +1047,6 @@
         window.setTimeout(() => el.remove(), 2000);
       }
     };
-
-    if (bot) {
-      bot.addEventListener('click', (e) => {
-        bot.classList.remove('is-happy');
-        void bot.offsetWidth;
-        bot.classList.add('is-happy');
-        const rect = bot.getBoundingClientRect();
-        spawnHearts(rect.left + rect.width / 2, rect.top, reducedMotion() ? 1 : 7);
-        if (heroField) heroField.pulse(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      });
-    }
 
     const seq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let pos = 0;
@@ -1056,6 +1122,7 @@
   Work.renderList();
   Work.renderArchive();
   LED.setStop(0);
+  Work.applyCaseHash();
   if (window.PortfolioI18n) {
     window.PortfolioI18n.onChange(() => {
       Work.rerender();
