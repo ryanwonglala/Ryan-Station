@@ -118,20 +118,27 @@ function toggleTerminalLogVisibility() {
 // ========================= 🎼 播放列表加载 ===============================
 // ========================================================================
 
+async function loadJsonAsset(fileName, fallbackGlobal) {
+  try {
+    const response = await fetch(fileName);
+    if (response.ok) return await response.json();
+  } catch (error) {
+    /* Chrome blocks fetch() on file://; fall through to the script embed. */
+  }
+  const embedded = fallbackGlobal ? window[fallbackGlobal] : null;
+  return embedded || null;
+}
+
 async function loadPlaylist() {
   try {
-    const response = await fetch('playlist.json');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    playlist = Array.isArray(data.tracks) ? data.tracks : [];
+    const data = await loadJsonAsset('playlist.json', 'STATION_PLAYLIST');
+    playlist = data && Array.isArray(data.tracks) ? data.tracks : [];
 
     renderPlaylist();
     updatePlaylistCount();
     if (playlist.length > 0) loadTrack(0);
 
-    return true;
+    return playlist.length > 0;
   } catch (error) {
     console.error('加载播放列表失败:', error);
     writeTrackInfo({ title: '加载失败', artist: '无法加载播放列表' });
@@ -527,8 +534,8 @@ let djBusyUntil = 0;
 
 async function loadDjLines() {
   try {
-    const res = await fetch('dj-lines.json');
-    if (res.ok) djLines = await res.json();
+    const data = await loadJsonAsset('dj-lines.json', 'STATION_DJ_LINES');
+    if (data) djLines = data;
   } catch (err) { /* DJ 静音也不影响播放 */ }
 }
 
